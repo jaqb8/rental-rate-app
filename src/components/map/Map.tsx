@@ -2,19 +2,30 @@
 import {
   MapContainer,
   TileLayer,
-  Marker,
   CircleMarker,
   Popup,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { env } from "@/env";
+import { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
-function Map() {
+interface MapProps {
+  sidebarOpen: boolean;
+}
+
+function Map({ sidebarOpen }: MapProps) {
+  const [key, setKey] = useState(uuidv4());
+
+  useEffect(() => {
+    setKey(uuidv4());
+  }, [sidebarOpen]);
+
   return (
-    <main className="z-1 h-[100vh] w-[100%] bg-cover">
+    <div className="z-1 h-full w-full bg-cover">
       {/*leaflet and react-leaflet*/}
       <div>
-        <MapContainer center={[40.609787846393196, 20.7890265133657]} zoom={5}>
+        <MapContainer key={key} center={[40.609787846393196, 20.7890265133657]} zoom={5}>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url={`https://tile.jawg.io/jawg-sunny/{z}/{x}/{y}{r}.png?access-token=${env.NEXT_PUBLIC_JAWG_ACCESS_TOKEN}`}
@@ -34,7 +45,7 @@ function Map() {
           </CircleMarker>
         </MapContainer>
       </div>
-    </main>
+    </div>
   );
 }
 
