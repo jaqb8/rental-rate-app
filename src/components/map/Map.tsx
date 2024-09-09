@@ -2,49 +2,74 @@
 import {
   MapContainer,
   TileLayer,
-  CircleMarker,
   Popup,
+  Marker,
+  useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 import { env } from "@/env";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { useSize } from "@/app/hooks";
+
+L.Marker.prototype.options.icon = L.icon({
+  iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
+  shadowSize: [41, 41],
+});
 
 interface MapProps {
   sidebarOpen: boolean;
 }
 
+const ResizeMap = ({ containerRef }: { containerRef: React.RefObject<HTMLDivElement> }) => {
+  const map = useMap();
+  const { width, height } = useSize(containerRef);
+
+  useEffect(() => {
+    if (map) {
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 100);
+    }
+  }, [height, width, map]);
+
+  return null;
+};
+
 function Map({ sidebarOpen }: MapProps) {
   const [key, setKey] = useState(uuidv4());
+  const containerRef = useRef(null);
+
 
   useEffect(() => {
     setKey(uuidv4());
   }, [sidebarOpen]);
 
   return (
-    <div className="z-1 h-full w-full bg-cover">
+    <div className="z-1 h-[100%] w-[100%]" ref={containerRef}>
       {/*leaflet and react-leaflet*/}
-      <div>
-        <MapContainer key={key} center={[40.609787846393196, 20.7890265133657]} zoom={5}>
+        <MapContainer
+          key={key}
+          center={[40.609787846393196, 20.7890265133657]}
+          zoom={5}
+          style={{ height: "100%", width: "100%" }}
+        >
+          <ResizeMap containerRef={containerRef} />
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url={`https://tile.jawg.io/jawg-sunny/{z}/{x}/{y}{r}.png?access-token=${env.NEXT_PUBLIC_JAWG_ACCESS_TOKEN}`}
           />
-
-          <CircleMarker
-            className="n h-[150px] w-[150px]"
-            center={[40.609787846393196, 20.7890265133657]}
-            radius={10}
-            color="transparent"
-            fillColor="green"
-            fillOpacity={0.5}
-          >
-            <Popup className="h-[150px] w-[460px]">
-              <p className="text-[25px]">My Location </p>
+          <Marker position={[40.609787846393196, 20.7890265133657]}>
+            <Popup>
+              A pretty CSS3 popup. <br /> Easily customizable.
             </Popup>
-          </CircleMarker>
+          </Marker>
         </MapContainer>
-      </div>
     </div>
   );
 }

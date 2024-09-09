@@ -7,11 +7,13 @@ import {
   ChevronRightIcon,
   House,
   MenuIcon,
+  Plus,
   SearchIcon,
 } from "lucide-react";
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import Map from "@/components/map";
 import { Input } from "../ui/input";
+import Link from "next/link";
 
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
@@ -71,7 +73,7 @@ export function Sidebar() {
           <ScrollArea className="flex-grow">
             <div className="p-4">
               <div className="mb-4">
-              {isOpen ? (
+                {isOpen ? (
                   <form onSubmit={handleSearch} className="relative">
                     <Input
                       type="search"
@@ -100,12 +102,41 @@ export function Sidebar() {
                 )}
               </div>
 
-              <div className="mb-4 h-16 rounded-md bg-gray-700 p-4">
-                {isOpen && <span></span>}
+              <div className="mb-4">
+                {isOpen ? (
+                  <Link href="/landlord/add">
+                    <Button variant="outline" className="w-full text-primary">
+                      <Plus />
+                      Add New Landlord
+                    </Button>
+                  </Link>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="w-full text-white hover:bg-gray-700"
+                    onClick={toggleSidebar}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
 
-              <div className="mb-4 h-16 rounded-md bg-gray-700 p-4">
-                {isOpen && <span></span>}
+              <div className="mb-4">
+                {isOpen ? (
+                  <Button variant="outline" className="w-full text-primary">
+                    Add New Review
+                  </Button>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="w-full text-white hover:bg-gray-700"
+                    onClick={toggleSidebar}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
             </div>
           </ScrollArea>
@@ -115,6 +146,8 @@ export function Sidebar() {
         <Map sidebarOpen={isOpen} />
       </div> */}
       {/* Main content */}
+      <Map sidebarOpen={isOpen} />
+
       <main className="flex-grow bg-gray-100">
         {isMobile && (
           <Button
@@ -126,7 +159,6 @@ export function Sidebar() {
             <MenuIcon />
           </Button>
         )}
-        <Map sidebarOpen={isOpen} />
       </main>
     </div>
   );
