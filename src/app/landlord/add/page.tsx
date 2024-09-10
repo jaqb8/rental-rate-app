@@ -3,9 +3,9 @@ import AddLandlordForm from "./form";
 
 export default function AddLandlord() {
   return (
-    <div className="w-full">
-      <h2 className="text-2xl font-bold">Add New Landlord</h2>
-      <div className="px-72">
+    <div className="flex items-center flex-col">
+      <h2 className="text-2xl pb-4 font-bold">Add New Landlord</h2>
+      <div className="flex justify-center">
         <AddLandlordForm />
       </div>
     </div>

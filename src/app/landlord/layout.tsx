@@ -17,7 +17,7 @@ export default function LandlordLayout({
           </Button>
         </Link>
       </header>
-      <section className="container flex px-48 py-12">{children}</section>
+      <section className="px-8 md:px-24 lg:px-64 py-12">{children}</section>
     </main>
   );
 }
