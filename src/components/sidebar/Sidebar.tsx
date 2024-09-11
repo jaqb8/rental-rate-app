@@ -10,15 +10,16 @@ import {
   Plus,
   SearchIcon,
 } from "lucide-react";
-import { type FormEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Map from "@/components/map";
-import { Input } from "../ui/input";
 import Link from "next/link";
+import AutosuggestInput from "../autosuggest-input";
+import { type AddressSuggestion } from "../autosuggest-input/AutosuggestInput";
 
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedQuery, setSelectedQuery] = useState<AddressSuggestion | null>(null);
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -34,24 +35,20 @@ export function Sidebar() {
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
-  const handleSearch = (e: FormEvent<HTMLFormElement>): void => {
-    e.preventDefault();
-    console.log("Searching for:", searchQuery);
-    // Implement your search logic here
+  const handleSelect = (suggestion: AddressSuggestion): void => {
+    setSelectedQuery(suggestion);
   };
 
   return (
     <div className="flex w-full">
-      {/* Sidebar */}
       <aside
         className={`${
-          isOpen ? "w-96" : "w-16"
+          isOpen ? "w-[30rem]" : "w-16"
         } bg-gray-800 text-white transition-all duration-300 ease-in-out ${
           isMobile && !isOpen ? "hidden" : ""
         }`}
       >
         <div className="flex h-full flex-col">
-          {/* Sidebar header */}
           <div className="flex h-16 items-center justify-between px-4">
             {isOpen && (
               <h2 className="flex items-center gap-1 text-xl font-bold">
@@ -69,27 +66,13 @@ export function Sidebar() {
             </Button>
           </div>
 
-          {/* Sidebar content */}
           <ScrollArea className="flex-grow">
             <div className="p-4">
               <div className="mb-4">
                 {isOpen ? (
-                  <form onSubmit={handleSearch} className="relative">
-                    <Input
-                      type="search"
-                      placeholder="Search..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full bg-gray-700 text-white placeholder-gray-400"
-                    />
-                    <Button
-                      type="submit"
-                      size="icon"
-                      className="absolute right-0 top-0 bg-transparent hover:bg-gray-600"
-                    >
-                      <SearchIcon className="h-4 w-4" />
-                    </Button>
-                  </form>
+                  <div className="flex w-full max-w-sm items-start space-x-2">
+                    <AutosuggestInput onSelect={handleSelect} />
+                  </div>
                 ) : (
                   <Button
                     variant="ghost"
@@ -142,11 +125,7 @@ export function Sidebar() {
           </ScrollArea>
         </div>
       </aside>
-      {/* <div className="w-full">
-        <Map sidebarOpen={isOpen} />
-      </div> */}
-      {/* Main content */}
-      <Map sidebarOpen={isOpen} />
+      <Map sidebarOpen={isOpen} selectedQuery={selectedQuery} />
 
       <main className="flex-grow bg-gray-100">
         {isMobile && (
