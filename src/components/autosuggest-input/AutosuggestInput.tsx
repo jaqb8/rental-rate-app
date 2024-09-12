@@ -148,7 +148,7 @@ export default function AutosuggestInput({
           >
             {isLoadingSuggestions ? (
               <div className="flex items-center justify-center p-4">
-                <LoaderCircle className="h-4 w-4 animate-spin" />
+                <LoaderCircle className="h-4 w-4 animate-spin text-primary" />
               </div>
             ) : isErrorSuggestions ? (
               <div className="flex items-center justify-center p-4">
