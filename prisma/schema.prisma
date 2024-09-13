@@ -74,13 +74,15 @@ model VerificationToken {
 }
 
 model Landlord {
-    id        String   @id @default(cuid())
-    street    String
-    city      String
-    zip       String
-    country   String
-    lat       Float
-    lng       Float
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id           String   @id @default(cuid())
+    street       String
+    streetNumber String
+    flatNumber   String?
+    city         String
+    zip          String
+    country      String
+    lat          String
+    lng          String
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
 }

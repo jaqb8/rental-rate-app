@@ -22,42 +22,53 @@ export const landlordRouter = createTRPCRouter({
     .input(
       z.object({
         street: z.string().min(1),
+        streetNumber: z.string().min(1),
+        flatNumber: z.string().optional(),
         city: z.string().min(1),
         zip: z.string().min(1),
         country: z.string().min(1),
+        lat: z.string().optional(),
+        lng: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const address = `${input.street}, ${input.city}, ${input.zip}, ${input.country}`;
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${address}&format=json&limit=1`,
-        {
-          method: "GET",
-        },
-      );
-
-      if (!response.ok) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to fetch coordinates",
-        });
-      }
-
-      const data: { lat: string; lon: string }[] = await response.json();
-
-      const lat = parseFloat(data[0]?.lat ?? "0");
-      const lng = parseFloat(data[0]?.lon ?? "0");
+      let lat = input.lat;
+      let lng = input.lng;
 
       if (!lat || !lng) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to fetch coordinates",
-        });
+        const address = `${input.street}, ${input.streetNumber}, ${input.flatNumber}, ${input.city}, ${input.zip}, ${input.country}`;
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${address}&format=json&limit=1`,
+          {
+            method: "GET",
+          },
+        );
+
+        if (!response.ok) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to fetch coordinates",
+          });
+        }
+
+        const data: { lat: string; lon: string }[] = await response.json();
+
+        lat = data[0]?.lat;
+        lng = data[0]?.lon;
+
+        if (!lat || !lng) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to fetch coordinates",
+          });
+        }
       }
 
       return ctx.db.landlord.create({
         data: {
           street: input.street,
+          streetNumber: input.streetNumber,
+          flatNumber: input.flatNumber,
           city: input.city,
           zip: input.zip,
           country: input.country,

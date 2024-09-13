@@ -18,8 +18,10 @@ L.Marker.prototype.options.icon = L.icon({
 });
 
 interface MapProps {
-  sidebarOpen: boolean;
-  selectedQuery: AddressSuggestion | null;
+  sidebarOpen?: boolean;
+  selectedQuery?: AddressSuggestion | null;
+  width?: string;
+  height?: string;
 }
 
 const ResizeMap = ({
@@ -59,7 +61,7 @@ const BoundingBoxZoom = ({
   return null;
 };
 
-function Map({ sidebarOpen, selectedQuery }: MapProps) {
+function Map({ sidebarOpen, selectedQuery, width = "100%", height = "100%" }: MapProps) {
   const [key, setKey] = useState(uuidv4());
   const containerRef = useRef(null);
 
@@ -68,7 +70,7 @@ function Map({ sidebarOpen, selectedQuery }: MapProps) {
   }, [sidebarOpen]);
 
   return (
-    <div className="z-1 h-[100%] w-[100%]" ref={containerRef}>
+    <div className={`z-1 h-[${height}] w-[${width}]`} ref={containerRef}>
       <MapContainer
         key={key}
         center={[40.609787846393196, 20.7890265133657]}

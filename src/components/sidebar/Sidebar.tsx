@@ -6,6 +6,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   House,
+  Loader2,
   MenuIcon,
   Plus,
   SearchIcon,
@@ -14,7 +15,7 @@ import { useEffect, useState } from "react";
 import Map from "@/components/map";
 import AutosuggestInput from "../autosuggest-input";
 import { type AddressSuggestion } from "../autosuggest-input/AutosuggestInput";
-// Add these imports
+import { api } from "@/trpc/react";
 import {
   Dialog,
   DialogContent,
@@ -28,21 +29,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-
-interface AddressFormData {
-  street: string;
-  streetNumber: string;
-  flatNumber: string;
-  city: string;
-  zipCode: string;
-}
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   street: z.string().min(2, {
@@ -51,9 +45,7 @@ const formSchema = z.object({
   streetNumber: z.string().min(1, {
     message: "Street number is required.",
   }),
-  flatNumber: z.string().min(1, {
-    message: "Flat number is required.",
-  }),
+  flatNumber: z.string().optional(),
   city: z.string().min(2, {
     message: "City must be at least 2 characters.",
   }),
@@ -79,9 +71,53 @@ export function Sidebar() {
       zipCode: "",
     },
   });
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const { mutate: createLandlord, isPending: isPendingLandlord } =
+    api.landlord.create.useMutation({
+      onSuccess: (data) => {
+        void router.push(`/landlord/${data.id}?created=true`);
+      },
+      onError: (error) => {
+        console.error(error);
+        toast({
+          title: "Error",
+          description: "Address not found. Please try again.",
+          variant: "destructive",
+          duration: 3000,
+        });
+      },
+    });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    console.log(values, selectedQuery);
+    let payload = {
+      street: values.street,
+      streetNumber: values.streetNumber,
+      flatNumber: values.flatNumber,
+      city: values.city,
+      zip: values.zipCode,
+      country: selectedQuery?.address.country ?? "",
+      lat: "",
+      lng: "",
+    };
+
+    if (
+      selectedQuery?.address.road &&
+      selectedQuery?.address.house_number &&
+      selectedQuery?.address.city &&
+      selectedQuery?.address.postcode
+    ) {
+      payload = {
+        ...payload,
+        lat: selectedQuery?.lat ?? "",
+        lng: selectedQuery?.lon ?? "",
+      };
+    }
+
+    // console.log(payload);
+    createLandlord(payload);
   }
 
   useEffect(() => {
@@ -96,19 +132,30 @@ export function Sidebar() {
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   const handleSelect = (suggestion: AddressSuggestion): void => {
     setSelectedQuery(suggestion);
   };
 
   const onOpenChange = (open: boolean) => {
-    console.log("open", open);
+    if (!open) {
+      setSelectedQuery(null);
+    }
+
     setIsSidebarOpen(!open);
     setIsDialogOpen(open);
   };
 
   const handleOpenDialog = () => {
+    form.reset();
+    form.setValue("street", selectedQuery?.address.road ?? "");
+    form.setValue("streetNumber", selectedQuery?.address.house_number ?? "");
+    form.setValue("city", selectedQuery?.address.city ?? "");
+    form.setValue("zipCode", selectedQuery?.address.postcode ?? "");
+
     setIsSidebarOpen(false);
     setIsDialogOpen(true);
   };
@@ -251,19 +298,19 @@ export function Sidebar() {
                         </FormItem>
                       )}
                     />
-                  <FormField
-                    control={form.control}
-                    name="flatNumber"
-                    render={({ field }) => (
-                      <FormItem className="w-1/5 flex-grow">
-                        <FormLabel>Flat Number</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Flat Number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="flatNumber"
+                      render={({ field }) => (
+                        <FormItem className="w-1/5 flex-grow">
+                          <FormLabel>Flat Number</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Flat Number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                   <div className="flex gap-2">
                     <FormField
@@ -294,7 +341,14 @@ export function Sidebar() {
                     />
                   </div>
                   <div className="pt-4">
-                    <Button type="submit">Add Landlord</Button>
+                    <Button disabled={isPendingLandlord} type="submit">
+                      {isPendingLandlord ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Plus className="mr-2 h-4 w-4" />
+                      )}
+                      {isPendingLandlord ? "Processing..." : "Add Landlord"}
+                    </Button>
                   </div>
                 </form>
               </Form>
