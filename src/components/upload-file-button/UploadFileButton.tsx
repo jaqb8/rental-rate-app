@@ -1,65 +1,65 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Upload } from "lucide-react";
-import { useRef } from "react";
-
-export interface FileData {
-  name: string;
-  size: number;
-  type: string;
-}
+import { Loader2, Upload } from "lucide-react";
+import { UploadButton } from "../uploadthing";
+import { useToast } from "@/hooks/use-toast";
 
 export default function UploadFileButton({
   children,
-  onFileSelect,
-  accept,
+  landlordId,
+  onUploadComplete,
 }: {
   children: React.ReactNode;
-  onFileSelect: (file: FileData | null) => void;
-  accept: string;
+  landlordId: string;
+  onUploadComplete: (res: any) => void;
 }) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleButtonClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files ? event.target.files[0] : null;
-    let fileData = null;
-    if (file) {
-      fileData = {
-        name: file.name,
-        size: file.size,
-        type: file.type,
-      };
-    }
-    onFileSelect(fileData);
-  };
-
+  const { toast } = useToast();
   return (
-    <div className="space-y-2">
-      <div className="flex items-center space-x-2">
-        <Button
-          type="button"
-          onClick={handleButtonClick}
-          variant="outline"
-          size="sm"
-        >
-          <Upload className="mr-2 h-4 w-4" />
-          {children}
-        </Button>
-        <Input
-          id="file-upload"
-          type="file"
-          className="hidden"
-          onChange={handleFileChange}
-          accept={accept}
-          ref={fileInputRef}
-        />
-      </div>
+    <div>
+      <UploadButton
+        input={{
+          landlordId,
+        }}
+        appearance={{
+          button:
+            "ut-ready:bg-primary focus-within:ring-0 ut-uploading:cursor-not-allowed bg-gray-500 after:ut-uploading:bg-green-500 after:ut-uploading:bg-opacity-50",
+          allowedContent: "hidden",
+        }}
+        endpoint="imageUploader"
+        content={{
+          button: ({ isUploading }) => (
+            <div className="flex items-center space-x-2 text-sm">
+              {isUploading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Upload className="mr-2 h-4 w-4" />
+              )}
+              {children}
+            </div>
+          ),
+        }}
+        onBeforeUploadBegin={(files) => {
+          if (files[0]) {
+            const fileExtension = files[0].name.split('.').pop();
+            files[0] = new File([files[0]], `${landlordId}.${fileExtension}`, {
+              type: files[0].type,
+            });
+          }
+          return files;
+        }}
+        onClientUploadComplete={onUploadComplete}
+        onUploadError={(error) => {
+          let message = error.message;
+          if (error.message.includes("FileSizeMismatch")) {
+            message = "File size is too big (max 1MB)";
+          }
+          toast({
+            title: "Error",
+            description: message,
+            variant: "destructive",
+          });
+        }}
+      />
     </div>
   );
 }

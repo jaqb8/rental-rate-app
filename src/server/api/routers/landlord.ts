@@ -6,6 +6,7 @@ import {
   publicProcedure,
 } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
+import { utapi } from "@/server/uploadthing";
 
 export const landlordRouter = createTRPCRouter({
   getById: publicProcedure
@@ -76,6 +77,33 @@ export const landlordRouter = createTRPCRouter({
           lng,
         },
       });
+    }),
+
+  update: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        data: z.object({
+          photoUrl: z.string().optional(),
+        }),
+      }),
+    )
+    .mutation(({ ctx, input }) => {
+      return ctx.db.landlord.update({ where: { id: input.id }, data: input.data });
+    }),
+
+  deleteImage: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const photoCustomId = input.id;
+        const res = await utapi.deleteFiles(photoCustomId, { keyType: "customId" });
+        if (res.deletedCount === 0) {
+          throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete image",
+        });
+      }
+      return ctx.db.landlord.update({ where: { id: input.id }, data: { photoUrl: null } });
     }),
 
   //   getLatest: protectedProcedure.query(async ({ ctx }) => {

@@ -23,9 +23,9 @@ import {
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { UploadFileButton, type FileData } from "@/components/upload-file-button";
-
-
+import { UploadFileButton } from "@/components/upload-file-button";
+import { revalidatePath } from "next/cache";
+import DeleteImageButton from "./DeleteImageButton";
 
 export default async function LandlordPage({
   params,
@@ -37,7 +37,6 @@ export default async function LandlordPage({
   const trpc = createCaller(await createTRPCContext({} as any));
   const landlord = await trpc.landlord.getById({ id: params.id });
 
-  const photoUrl = null;
   const placeholderReviews = [];
   // const placeholderReviews = [
   //   {
@@ -67,10 +66,10 @@ export default async function LandlordPage({
     notFound();
   }
 
-  async function uploadPhoto(fileData: FileData | null) {
+  const invalidateLandlordPage = async () => {
     "use server";
-    console.log("upload photo", fileData);
-  }
+    revalidatePath(`/landlord/${landlord.id}`);
+  };
 
   return (
     <div className="w-full">
@@ -98,27 +97,42 @@ export default async function LandlordPage({
       )}
       <Card>
         <CardHeader className="space-y-1">
-          <div className="text-2xl font-bold">
-            {landlord.street} {landlord.streetNumber}{" "}
-            {landlord.flatNumber ? ` / ${landlord.flatNumber}` : ""}
-          </div>
-          <div className="text-xl">
-            {landlord.city}, {landlord.zip}
+          <div className="flex justify-between">
+            <div>
+              <div className="text-2xl font-bold">
+                {landlord.street} {landlord.streetNumber}{" "}
+                {landlord.flatNumber ? ` / ${landlord.flatNumber}` : ""}
+              </div>
+              <div className="text-xl">
+                {landlord.city}, {landlord.zip}
+              </div>
+            </div>
+            <Button variant="outline">
+              <Edit className="mr-2 h-4 w-4" /> Edit
+            </Button>
           </div>
         </CardHeader>
-        <div className="relative my-3 h-48 w-full bg-muted">
-          {photoUrl ? (
-            <Image
-              src={photoUrl}
-              alt={`Photo of ${landlord.street} ${landlord.streetNumber}`}
-              layout="fill"
-              objectFit="cover"
-              className="rounded-md"
-            />
+        <div className="relative mb-6 h-48 w-full border-y bg-muted">
+          {landlord.photoUrl ? (
+            <>
+              <Image
+                src={landlord.photoUrl}
+                alt={`Photo of ${landlord.street} ${landlord.streetNumber}`}
+                fill={true}
+                className="object-cover"
+              />
+              <DeleteImageButton
+                landlordId={landlord.id}
+                onDeleteComplete={invalidateLandlordPage}
+              />
+            </>
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center space-y-2">
               <ImageIcon className="h-14 w-14 text-muted-foreground" />
-              <UploadFileButton onFileSelect={uploadPhoto} accept="image/*">
+              <UploadFileButton
+                landlordId={landlord.id}
+                onUploadComplete={invalidateLandlordPage}
+              >
                 Upload Photo
               </UploadFileButton>
             </div>
@@ -165,19 +179,16 @@ export default async function LandlordPage({
             )}
           </div>
         </CardContent>
-        {placeholderReviews.length > 0 && (
-          <CardFooter className="flex flex-wrap gap-2">
-            <Button className="flex-1" variant="outline">
-              <MessageSquare className="mr-2 h-4 w-4" /> Write a Review
-            </Button>
-            <Button className="flex-1" variant="outline">
-              <Edit className="mr-2 h-4 w-4" /> Edit Profile
-            </Button>
-            <Button className="flex-1" variant="outline">
-              <MapPin className="mr-2 h-4 w-4" /> Show on Map
-            </Button>
-          </CardFooter>
-        )}
+
+        <CardFooter className="flex flex-wrap gap-2">
+          <Button className="flex-1" variant="outline">
+            <MessageSquare className="mr-2 h-4 w-4" /> Write an opinion
+          </Button>
+
+          <Button className="flex-1" variant="outline">
+            <MapPin className="mr-2 h-4 w-4" /> Show on Map
+          </Button>
+        </CardFooter>
       </Card>
     </div>
   );

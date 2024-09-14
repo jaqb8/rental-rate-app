@@ -61,7 +61,10 @@ const BoundingBoxZoom = ({
   return null;
 };
 
-function Map({ sidebarOpen, selectedQuery, width = "100%", height = "100%" }: MapProps) {
+function Map({
+  sidebarOpen,
+  selectedQuery,
+}: MapProps) {
   const [key, setKey] = useState(uuidv4());
   const containerRef = useRef(null);
 
@@ -70,7 +73,7 @@ function Map({ sidebarOpen, selectedQuery, width = "100%", height = "100%" }: Ma
   }, [sidebarOpen]);
 
   return (
-    <div className={`z-1 h-[${height}] w-[${width}]`} ref={containerRef}>
+    <div className="z-1 h-[100vh] w-[100vw]" ref={containerRef}>
       <MapContainer
         key={key}
         center={[40.609787846393196, 20.7890265133657]}
