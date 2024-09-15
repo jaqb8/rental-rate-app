@@ -185,9 +185,11 @@ export default async function LandlordPage({
             <MessageSquare className="mr-2 h-4 w-4" /> Write an opinion
           </Button>
 
-          <Button className="flex-1" variant="outline">
-            <MapPin className="mr-2 h-4 w-4" /> Show on Map
-          </Button>
+          <Link className="flex-1" href={`/?landlordId=${landlord.id}`}>
+            <Button variant="outline" className="w-full">
+              <MapPin className="mr-2 h-4 w-4" /> Show on Map
+            </Button>
+          </Link>
         </CardFooter>
       </Card>
     </div>

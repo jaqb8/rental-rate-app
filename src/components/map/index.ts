@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
-import { type AddressSuggestion } from "../autosuggest-input/AutosuggestInput";
+import { type MapProps } from "./Map";
 
-export const Map = dynamic<{ sidebarOpen?: boolean; selectedQuery?: AddressSuggestion | null }>(() => import("./Map"), {
+export const Map = dynamic<MapProps>(() => import("./Map"), {
   ssr: false,
 });
 

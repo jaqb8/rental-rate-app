@@ -9,6 +9,10 @@ import { TRPCError } from "@trpc/server";
 import { utapi } from "@/server/uploadthing";
 
 export const landlordRouter = createTRPCRouter({
+  getAll: publicProcedure.query(({ ctx }) => {
+    return ctx.db.landlord.findMany();
+  }),
+
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) => {

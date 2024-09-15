@@ -24,13 +24,15 @@ export type AddressSuggestion = {
 
 export default function AutosuggestInput({
   onSelect,
+  inputValue,
+  setInputValue,
   suggestionsLimit = 3,
 }: {
   onSelect: (suggestion: AddressSuggestion) => void;
+  inputValue: string;
+  setInputValue: (value: string) => void;
   suggestionsLimit?: number;
 }) {
-  const [inputValue, setInputValue] = useState("");
-  const debouncedInputValue = useDebounce(inputValue, 500);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(
@@ -38,14 +40,21 @@ export default function AutosuggestInput({
   );
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLUListElement>(null);
+  
+  const [internalValue, setInternalValue] = useState(inputValue);
+  const debouncedInputValue = useDebounce(internalValue, 500);
 
   useEffect(() => {
-    if (inputValue.length > 2 && !selectedSuggestion) {
+    setInternalValue(inputValue);
+  }, [inputValue]);
+
+  useEffect(() => {
+    if (internalValue.length > 2 && !selectedSuggestion && internalValue !== inputValue) {
       setIsOpen(true);
     } else {
       setIsOpen(false);
     }
-  }, [inputValue, selectedSuggestion]);
+  }, [internalValue, selectedSuggestion, inputValue]);
 
   useEffect(() => {
     if (isOpen && suggestionsRef.current) {
@@ -77,11 +86,12 @@ export default function AutosuggestInput({
   } = useQuery<AddressSuggestion[]>({
     queryKey: ["addressSuggestions", debouncedInputValue],
     queryFn: () => fetchAddressSuggestions(debouncedInputValue),
-    enabled: isOpen && inputValue.length > 2 && !selectedSuggestion,
+    enabled: isOpen && internalValue.length > 2 && !selectedSuggestion,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
+    const newValue = e.target.value;
+    setInternalValue(newValue);
     setSelectedSuggestion(null);
     setHighlightedIndex(-1);
   };
@@ -107,7 +117,7 @@ export default function AutosuggestInput({
   };
 
   const handleSelectSuggestion = (suggestion: AddressSuggestion) => {
-    setInputValue(suggestion.display_name);
+    setInternalValue(suggestion.display_name);
     setSelectedSuggestion(suggestion.display_name);
     setIsOpen(false);
     onSelect(suggestion);
@@ -120,7 +130,7 @@ export default function AutosuggestInput({
           ref={inputRef}
           type="text"
           placeholder="Search for an address"
-          value={inputValue}
+          value={internalValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           aria-autocomplete="list"

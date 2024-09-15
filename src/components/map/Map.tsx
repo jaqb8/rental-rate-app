@@ -1,28 +1,23 @@
 "use client";
-import { MapContainer, TileLayer, Popup, Marker, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { env } from "@/env";
 import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useSize } from "@/app/hooks";
-import { type AddressSuggestion } from "../autosuggest-input/AutosuggestInput";
+import { useRouter, useSearchParams } from "next/navigation";
+import { type Landlord } from "@prisma/client";
+import { api } from "@/trpc/react";
 
 L.Marker.prototype.options.icon = L.icon({
-  iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-  iconSize: [25, 41],
+  iconUrl: "./marker.png",
+  iconSize: [28, 45],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
-  shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
-  shadowSize: [41, 41],
+  // shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
+  // shadowSize: [41, 41],
 });
-
-interface MapProps {
-  sidebarOpen?: boolean;
-  selectedQuery?: AddressSuggestion | null;
-  width?: string;
-  height?: string;
-}
 
 const ResizeMap = ({
   containerRef,
@@ -61,16 +56,47 @@ const BoundingBoxZoom = ({
   return null;
 };
 
-function Map({
-  sidebarOpen,
-  selectedQuery,
-}: MapProps) {
+export interface MapProps {
+  sidebarOpen?: boolean;
+  boundingBox?: [number, number, number, number];
+  onSelectLandlord: (landlord: Landlord) => void;
+}
+
+function Map({ sidebarOpen, boundingBox, onSelectLandlord }: MapProps) {
   const [key, setKey] = useState(uuidv4());
   const containerRef = useRef(null);
+  const [selectedBoundingBox, setSelectedBoundingBox] = useState<
+    [number, number, number, number]
+  >([49.0020468, 55.03605, 14.0696389, 24.145783]); // Poland
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { data: landlords, isLoading } = api.landlord.getAll.useQuery();
 
   useEffect(() => {
     setKey(uuidv4());
   }, [sidebarOpen]);
+
+  useEffect(() => {
+    if (landlords && searchParams.get("landlordId")) {
+      const landlordId = searchParams.get("landlordId");
+      const landlord = landlords.find((landlord) => landlord.id === landlordId);
+      if (landlord) {
+        onSelectLandlord(landlord);
+        setSelectedBoundingBox([
+          parseFloat(landlord.lat),
+          parseFloat(landlord.lat),
+          parseFloat(landlord.lng),
+          parseFloat(landlord.lng),
+        ]);
+      }
+    }
+  }, [searchParams, landlords, onSelectLandlord]);
+
+  useEffect(() => {
+    if (boundingBox) {
+      setSelectedBoundingBox(boundingBox);
+    }
+  }, [boundingBox]);
 
   return (
     <div className="z-1 h-[100vh] w-[100vw]" ref={containerRef}>
@@ -85,14 +111,38 @@ function Map({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url={`https://tile.jawg.io/jawg-sunny/{z}/{x}/{y}{r}.png?access-token=${env.NEXT_PUBLIC_JAWG_ACCESS_TOKEN}`}
         />
-        <Marker position={[40.609787846393196, 20.7890265133657]}>
-          <Popup>
-            A pretty CSS3 popup. <br /> Easily customizable.
-          </Popup>
-        </Marker>
-        {selectedQuery?.boundingbox && (
-          <BoundingBoxZoom boundingBox={selectedQuery.boundingbox} />
-        )}
+        {landlords?.map((landlord) => (
+          <Marker
+            key={landlord.id}
+            position={[parseFloat(landlord.lat), parseFloat(landlord.lng)]}
+            eventHandlers={{
+              click: () => {
+                router.push(`/?landlordId=${landlord.id}`);
+                setSelectedBoundingBox([
+                  parseFloat(landlord.lat),
+                  parseFloat(landlord.lat),
+                  parseFloat(landlord.lng),
+                  parseFloat(landlord.lng),
+                ]);
+                onSelectLandlord(landlord);
+              },
+            }}
+          >
+            {/* <Popup>
+              <div className="flex flex-col gap-1 mb-2">
+                <span className="font-bold">
+                  {landlord.street} {landlord.streetNumber}
+                  {landlord.flatNumber ? ` / ${landlord.flatNumber}` : ""}
+                </span>
+                <span>
+                  {landlord.city}, {landlord.zip}
+                </span>
+              </div>
+              <Link href={`/landlord/${landlord.id}`}>Show details</Link>
+            </Popup> */}
+          </Marker>
+        ))}
+        <BoundingBoxZoom boundingBox={selectedBoundingBox} />
       </MapContainer>
     </div>
   );

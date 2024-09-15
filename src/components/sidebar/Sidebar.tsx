@@ -6,10 +6,14 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   House,
+  Info,
   Loader2,
+  MapPinIcon,
   MenuIcon,
+  MessageSquare,
   Plus,
   SearchIcon,
+  Star,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import Map from "@/components/map";
@@ -36,7 +40,16 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { type Landlord } from "@prisma/client";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import Link from "next/link";
 
 const formSchema = z.object({
   street: z.string().min(2, {
@@ -57,10 +70,14 @@ const formSchema = z.object({
 export function Sidebar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [selectedLandlord, setSelectedLandlord] = useState<Landlord | null>(
+    null,
+  );
   const [selectedQuery, setSelectedQuery] = useState<AddressSuggestion | null>(
     null,
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [inputValue, setInputValue] = useState("");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -73,6 +90,7 @@ export function Sidebar() {
   });
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const { mutate: createLandlord, isPending: isPendingLandlord } =
     api.landlord.create.useMutation({
@@ -116,7 +134,6 @@ export function Sidebar() {
       };
     }
 
-    // console.log(payload);
     createLandlord(payload);
   }
 
@@ -136,7 +153,7 @@ export function Sidebar() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const handleSelect = (suggestion: AddressSuggestion): void => {
+  const handleSelectQuery = (suggestion: AddressSuggestion): void => {
     setSelectedQuery(suggestion);
   };
 
@@ -159,6 +176,14 @@ export function Sidebar() {
     setIsSidebarOpen(false);
     setIsDialogOpen(true);
   };
+
+  const handleSelectLandlord = (landlord: Landlord) => {
+    setSelectedLandlord(landlord);
+    setInputValue(
+      `${landlord.street} ${landlord.streetNumber} ${landlord.flatNumber} ${landlord.city} ${landlord.zip} ${landlord.country}`,
+    );
+  };
+  const averageRating = 4.5;
 
   return (
     <>
@@ -199,7 +224,11 @@ export function Sidebar() {
                 <div className="mb-4">
                   {isSidebarOpen ? (
                     <div className="flex w-full max-w-sm items-start space-x-2">
-                      <AutosuggestInput onSelect={handleSelect} />
+                      <AutosuggestInput
+                        onSelect={handleSelectQuery}
+                        inputValue={inputValue}
+                        setInputValue={setInputValue}
+                      />
                     </div>
                   ) : (
                     <Button
@@ -215,15 +244,70 @@ export function Sidebar() {
 
                 <div className="mb-4">
                   {isSidebarOpen ? (
-                    <Button
-                      variant="outline"
-                      className="w-full text-primary"
-                      disabled={!selectedQuery}
-                      onClick={handleOpenDialog}
-                    >
-                      <Plus />
-                      Add New Landlord
-                    </Button>
+                    <>
+                      <Button
+                        variant="outline"
+                        className="w-full text-primary"
+                        disabled={!selectedQuery}
+                        onClick={handleOpenDialog}
+                      >
+                        <Plus />
+                        Add New Landlord
+                      </Button>
+                      {selectedLandlord && (
+                        <Card className="mt-4">
+                          <CardHeader className="flex flex-row items-center space-x-4 pb-2">
+                            <MapPinIcon className="h-8 w-8 text-primary" />
+                            <CardTitle>Landlord Information</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="grid gap-2">
+                              <p className="text-lg font-bold">
+                                {selectedLandlord.street}{" "}
+                                {selectedLandlord.streetNumber}
+                                {selectedLandlord.flatNumber &&
+                                  ` / ${selectedLandlord.flatNumber}`}
+                              </p>
+                              <div className="flex flex-col">
+                                <span className="font-semibold">
+                                  {selectedLandlord.zip} {selectedLandlord.city}
+                                </span>
+                                <span className="text-gray-500">
+                                  {selectedLandlord.country}
+                                </span>
+                              </div>
+                              <div className="mt-2 flex items-center space-x-1">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <Star
+                                    key={star}
+                                    className={`h-5 w-5 ${
+                                      star <= Math.floor(averageRating)
+                                        ? "fill-yellow-400 text-yellow-400"
+                                        : "text-gray-300"
+                                    }`}
+                                  />
+                                ))}
+                                <span className="ml-2 text-sm font-medium">
+                                  {averageRating.toFixed(1)}
+                                </span>
+                              </div>
+                            </div>
+                          </CardContent>
+                          <CardFooter className="flex justify-between gap-2">
+                            <Link href={`landlord/${selectedLandlord.id}`}>
+                              <Button variant="outline">
+                                <Info className="mr-2 h-4 w-4" />
+                                Show Details
+                              </Button>
+                            </Link>
+                            <Button>
+                              <MessageSquare className="mr-2 h-4 w-4" /> Write
+                              an opinion
+                            </Button>
+                          </CardFooter>
+                        </Card>
+                      )}
+                    </>
                   ) : (
                     <Button
                       variant="ghost"
@@ -235,28 +319,15 @@ export function Sidebar() {
                     </Button>
                   )}
                 </div>
-
-                {/* <div className="mb-4">
-                  {isSidebarOpen ? (
-                    <Button variant="outline" className="w-full text-primary">
-                      Add New Review
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="w-full text-white hover:bg-gray-700"
-                      onClick={toggleSidebar}
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div> */}
               </div>
             </ScrollArea>
           </div>
         </aside>
-        <Map sidebarOpen={isSidebarOpen} selectedQuery={selectedQuery} />
+        <Map
+          sidebarOpen={isSidebarOpen}
+          boundingBox={selectedQuery?.boundingbox}
+          onSelectLandlord={handleSelectLandlord}
+        />
         <div className="absolute right-4 top-4 z-[1000]">
           <Dialog open={isDialogOpen} onOpenChange={onOpenChange}>
             <DialogContent className="z-[1000]">
