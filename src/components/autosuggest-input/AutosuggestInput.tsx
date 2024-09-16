@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AlertTriangle, LoaderCircle, SearchIcon } from "lucide-react";
+import { AlertTriangle, LoaderCircle, SearchIcon, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDebounce } from "@/app/hooks";
@@ -28,7 +28,7 @@ export default function AutosuggestInput({
   setInputValue,
   suggestionsLimit = 3,
 }: {
-  onSelect: (suggestion: AddressSuggestion) => void;
+  onSelect: (suggestion: AddressSuggestion | null) => void;
   inputValue: string;
   setInputValue: (value: string) => void;
   suggestionsLimit?: number;
@@ -40,7 +40,7 @@ export default function AutosuggestInput({
   );
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLUListElement>(null);
-  
+
   const [internalValue, setInternalValue] = useState(inputValue);
   const debouncedInputValue = useDebounce(internalValue, 500);
 
@@ -49,7 +49,11 @@ export default function AutosuggestInput({
   }, [inputValue]);
 
   useEffect(() => {
-    if (internalValue.length > 2 && !selectedSuggestion && internalValue !== inputValue) {
+    if (
+      internalValue.length > 2 &&
+      !selectedSuggestion &&
+      internalValue !== inputValue
+    ) {
       setIsOpen(true);
     } else {
       setIsOpen(false);
@@ -123,26 +127,39 @@ export default function AutosuggestInput({
     onSelect(suggestion);
   };
 
+  const handleClearInput = () => {
+    setInternalValue("");
+    setSelectedSuggestion(null);
+    setIsOpen(false);
+    onSelect(null);
+  };
+
   return (
     <div className="relative w-full">
       <div className="relative flex items-center gap-2">
-        <Input
-          ref={inputRef}
-          type="text"
-          placeholder="Search for an address"
-          value={internalValue}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          aria-autocomplete="list"
-          aria-controls="suggestions-list"
-          aria-expanded={isOpen}
-          className="w-[300px]"
-        />
-        <Button
-          variant="outline"
-          size="icon"
-          className="text-primary hover:bg-gray-600"
-        >
+        <div className="relative w-full">
+          <Input
+            ref={inputRef}
+            type="text"
+            placeholder="Search for an address"
+            value={internalValue}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            aria-autocomplete="list"
+            aria-controls="suggestions-list"
+            aria-expanded={isOpen}
+            className="w-full"
+          />
+          {internalValue && (
+            <div
+              onClick={handleClearInput}
+              className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer bg-secondary-foreground text-secondary hover:bg-secondary-foreground hover:text-primary"
+            >
+              <X className="h-4 w-4" />
+            </div>
+          )}
+        </div>
+        <Button variant="default" size="icon">
           <SearchIcon className="h-4 w-10" />
         </Button>
       </div>

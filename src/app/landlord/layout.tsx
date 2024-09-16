@@ -10,9 +10,9 @@ export default function LandlordLayout({
 }) {
   return (
     <main>
-      <header className="flex justify-between items-center px-8 py-3 bg-gray-200 border-b border-gray-300">
+      <header className="flex justify-between items-center px-8 py-3 bg-primary/10 border-b border-primary">
         <Link href="/">
-          <Button variant="outline">
+          <Button variant="default">
             <ChevronLeft /> Go Back
           </Button>
         </Link>

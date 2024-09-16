@@ -109,7 +109,6 @@ export function Sidebar() {
     });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values, selectedQuery);
     let payload = {
       street: values.street,
       streetNumber: values.streetNumber,
@@ -153,7 +152,7 @@ export function Sidebar() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const handleSelectQuery = (suggestion: AddressSuggestion): void => {
+  const handleSelectQuery = (suggestion: AddressSuggestion | null): void => {
     setSelectedQuery(suggestion);
   };
 
@@ -197,7 +196,7 @@ export function Sidebar() {
         <aside
           className={`${
             isSidebarOpen ? "w-[30rem]" : "w-16"
-          } bg-gray-800 text-white transition-all duration-300 ease-in-out ${
+          } bg-secondary-foreground text-white transition-all duration-300 ease-in-out ${
             isMobile && !isSidebarOpen ? "hidden" : ""
           }`}
         >
@@ -210,10 +209,9 @@ export function Sidebar() {
                 </h2>
               )}
               <Button
-                variant="ghost"
+                variant="default"
                 size="icon"
                 onClick={toggleSidebar}
-                className="text-white hover:bg-gray-700"
               >
                 {isSidebarOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
               </Button>
@@ -234,7 +232,7 @@ export function Sidebar() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="w-full text-white hover:bg-gray-700"
+                      className="w-full"
                       onClick={toggleSidebar}
                     >
                       <SearchIcon className="h-4 w-4" />
@@ -246,8 +244,8 @@ export function Sidebar() {
                   {isSidebarOpen ? (
                     <>
                       <Button
-                        variant="outline"
-                        className="w-full text-primary"
+                        variant="default"
+                        className="w-full"
                         disabled={!selectedQuery}
                         onClick={handleOpenDialog}
                       >
@@ -300,10 +298,12 @@ export function Sidebar() {
                                 Show Details
                               </Button>
                             </Link>
-                            <Button>
-                              <MessageSquare className="mr-2 h-4 w-4" /> Write
-                              an opinion
-                            </Button>
+                            <Link href={`landlord/${selectedLandlord.id}/reviews/new`}>
+                              <Button>
+                                <MessageSquare className="mr-2 h-4 w-4" /> Write
+                                an opinion
+                              </Button>
+                            </Link>
                           </CardFooter>
                         </Card>
                       )}
@@ -312,7 +312,7 @@ export function Sidebar() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="w-full text-white hover:bg-gray-700"
+                      className="w-full"
                       onClick={toggleSidebar}
                     >
                       <Plus className="h-4 w-4" />
