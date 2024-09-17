@@ -5,10 +5,11 @@ import L from "leaflet";
 import { env } from "@/env";
 import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { useSize } from "@/app/hooks";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useSize } from "@/hooks";
 import { type Landlord } from "@prisma/client";
 import { api } from "@/trpc/react";
+import { useSelectedQuery, useSelectedLandlord } from "@/stores";
 
 L.Marker.prototype.options.icon = L.icon({
   iconUrl: "./marker.png",
@@ -58,11 +59,9 @@ const BoundingBoxZoom = ({
 
 export interface MapProps {
   sidebarOpen?: boolean;
-  boundingBox?: [number, number, number, number];
-  onSelectLandlord: (landlord: Landlord) => void;
 }
 
-function Map({ sidebarOpen, boundingBox, onSelectLandlord }: MapProps) {
+function Map({ sidebarOpen }: MapProps) {
   const [key, setKey] = useState(uuidv4());
   const containerRef = useRef(null);
   const [selectedBoundingBox, setSelectedBoundingBox] = useState<
@@ -71,7 +70,8 @@ function Map({ sidebarOpen, boundingBox, onSelectLandlord }: MapProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { data: landlords, isLoading } = api.landlord.getAll.useQuery();
-
+  const { selectedQuery, setSelectedQuery } = useSelectedQuery();
+  const { setSelectedLandlord, selectedLandlord } = useSelectedLandlord();
   useEffect(() => {
     setKey(uuidv4());
   }, [sidebarOpen]);
@@ -81,7 +81,7 @@ function Map({ sidebarOpen, boundingBox, onSelectLandlord }: MapProps) {
       const landlordId = searchParams.get("landlordId");
       const landlord = landlords.find((landlord) => landlord.id === landlordId);
       if (landlord) {
-        onSelectLandlord(landlord);
+        setSelectedLandlord(landlord);
         setSelectedBoundingBox([
           parseFloat(landlord.lat),
           parseFloat(landlord.lat),
@@ -90,13 +90,15 @@ function Map({ sidebarOpen, boundingBox, onSelectLandlord }: MapProps) {
         ]);
       }
     }
-  }, [searchParams, landlords, onSelectLandlord]);
+  }, [searchParams, landlords, setSelectedLandlord]);
 
   useEffect(() => {
-    if (boundingBox) {
-      setSelectedBoundingBox(boundingBox);
+    if (selectedQuery?.boundingbox) {
+      setSelectedBoundingBox(selectedQuery.boundingbox);
+    } else if (!selectedQuery && !selectedLandlord) {
+      setSelectedBoundingBox([49.0020468, 55.03605, 14.0696389, 24.145783]); // Poland
     }
-  }, [boundingBox]);
+  }, [selectedQuery, selectedLandlord]);
 
   return (
     <div className="z-1 h-[100vh] w-[100vw]" ref={containerRef}>
@@ -124,7 +126,8 @@ function Map({ sidebarOpen, boundingBox, onSelectLandlord }: MapProps) {
                   parseFloat(landlord.lng),
                   parseFloat(landlord.lng),
                 ]);
-                onSelectLandlord(landlord);
+                setSelectedLandlord(landlord);
+                setSelectedQuery(null);
               },
             }}
           >

@@ -5,7 +5,9 @@ import { Input } from "@/components/ui/input";
 import { AlertTriangle, LoaderCircle, SearchIcon, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useDebounce } from "@/app/hooks";
+import { useDebounce } from "@/hooks";
+import { useSelectedLandlord, useSelectedQuery } from "@/stores";
+import { useRouter } from "next/navigation";
 
 export type AddressSuggestion = {
   place_id: number;
@@ -23,42 +25,29 @@ export type AddressSuggestion = {
 };
 
 export default function AutosuggestInput({
-  onSelect,
-  inputValue,
-  setInputValue,
   suggestionsLimit = 3,
 }: {
-  onSelect: (suggestion: AddressSuggestion | null) => void;
-  inputValue: string;
-  setInputValue: (value: string) => void;
   suggestionsLimit?: number;
 }) {
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(
-    null,
-  );
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLUListElement>(null);
 
-  const [internalValue, setInternalValue] = useState(inputValue);
-  const debouncedInputValue = useDebounce(internalValue, 500);
+  const [inputValue, setInputValue] = useState("");
+  const debouncedInputValue = useDebounce(inputValue, 500);
+
+  const { setSelectedQuery, selectedQuery } = useSelectedQuery();
+  const { setSelectedLandlord, selectedLandlord } = useSelectedLandlord();
+  const router = useRouter();
 
   useEffect(() => {
-    setInternalValue(inputValue);
-  }, [inputValue]);
-
-  useEffect(() => {
-    if (
-      internalValue.length > 2 &&
-      !selectedSuggestion &&
-      internalValue !== inputValue
-    ) {
+    if (inputValue.length > 2 && !selectedLandlord) {
       setIsOpen(true);
     } else {
       setIsOpen(false);
     }
-  }, [internalValue, selectedSuggestion, inputValue]);
+  }, [inputValue, selectedLandlord]);
 
   useEffect(() => {
     if (isOpen && suggestionsRef.current) {
@@ -70,6 +59,15 @@ export default function AutosuggestInput({
       }
     }
   }, [highlightedIndex, isOpen]);
+
+  useEffect(() => {
+    if (selectedLandlord) {
+      setInputValue(
+        `${selectedLandlord.street} ${selectedLandlord.streetNumber} ${selectedLandlord.flatNumber}`,
+      );
+      setIsOpen(false);
+    }
+  }, [selectedLandlord]);
 
   const fetchAddressSuggestions = async (query: string) => {
     if (query.length < 3) return [];
@@ -90,13 +88,13 @@ export default function AutosuggestInput({
   } = useQuery<AddressSuggestion[]>({
     queryKey: ["addressSuggestions", debouncedInputValue],
     queryFn: () => fetchAddressSuggestions(debouncedInputValue),
-    enabled: isOpen && internalValue.length > 2 && !selectedSuggestion,
+    enabled: isOpen && inputValue.length > 2 && !selectedLandlord,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    setInternalValue(newValue);
-    setSelectedSuggestion(null);
+    setInputValue(newValue);
+    setSelectedQuery(null);
     setHighlightedIndex(-1);
   };
 
@@ -121,17 +119,17 @@ export default function AutosuggestInput({
   };
 
   const handleSelectSuggestion = (suggestion: AddressSuggestion) => {
-    setInternalValue(suggestion.display_name);
-    setSelectedSuggestion(suggestion.display_name);
+    setInputValue(suggestion.display_name);
+    setSelectedQuery(suggestion);
     setIsOpen(false);
-    onSelect(suggestion);
   };
 
   const handleClearInput = () => {
-    setInternalValue("");
-    setSelectedSuggestion(null);
+    setInputValue("");
+    setSelectedQuery(null);
+    setSelectedLandlord(null);
     setIsOpen(false);
-    onSelect(null);
+    router.push("/");
   };
 
   return (
@@ -142,7 +140,7 @@ export default function AutosuggestInput({
             ref={inputRef}
             type="text"
             placeholder="Search for an address"
-            value={internalValue}
+            value={inputValue}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             aria-autocomplete="list"
@@ -150,7 +148,7 @@ export default function AutosuggestInput({
             aria-expanded={isOpen}
             className="w-full"
           />
-          {internalValue && (
+          {inputValue && (
             <div
               onClick={handleClearInput}
               className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer bg-secondary-foreground text-secondary hover:bg-secondary-foreground hover:text-primary"

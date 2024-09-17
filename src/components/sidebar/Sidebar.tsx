@@ -18,7 +18,6 @@ import {
 import { useEffect, useState } from "react";
 import Map from "@/components/map";
 import AutosuggestInput from "../autosuggest-input";
-import { type AddressSuggestion } from "../autosuggest-input/AutosuggestInput";
 import { api } from "@/trpc/react";
 import {
   Dialog,
@@ -40,7 +39,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { type Landlord } from "@prisma/client";
 import {
   Card,
@@ -50,6 +49,7 @@ import {
   CardTitle,
 } from "../ui/card";
 import Link from "next/link";
+import { useSelectedQuery, useSelectedLandlord } from "@/stores";
 
 const formSchema = z.object({
   street: z.string().min(2, {
@@ -70,14 +70,7 @@ const formSchema = z.object({
 export function Sidebar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [selectedLandlord, setSelectedLandlord] = useState<Landlord | null>(
-    null,
-  );
-  const [selectedQuery, setSelectedQuery] = useState<AddressSuggestion | null>(
-    null,
-  );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [inputValue, setInputValue] = useState("");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -90,7 +83,9 @@ export function Sidebar() {
   });
   const { toast } = useToast();
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const { setSelectedQuery, selectedQuery } = useSelectedQuery();
+  const { selectedLandlord, setSelectedLandlord } = useSelectedLandlord();
+
 
   const { mutate: createLandlord, isPending: isPendingLandlord } =
     api.landlord.create.useMutation({
@@ -152,10 +147,6 @@ export function Sidebar() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const handleSelectQuery = (suggestion: AddressSuggestion | null): void => {
-    setSelectedQuery(suggestion);
-  };
-
   const onOpenChange = (open: boolean) => {
     if (!open) {
       setSelectedQuery(null);
@@ -176,12 +167,6 @@ export function Sidebar() {
     setIsDialogOpen(true);
   };
 
-  const handleSelectLandlord = (landlord: Landlord) => {
-    setSelectedLandlord(landlord);
-    setInputValue(
-      `${landlord.street} ${landlord.streetNumber} ${landlord.flatNumber} ${landlord.city} ${landlord.zip} ${landlord.country}`,
-    );
-  };
   const averageRating = 4.5;
 
   return (
@@ -208,11 +193,7 @@ export function Sidebar() {
                   Rate Your Landlord
                 </h2>
               )}
-              <Button
-                variant="default"
-                size="icon"
-                onClick={toggleSidebar}
-              >
+              <Button variant="default" size="icon" onClick={toggleSidebar}>
                 {isSidebarOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
               </Button>
             </div>
@@ -222,11 +203,7 @@ export function Sidebar() {
                 <div className="mb-4">
                   {isSidebarOpen ? (
                     <div className="flex w-full max-w-sm items-start space-x-2">
-                      <AutosuggestInput
-                        onSelect={handleSelectQuery}
-                        inputValue={inputValue}
-                        setInputValue={setInputValue}
-                      />
+                      <AutosuggestInput />
                     </div>
                   ) : (
                     <Button
@@ -298,7 +275,9 @@ export function Sidebar() {
                                 Show Details
                               </Button>
                             </Link>
-                            <Link href={`landlord/${selectedLandlord.id}/reviews/new`}>
+                            <Link
+                              href={`landlord/${selectedLandlord.id}/reviews/new`}
+                            >
                               <Button>
                                 <MessageSquare className="mr-2 h-4 w-4" /> Write
                                 an opinion
@@ -320,13 +299,16 @@ export function Sidebar() {
                   )}
                 </div>
               </div>
+              <div className="absolute text-sm break-words z-[1000] w-full bg-black p-4">
+                {JSON.stringify(selectedQuery)}
+                <br />
+                {JSON.stringify(selectedLandlord)}
+              </div>
             </ScrollArea>
           </div>
         </aside>
         <Map
           sidebarOpen={isSidebarOpen}
-          boundingBox={selectedQuery?.boundingbox}
-          onSelectLandlord={handleSelectLandlord}
         />
         <div className="absolute right-4 top-4 z-[1000]">
           <Dialog open={isDialogOpen} onOpenChange={onOpenChange}>
