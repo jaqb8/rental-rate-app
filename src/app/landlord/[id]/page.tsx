@@ -18,6 +18,7 @@ import {
   MapPin,
   MessageSquare,
   MessageSquarePlus,
+  Plus,
   Star,
 } from "lucide-react";
 import Link from "next/link";
@@ -95,7 +96,7 @@ export default async function LandlordPage({
           </AlertDescription>
         </Alert>
       )}
-      <Card>
+      <Card className="border-primary bg-card-foreground text-primary-foreground shadow-2xl shadow-primary/80">
         <CardHeader className="space-y-1">
           <div className="flex justify-between">
             <div>
@@ -107,12 +108,12 @@ export default async function LandlordPage({
                 {landlord.city}, {landlord.zip}
               </div>
             </div>
-            <Button variant="outline">
+            <Button variant="secondary">
               <Edit className="mr-2 h-4 w-4" /> Edit
             </Button>
           </div>
         </CardHeader>
-        <div className="relative mb-6 h-48 w-full border-y bg-muted">
+        <div className="relative mb-6 h-48 w-full border-y border-primary bg-primary/30">
           {landlord.photoUrl ? (
             <>
               <Image
@@ -128,7 +129,7 @@ export default async function LandlordPage({
             </>
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center space-y-2">
-              <ImageIcon className="h-14 w-14 text-muted-foreground" />
+              <ImageIcon className="h-14 w-14 text-muted" />
               <UploadFileButton
                 landlordId={landlord.id}
                 onUploadComplete={invalidateLandlordPage}
@@ -167,13 +168,21 @@ export default async function LandlordPage({
               </>
             )}
             {placeholderReviews.length === 0 && (
-              <Card className="w-full">
+              <Card className="w-full border-primary bg-primary/30">
                 <CardContent className="flex flex-col items-center justify-center space-y-4 p-6">
-                  <MessageSquarePlus className="h-12 w-12 text-muted-foreground" />
-                  <p className="text-center text-lg font-medium">
+                  <MessageSquarePlus className="h-12 w-12 text-muted" />
+                  <p className="text-center text-lg font-medium text-muted">
                     No reviews yet
                   </p>
-                  <Button className="mt-2">Add first opinion</Button>
+                  <Link
+                    href={`/landlord/${landlord.id}/reviews/new`}
+                    className="mt-2"
+                  >
+                    <Button variant="secondary">
+                      <Plus className="me-1 h-5 w-5" />
+                      Add first opinion
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             )}
@@ -181,12 +190,14 @@ export default async function LandlordPage({
         </CardContent>
 
         <CardFooter className="flex flex-wrap gap-2">
-          <Button className="flex-1" variant="outline">
-            <MessageSquare className="mr-2 h-4 w-4" /> Write an opinion
-          </Button>
+          <Link className="flex-1" href={`/landlord/${landlord.id}/reviews/new`}>
+            <Button className="w-full">
+              <MessageSquare className="mr-2 h-4 w-4" /> Write an opinion
+            </Button>
+          </Link>
 
           <Link className="flex-1" href={`/?landlordId=${landlord.id}`}>
-            <Button variant="outline" className="w-full">
+            <Button className="w-full">
               <MapPin className="mr-2 h-4 w-4" /> Show on Map
             </Button>
           </Link>

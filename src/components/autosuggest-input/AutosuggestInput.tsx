@@ -36,18 +36,19 @@ export default function AutosuggestInput({
 
   const [inputValue, setInputValue] = useState("");
   const debouncedInputValue = useDebounce(inputValue, 500);
+  const [hasSelectedSuggestion, setHasSelectedSuggestion] = useState(false);
 
   const { setSelectedQuery, selectedQuery } = useSelectedQuery();
   const { setSelectedLandlord, selectedLandlord } = useSelectedLandlord();
   const router = useRouter();
 
   useEffect(() => {
-    if (inputValue.length > 2 && !selectedLandlord) {
+    if (inputValue.length > 2 && !selectedLandlord && !hasSelectedSuggestion) {
       setIsOpen(true);
     } else {
       setIsOpen(false);
     }
-  }, [inputValue, selectedLandlord]);
+  }, [inputValue, selectedLandlord, hasSelectedSuggestion]);
 
   useEffect(() => {
     if (isOpen && suggestionsRef.current) {
@@ -94,6 +95,7 @@ export default function AutosuggestInput({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setInputValue(newValue);
+    setHasSelectedSuggestion(false);
     setSelectedQuery(null);
     setHighlightedIndex(-1);
   };
@@ -121,6 +123,7 @@ export default function AutosuggestInput({
   const handleSelectSuggestion = (suggestion: AddressSuggestion) => {
     setInputValue(suggestion.display_name);
     setSelectedQuery(suggestion);
+    setHasSelectedSuggestion(true);
     setIsOpen(false);
   };
 

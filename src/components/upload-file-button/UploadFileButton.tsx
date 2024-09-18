@@ -22,7 +22,7 @@ export default function UploadFileButton({
         }}
         appearance={{
           button:
-            "ut-ready:bg-primary focus-within:ring-0 ut-uploading:cursor-not-allowed bg-gray-500 after:ut-uploading:bg-green-500 after:ut-uploading:bg-opacity-50",
+            "ut-ready:bg-secondary ut-ready:text-secondary-foreground ut-ready:shadow-sm ut-ready:hover:bg-secondary/80 focus-within:ring-0 ut-uploading:cursor-not-allowed bg-secondary after:ut-uploading:bg-green-500 after:ut-uploading:bg-opacity-50 font-medium",
           allowedContent: "hidden",
         }}
         endpoint="imageUploader"

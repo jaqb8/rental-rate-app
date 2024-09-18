@@ -86,7 +86,6 @@ export function Sidebar() {
   const { setSelectedQuery, selectedQuery } = useSelectedQuery();
   const { selectedLandlord, setSelectedLandlord } = useSelectedLandlord();
 
-
   const { mutate: createLandlord, isPending: isPendingLandlord } =
     api.landlord.create.useMutation({
       onSuccess: (data) => {
@@ -181,14 +180,14 @@ export function Sidebar() {
         <aside
           className={`${
             isSidebarOpen ? "w-[30rem]" : "w-16"
-          } bg-secondary-foreground text-white transition-all duration-300 ease-in-out ${
+          } bg-secondary-foreground text-secondary transition-all duration-300 ease-in-out ${
             isMobile && !isSidebarOpen ? "hidden" : ""
           }`}
         >
           <div className="flex h-full flex-col">
             <div className="flex h-16 items-center justify-between px-4">
               {isSidebarOpen && (
-                <h2 className="flex items-center gap-1 text-xl font-bold">
+                <h2 className="flex items-center gap-1 text-2xl font-bold text-primary-foreground">
                   <House />
                   Rate Your Landlord
                 </h2>
@@ -230,24 +229,24 @@ export function Sidebar() {
                         Add New Landlord
                       </Button>
                       {selectedLandlord && (
-                        <Card className="mt-4">
-                          <CardHeader className="flex flex-row items-center space-x-4 pb-2">
+                        <Card className="mt-4 border-primary bg-card-foreground text-primary">
+                          <CardHeader className="flex flex-row items-center space-x-2 pb-2">
                             <MapPinIcon className="h-8 w-8 text-primary" />
-                            <CardTitle>Landlord Information</CardTitle>
+                            <CardTitle className="text-xl">Landlord Information</CardTitle>
                           </CardHeader>
-                          <CardContent>
+                          <CardContent className="text-primary-foreground">
                             <div className="grid gap-2">
-                              <p className="text-lg font-bold">
-                                {selectedLandlord.street}{" "}
-                                {selectedLandlord.streetNumber}
-                                {selectedLandlord.flatNumber &&
-                                  ` / ${selectedLandlord.flatNumber}`}
-                              </p>
                               <div className="flex flex-col">
+                                <span className="text-lg font-bold">
+                                  {selectedLandlord.street}{" "}
+                                  {selectedLandlord.streetNumber}
+                                  {selectedLandlord.flatNumber &&
+                                    ` / ${selectedLandlord.flatNumber}`}
+                                </span>
                                 <span className="font-semibold">
                                   {selectedLandlord.zip} {selectedLandlord.city}
                                 </span>
-                                <span className="text-gray-500">
+                                <span className="">
                                   {selectedLandlord.country}
                                 </span>
                               </div>
@@ -270,7 +269,7 @@ export function Sidebar() {
                           </CardContent>
                           <CardFooter className="flex justify-between gap-2">
                             <Link href={`landlord/${selectedLandlord.id}`}>
-                              <Button variant="outline">
+                              <Button variant="secondary">
                                 <Info className="mr-2 h-4 w-4" />
                                 Show Details
                               </Button>
@@ -299,7 +298,7 @@ export function Sidebar() {
                   )}
                 </div>
               </div>
-              <div className="absolute text-sm break-words z-[1000] w-full bg-black p-4">
+              <div className="absolute z-[1000] w-full break-words bg-black p-4 text-sm">
                 {JSON.stringify(selectedQuery)}
                 <br />
                 {JSON.stringify(selectedLandlord)}
@@ -307,12 +306,10 @@ export function Sidebar() {
             </ScrollArea>
           </div>
         </aside>
-        <Map
-          sidebarOpen={isSidebarOpen}
-        />
+        <Map sidebarOpen={isSidebarOpen} />
         <div className="absolute right-4 top-4 z-[1000]">
           <Dialog open={isDialogOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="z-[1000]">
+            <DialogContent className="z-[1000] bg-card-foreground">
               <DialogHeader>
                 <DialogTitle>Add New Landlord</DialogTitle>
                 <DialogDescription>
