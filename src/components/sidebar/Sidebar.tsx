@@ -40,7 +40,6 @@ import {
 import { Input } from "../ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { type Landlord } from "@prisma/client";
 import {
   Card,
   CardContent,
@@ -166,7 +165,6 @@ export function Sidebar() {
     setIsDialogOpen(true);
   };
 
-  const averageRating = 4.5;
 
   return (
     <>
@@ -255,14 +253,14 @@ export function Sidebar() {
                                   <Star
                                     key={star}
                                     className={`h-5 w-5 ${
-                                      star <= Math.floor(averageRating)
+                                      star <= Math.floor(selectedLandlord.avgRating ?? 0)
                                         ? "fill-yellow-400 text-yellow-400"
                                         : "text-gray-300"
                                     }`}
                                   />
                                 ))}
                                 <span className="ml-2 text-sm font-medium">
-                                  {averageRating.toFixed(1)}
+                                  {selectedLandlord.avgRating?.toFixed(1)}
                                 </span>
                               </div>
                             </div>

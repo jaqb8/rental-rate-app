@@ -1,13 +1,10 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { createCaller } from "@/server/api/root";
 import { createTRPCContext } from "@/server/api/trpc";
@@ -27,6 +24,7 @@ import Image from "next/image";
 import { UploadFileButton } from "@/components/upload-file-button";
 import { revalidatePath } from "next/cache";
 import DeleteImageButton from "./DeleteImageButton";
+import dayjs from "dayjs";
 
 export default async function LandlordPage({
   params,
@@ -37,8 +35,14 @@ export default async function LandlordPage({
 }) {
   const trpc = createCaller(await createTRPCContext({} as any));
   const landlord = await trpc.landlord.getById({ id: params.id });
+  const reviews = (
+    await trpc.review.getByLandlordId({ landlordId: params.id })
+  ).map((review) => ({
+    ...review,
+    createdAt: dayjs(review.createdAt).format("DD-MM-YYYY HH:mm"),
+  }));
 
-  const placeholderReviews = [];
+  // const placeholderReviews = [];
   // const placeholderReviews = [
   //   {
   //     id: "1",
@@ -72,6 +76,22 @@ export default async function LandlordPage({
     revalidatePath(`/landlord/${landlord.id}`);
   };
 
+  const renderStars = (rating: number | null) => {
+    if (!rating) {
+      return 0;
+    }
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <Star
+          key={i}
+          className={`h-4 w-4 ${i <= rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+        />,
+      );
+    }
+    return stars;
+  };
+
   return (
     <div className="w-full">
       {searchParams.created && (
@@ -99,7 +119,7 @@ export default async function LandlordPage({
       <Card className="border-primary bg-card-foreground text-primary-foreground shadow-2xl shadow-primary/80">
         <CardHeader className="space-y-1">
           <div className="flex justify-between">
-            <div>
+            <div className="flex flex-col">
               <div className="text-2xl font-bold">
                 {landlord.street} {landlord.streetNumber}{" "}
                 {landlord.flatNumber ? ` / ${landlord.flatNumber}` : ""}
@@ -107,7 +127,15 @@ export default async function LandlordPage({
               <div className="text-xl">
                 {landlord.city}, {landlord.zip}
               </div>
+              <div className="flex text-secondary items-center pt-3 gap-2">
+                <div className="">
+                  {landlord.avgRating?.toFixed(1)}
+                </div>
+                <div className="flex">{renderStars(landlord.avgRating)}</div>
+                <div>({reviews.length})</div>
+              </div>
             </div>
+
             <Button variant="secondary">
               <Edit className="mr-2 h-4 w-4" /> Edit
             </Button>
@@ -141,16 +169,19 @@ export default async function LandlordPage({
         </div>
         <CardContent className="grid gap-6">
           <div>
-            {placeholderReviews.length > 0 && (
+            {reviews.length > 0 && (
               <>
                 <h3 className="mb-2 font-semibold">Last 3 Reviews</h3>
                 <ul className="space-y-4">
-                  {placeholderReviews.map((review) => (
-                    <li key={review.id} className="rounded-md bg-muted p-3">
+                  {reviews.map((review) => (
+                    <li
+                      key={review.id}
+                      className="rounded-md bg-secondary p-3 text-secondary-foreground"
+                    >
                       <div className="mb-1 flex items-center justify-between">
-                        <span className="font-medium">{review.author}</span>
+                        <span className="font-medium">{review.title}</span>
                         <span className="text-sm text-muted-foreground">
-                          {review.date}
+                          {review.createdAt}
                         </span>
                       </div>
                       <div className="mb-1 flex items-center">
@@ -161,13 +192,13 @@ export default async function LandlordPage({
                           />
                         ))}
                       </div>
-                      <p className="text-sm">{review.comment}</p>
+                      <p className="text-sm">{review.content}</p>
                     </li>
                   ))}
                 </ul>
               </>
             )}
-            {placeholderReviews.length === 0 && (
+            {reviews.length === 0 && (
               <Card className="w-full border-primary bg-primary/30">
                 <CardContent className="flex flex-col items-center justify-center space-y-4 p-6">
                   <MessageSquarePlus className="h-12 w-12 text-muted" />
@@ -190,14 +221,17 @@ export default async function LandlordPage({
         </CardContent>
 
         <CardFooter className="flex flex-wrap gap-2">
-          <Link className="flex-1" href={`/landlord/${landlord.id}/reviews/new`}>
+          <Link
+            className="flex-1"
+            href={`/landlord/${landlord.id}/reviews/new`}
+          >
             <Button className="w-full">
               <MessageSquare className="mr-2 h-4 w-4" /> Write an opinion
             </Button>
           </Link>
 
           <Link className="flex-1" href={`/?landlordId=${landlord.id}`}>
-            <Button className="w-full">
+            <Button className="w-full" variant="secondary">
               <MapPin className="mr-2 h-4 w-4" /> Show on Map
             </Button>
           </Link>

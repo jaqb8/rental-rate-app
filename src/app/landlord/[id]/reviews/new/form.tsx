@@ -16,8 +16,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Star } from "lucide-react";
+import { Loader2, Star } from "lucide-react";
 import { type Landlord } from "@prisma/client";
+import { api } from "@/trpc/react";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -26,10 +29,14 @@ const formSchema = z.object({
   content: z.string().min(10, {
     message: "Content must be at least 10 characters.",
   }),
-  rating: z.number().min(1).max(5),
+  rating: z.number().min(1, {
+    message: "Pick a rating"
+  }).max(5),
 });
 
 export default function AddReviewForm({ landlord }: { landlord: Landlord }) {
+  const router = useRouter();
+  const { toast } = useToast();
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
 
@@ -42,13 +49,30 @@ export default function AddReviewForm({ landlord }: { landlord: Landlord }) {
     },
   });
 
+  const { mutate: createReview, isPending: isPendingReview } =
+    api.review.create.useMutation({
+      onSuccess: (data) => {
+        router.push(`/landlord/${landlord.id}/reviews/${data.id}`);
+      },
+      onError: (error) => {
+        console.error(error);
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Here you would typically send this data to your API
-    console.log(values);
+    createReview({
+      ...values,
+      landlordId: landlord.id,
+    });
   }
 
   return (
-    <div className="mx-auto max-w-2xl overflow-hidden rounded-lg bg-card-foreground border border-primary shadow-2xl shadow-primary/80">
+    <div className="mx-auto max-w-2xl overflow-hidden rounded-lg border border-primary bg-card-foreground shadow-2xl shadow-primary/80">
       <div className="border-b border-primary bg-primary/10 p-6">
         <h1 className="mb-2 text-2xl font-bold text-primary-foreground">
           Add Review
@@ -139,7 +163,12 @@ export default function AddReviewForm({ landlord }: { landlord: Landlord }) {
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit Review</Button>
+            <Button disabled={isPendingReview} type="submit">
+              {isPendingReview && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {isPendingReview ? "Processing..." : "Submit Review"}
+            </Button>
           </form>
         </Form>
       </div>

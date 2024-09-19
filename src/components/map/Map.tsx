@@ -1,9 +1,9 @@
 "use client";
 import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import L from "leaflet";
+import L, { type LatLngTuple } from "leaflet";
 import { env } from "@/env";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSize } from "@/hooks";
@@ -67,11 +67,46 @@ function Map({ sidebarOpen }: MapProps) {
   const [selectedBoundingBox, setSelectedBoundingBox] = useState<
     [number, number, number, number]
   >([49.0020468, 55.03605, 14.0696389, 24.145783]); // Poland
+  const [markers, setMarkers] = useState<
+    { id: string; position: LatLngTuple; eventHandlers?: L.LeafletEventHandlerFnMap, temp: boolean }[]
+  >([]);
   const searchParams = useSearchParams();
   const router = useRouter();
   const { data: landlords, isLoading } = api.landlord.getAll.useQuery();
   const { selectedQuery, setSelectedQuery } = useSelectedQuery();
   const { setSelectedLandlord, selectedLandlord } = useSelectedLandlord();
+
+  const focusLandlord = useCallback(
+    (landlord: Landlord) => {
+      router.push(`/?landlordId=${landlord.id}`);
+      setSelectedBoundingBox([
+        parseFloat(landlord.lat),
+        parseFloat(landlord.lat),
+        parseFloat(landlord.lng),
+        parseFloat(landlord.lng),
+      ]);
+      setSelectedLandlord(landlord);
+      setSelectedQuery(null);
+    },
+    [router, setSelectedLandlord, setSelectedQuery],
+  );
+
+  useEffect(() => {
+    if (!landlords) {
+      return;
+    }
+    const positions = landlords.map((landlord) => ({
+      id: landlord.id,
+      position: [
+        parseFloat(landlord.lat),
+        parseFloat(landlord.lng),
+      ] as LatLngTuple,
+      eventHandlers: { click: () => focusLandlord(landlord) },
+      temp: false
+    }));
+    setMarkers(positions);
+  }, [landlords, focusLandlord]);
+
   useEffect(() => {
     setKey(uuidv4());
   }, [sidebarOpen]);
@@ -93,8 +128,20 @@ function Map({ sidebarOpen }: MapProps) {
   }, [searchParams, landlords, setSelectedLandlord]);
 
   useEffect(() => {
+    setMarkers(m => m.filter(marker => !marker.temp));
     if (selectedQuery?.boundingbox) {
       setSelectedBoundingBox(selectedQuery.boundingbox);
+      setMarkers(m => ([
+        ...m,
+        {
+          id: selectedQuery.place_id.toString(),
+          position: [
+            parseFloat(selectedQuery.lat),
+            parseFloat(selectedQuery.lon),
+          ] as LatLngTuple,
+          temp: true
+        },
+      ]));
     } else if (!selectedQuery && !selectedLandlord) {
       setSelectedBoundingBox([49.0020468, 55.03605, 14.0696389, 24.145783]); // Poland
     }
@@ -113,23 +160,11 @@ function Map({ sidebarOpen }: MapProps) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url={`https://tile.jawg.io/jawg-sunny/{z}/{x}/{y}{r}.png?access-token=${env.NEXT_PUBLIC_JAWG_ACCESS_TOKEN}`}
         />
-        {landlords?.map((landlord) => (
+        {markers.map((marker) => (
           <Marker
-            key={landlord.id}
-            position={[parseFloat(landlord.lat), parseFloat(landlord.lng)]}
-            eventHandlers={{
-              click: () => {
-                router.push(`/?landlordId=${landlord.id}`);
-                setSelectedBoundingBox([
-                  parseFloat(landlord.lat),
-                  parseFloat(landlord.lat),
-                  parseFloat(landlord.lng),
-                  parseFloat(landlord.lng),
-                ]);
-                setSelectedLandlord(landlord);
-                setSelectedQuery(null);
-              },
-            }}
+            key={marker.id}
+            position={marker.position}
+            eventHandlers={marker.eventHandlers}
           >
             {/* <Popup>
               <div className="flex flex-col gap-1 mb-2">
