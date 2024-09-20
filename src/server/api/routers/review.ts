@@ -1,17 +1,59 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { revalidatePath } from "next/cache";
+import dayjs from "dayjs";
+import page from "@/app/landlord/[id]/reviews/[reviewId]/page";
 
 export const reviewRouter = createTRPCRouter({
   getByLandlordId: publicProcedure
-    .input(z.object({ landlordId: z.string() }))
-    .query(({ ctx, input }) => {
-      const reviews = ctx.db.review.findMany({
+    .input(
+      z.object({
+        landlordId: z.string(),
+        limit: z.number().int().optional().default(3),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const reviews = await ctx.db.review.findMany({
         where: {
           landlordId: input.landlordId,
         },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: input.limit,
       });
-      return reviews;
+      return reviews.map((review) => ({
+        ...review,
+        createdAt: dayjs(review.createdAt).format("DD-MM-YYYY HH:mm"),
+      }));
+    }),
+
+  getAll: publicProcedure
+    .input(
+      z.object({
+        landlordId: z.string(),
+        page: z.number().int().optional().default(1),
+        pageSize: z.number().int().optional().default(10),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const reviews = await ctx.db.review.findMany({
+        where: { landlordId: input.landlordId },
+        skip: (input.page - 1) * input.pageSize,
+        take: input.pageSize,
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      return {
+        page: input.page,
+        pageSize: input.pageSize,
+        count: await ctx.db.review.count(),
+        results: reviews.map((review) => ({
+          ...review,
+          createdAt: dayjs(review.createdAt).format("DD-MM-YYYY HH:mm"),
+        })),
+      };
     }),
 
   create: publicProcedure

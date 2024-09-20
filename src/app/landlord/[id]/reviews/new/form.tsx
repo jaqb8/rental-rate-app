@@ -21,6 +21,7 @@ import { type Landlord } from "@prisma/client";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { on } from "events";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -29,12 +30,21 @@ const formSchema = z.object({
   content: z.string().min(10, {
     message: "Content must be at least 10 characters.",
   }),
-  rating: z.number().min(1, {
-    message: "Pick a rating"
-  }).max(5),
+  rating: z
+    .number()
+    .min(1, {
+      message: "Pick a rating",
+    })
+    .max(5),
 });
 
-export default function AddReviewForm({ landlord }: { landlord: Landlord }) {
+export default function AddReviewForm({
+  landlord,
+  onAddComplete,
+}: {
+  landlord: Landlord;
+  onAddComplete: () => void;
+}) {
   const router = useRouter();
   const { toast } = useToast();
   const [rating, setRating] = useState(0);
@@ -69,6 +79,7 @@ export default function AddReviewForm({ landlord }: { landlord: Landlord }) {
       ...values,
       landlordId: landlord.id,
     });
+    onAddComplete();
   }
 
   return (
