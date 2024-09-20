@@ -10,7 +10,9 @@ import { createCaller } from "@/server/api/root";
 import { createTRPCContext } from "@/server/api/trpc";
 import {
   Check,
+  CircleEllipsis,
   Edit,
+  Ellipsis,
   ImageIcon,
   MapPin,
   MessageSquare,
@@ -24,7 +26,6 @@ import Image from "next/image";
 import { UploadFileButton } from "@/components/upload-file-button";
 import { revalidatePath } from "next/cache";
 import DeleteImageButton from "./DeleteImageButton";
-import dayjs from "dayjs";
 
 export default async function LandlordPage({
   params,
@@ -35,37 +36,7 @@ export default async function LandlordPage({
 }) {
   const trpc = createCaller(await createTRPCContext({} as any));
   const landlord = await trpc.landlord.getById({ id: params.id });
-  const reviews = (
-    await trpc.review.getByLandlordId({ landlordId: params.id })
-  ).map((review) => ({
-    ...review,
-    createdAt: dayjs(review.createdAt).format("DD-MM-YYYY HH:mm"),
-  }));
-
-  // const placeholderReviews = [];
-  // const placeholderReviews = [
-  //   {
-  //     id: "1",
-  //     rating: 4,
-  //     comment: "Great landlord, very responsive",
-  //     author: "Tenant 1",
-  //     date: "2023-05-15",
-  //   },
-  //   {
-  //     id: "2",
-  //     rating: 3,
-  //     comment: "Decent, but slow to fix issues",
-  //     author: "Tenant 2",
-  //     date: "2023-04-20",
-  //   },
-  //   {
-  //     id: "3",
-  //     rating: 5,
-  //     comment: "Excellent! Highly recommended",
-  //     author: "Tenant 3",
-  //     date: "2023-03-10",
-  //   },
-  // ];
+  const reviews = await trpc.review.getByLandlordId({ landlordId: params.id });
 
   if (!landlord) {
     notFound();
@@ -127,10 +98,8 @@ export default async function LandlordPage({
               <div className="text-xl">
                 {landlord.city}, {landlord.zip}
               </div>
-              <div className="flex text-secondary items-center pt-3 gap-2">
-                <div className="">
-                  {landlord.avgRating?.toFixed(1)}
-                </div>
+              <div className="flex items-center gap-2 pt-3 text-secondary">
+                <div className="">{landlord.avgRating?.toFixed(1)}</div>
                 <div className="flex">{renderStars(landlord.avgRating)}</div>
                 <div>({reviews.length})</div>
               </div>
@@ -171,7 +140,15 @@ export default async function LandlordPage({
           <div>
             {reviews.length > 0 && (
               <>
-                <h3 className="mb-2 font-semibold">Last 3 Reviews</h3>
+                <div className="flex items-center justify-between">
+                  <span className="ps-2 font-semibold">Last Reviews</span>
+                  <Link href={`/landlord/${landlord.id}/reviews`}>
+                    <Button className="text-base" variant="link">
+                      <Ellipsis className="mr-1 h-5 w-5" />
+                      Show more
+                    </Button>
+                  </Link>
+                </div>
                 <ul className="space-y-4">
                   {reviews.map((review) => (
                     <li
