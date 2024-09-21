@@ -8,8 +8,13 @@ import { v4 as uuidv4 } from "uuid";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSize } from "@/hooks";
 import { type Landlord } from "@prisma/client";
-import { api } from "@/trpc/react";
 import { useSelectedQuery, useSelectedLandlord } from "@/stores";
+import {
+  QueryClient,
+  usePrefetchQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { api } from "@/trpc/react";
 
 L.Marker.prototype.options.icon = L.icon({
   iconUrl: "./marker.png",
@@ -68,13 +73,25 @@ function Map({ sidebarOpen }: MapProps) {
     [number, number, number, number]
   >([49.0020468, 55.03605, 14.0696389, 24.145783]); // Poland
   const [markers, setMarkers] = useState<
-    { id: string; position: LatLngTuple; eventHandlers?: L.LeafletEventHandlerFnMap, temp: boolean }[]
+    {
+      id: string;
+      position: LatLngTuple;
+      eventHandlers?: L.LeafletEventHandlerFnMap;
+      temp: boolean;
+    }[]
   >([]);
   const searchParams = useSearchParams();
   const router = useRouter();
   const { data: landlords, isLoading } = api.landlord.getAll.useQuery();
   const { selectedQuery, setSelectedQuery } = useSelectedQuery();
   const { setSelectedLandlord, selectedLandlord } = useSelectedLandlord();
+  const queryClient = useQueryClient();
+
+  // const prefetch = (landlordId: string) =>
+  //   queryClient.prefetchQuery({
+  //     queryKey: ["selectedLandlordReviews", { id: landlordId }],
+  //     queryFn: () => trpc.review.getByLandlordId({ landlordId }),
+  //   });
 
   const focusLandlord = useCallback(
     (landlord: Landlord) => {
@@ -101,8 +118,11 @@ function Map({ sidebarOpen }: MapProps) {
         parseFloat(landlord.lat),
         parseFloat(landlord.lng),
       ] as LatLngTuple,
-      eventHandlers: { click: () => focusLandlord(landlord) },
-      temp: false
+      eventHandlers: {
+        click: () => focusLandlord(landlord),
+        mouseover: () => console.log(landlord.id),
+      },
+      temp: false,
     }));
     setMarkers(positions);
   }, [landlords, focusLandlord]);
@@ -128,10 +148,10 @@ function Map({ sidebarOpen }: MapProps) {
   }, [searchParams, landlords, setSelectedLandlord]);
 
   useEffect(() => {
-    setMarkers(m => m.filter(marker => !marker.temp));
+    setMarkers((m) => m.filter((marker) => !marker.temp));
     if (selectedQuery?.boundingbox) {
       setSelectedBoundingBox(selectedQuery.boundingbox);
-      setMarkers(m => ([
+      setMarkers((m) => [
         ...m,
         {
           id: selectedQuery.place_id.toString(),
@@ -139,9 +159,9 @@ function Map({ sidebarOpen }: MapProps) {
             parseFloat(selectedQuery.lat),
             parseFloat(selectedQuery.lon),
           ] as LatLngTuple,
-          temp: true
+          temp: true,
         },
-      ]));
+      ]);
     } else if (!selectedQuery && !selectedLandlord) {
       setSelectedBoundingBox([49.0020468, 55.03605, 14.0696389, 24.145783]); // Poland
     }
@@ -165,20 +185,7 @@ function Map({ sidebarOpen }: MapProps) {
             key={marker.id}
             position={marker.position}
             eventHandlers={marker.eventHandlers}
-          >
-            {/* <Popup>
-              <div className="flex flex-col gap-1 mb-2">
-                <span className="font-bold">
-                  {landlord.street} {landlord.streetNumber}
-                  {landlord.flatNumber ? ` / ${landlord.flatNumber}` : ""}
-                </span>
-                <span>
-                  {landlord.city}, {landlord.zip}
-                </span>
-              </div>
-              <Link href={`/landlord/${landlord.id}`}>Show details</Link>
-            </Popup> */}
-          </Marker>
+          ></Marker>
         ))}
         <BoundingBoxZoom boundingBox={selectedBoundingBox} />
       </MapContainer>

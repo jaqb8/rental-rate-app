@@ -10,7 +10,6 @@ import { createCaller } from "@/server/api/root";
 import { createTRPCContext } from "@/server/api/trpc";
 import {
   Check,
-  CircleEllipsis,
   Edit,
   Ellipsis,
   ImageIcon,
@@ -26,6 +25,7 @@ import Image from "next/image";
 import { UploadFileButton } from "@/components/upload-file-button";
 import { revalidatePath } from "next/cache";
 import DeleteImageButton from "./DeleteImageButton";
+import { calculateAverageRating } from "@/lib/utils";
 
 export default async function LandlordPage({
   params,
@@ -36,7 +36,14 @@ export default async function LandlordPage({
 }) {
   const trpc = createCaller(await createTRPCContext({} as any));
   const landlord = await trpc.landlord.getById({ id: params.id });
-  const reviews = await trpc.review.getByLandlordId({ landlordId: params.id });
+  const reviews = await trpc.review.getByLandlordId({
+    landlordId: params.id,
+    limit: 3,
+  });
+  const { avgRating, count: reviewCount } =
+    await trpc.review.getAvgRatingByLandlordId({
+      landlordId: params.id,
+    });
 
   if (!landlord) {
     notFound();
@@ -99,9 +106,9 @@ export default async function LandlordPage({
                 {landlord.city}, {landlord.zip}
               </div>
               <div className="flex items-center gap-2 pt-3 text-secondary">
-                <div className="">{landlord.avgRating?.toFixed(1)}</div>
-                <div className="flex">{renderStars(landlord.avgRating)}</div>
-                <div>({reviews.length})</div>
+                <div className="">{avgRating.toFixed(1)}</div>
+                <div className="flex">{renderStars(avgRating)}</div>
+                <div>({reviewCount})</div>
               </div>
             </div>
 

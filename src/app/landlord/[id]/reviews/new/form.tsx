@@ -21,7 +21,6 @@ import { type Landlord } from "@prisma/client";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { on } from "events";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -49,6 +48,7 @@ export default function AddReviewForm({
   const { toast } = useToast();
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
+  const utils = api.useUtils();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -62,6 +62,9 @@ export default function AddReviewForm({
   const { mutate: createReview, isPending: isPendingReview } =
     api.review.create.useMutation({
       onSuccess: (data) => {
+        utils.review.getAvgRatingByLandlordId.invalidate({
+          landlordId: landlord.id,
+        });
         router.push(`/landlord/${landlord.id}/reviews/${data.id}`);
       },
       onError: (error) => {

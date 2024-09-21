@@ -1,14 +1,13 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import dayjs from "dayjs";
-import page from "@/app/landlord/[id]/reviews/[reviewId]/page";
 
 export const reviewRouter = createTRPCRouter({
   getByLandlordId: publicProcedure
     .input(
       z.object({
         landlordId: z.string(),
-        limit: z.number().int().optional().default(3),
+        limit: z.number().int().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -25,6 +24,32 @@ export const reviewRouter = createTRPCRouter({
         ...review,
         createdAt: dayjs(review.createdAt).format("DD-MM-YYYY HH:mm"),
       }));
+    }),
+
+  getAvgRatingByLandlordId: publicProcedure
+    .input(
+      z.object({
+        landlordId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const reviews = await ctx.db.review.findMany({
+        where: {
+          landlordId: input.landlordId,
+        },
+      });
+      const ratings = reviews.map((review) => review.rating);
+      if (ratings.length === 0) {
+        return {
+          avgRating: 0,
+          count: 0,
+        };
+      }
+      return {
+        avgRating:
+          ratings.reduce((acc, rating) => acc + rating, 0) / ratings.length,
+        count: ratings.length,
+      };
     }),
 
   getAll: publicProcedure
@@ -48,7 +73,9 @@ export const reviewRouter = createTRPCRouter({
       return {
         page: input.page,
         pageSize: input.pageSize,
-        count: await ctx.db.review.count(),
+        count: await ctx.db.review.count({
+          where: { landlordId: input.landlordId },
+        }),
         results: reviews.map((review) => ({
           ...review,
           createdAt: dayjs(review.createdAt).format("DD-MM-YYYY HH:mm"),
@@ -65,8 +92,8 @@ export const reviewRouter = createTRPCRouter({
         landlordId: z.string().min(1),
       }),
     )
-    .mutation(async ({ ctx, input }) => {
-      const review = await ctx.db.review.create({
+    .mutation(({ ctx, input }) => {
+      return ctx.db.review.create({
         data: {
           title: input.title,
           content: input.content,
@@ -74,17 +101,5 @@ export const reviewRouter = createTRPCRouter({
           landlordId: input.landlordId,
         },
       });
-
-      const avgRating = await ctx.db.review.aggregate({
-        where: { landlordId: input.landlordId },
-        _avg: { rating: true },
-      });
-
-      await ctx.db.landlord.update({
-        where: { id: input.landlordId },
-        data: { avgRating: avgRating._avg.rating ?? 0 },
-      });
-
-      return review;
     }),
 });

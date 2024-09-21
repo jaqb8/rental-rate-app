@@ -25,6 +25,7 @@ export default async function LandlordReviewsPage({
     pageSize,
   } = await trpc.review.getAll({
     page: parseInt(searchParams.page ?? "1"),
+    pageSize: 5,
     landlordId: params.id,
   });
   const landlord = await trpc.landlord.getById({ id: params.id });
@@ -33,6 +34,8 @@ export default async function LandlordReviewsPage({
   const reviewsPerPage = pageSize;
   const totalPages = Math.ceil(count / reviewsPerPage);
   const currentPage = parseInt(searchParams.page ?? "1");
+
+  console.log(count);
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, index) => (

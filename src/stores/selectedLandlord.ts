@@ -8,5 +8,7 @@ interface SelectedLandlordStore {
 
 export const useSelectedLandlord = create<SelectedLandlordStore>((set) => ({
   selectedLandlord: null,
-  setSelectedLandlord: (landlord: Landlord | null) => set({ selectedLandlord: landlord }),
+  setSelectedLandlord: (landlord: Landlord | null) => {
+    set({ selectedLandlord: landlord });
+  },
 }));

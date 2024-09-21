@@ -15,7 +15,7 @@ import {
   SearchIcon,
   Star,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Map from "@/components/map";
 import AutosuggestInput from "../autosuggest-input";
 import { api } from "@/trpc/react";
@@ -83,7 +83,12 @@ export function Sidebar() {
   const { toast } = useToast();
   const router = useRouter();
   const { setSelectedQuery, selectedQuery } = useSelectedQuery();
-  const { selectedLandlord, setSelectedLandlord } = useSelectedLandlord();
+  const { selectedLandlord } = useSelectedLandlord();
+
+  const [{ avgRating, count: reviewCount }, avgRatingQuery] =
+    api.review.getAvgRatingByLandlordId.useSuspenseQuery({
+      landlordId: selectedLandlord?.id ?? "",
+    });
 
   const { mutate: createLandlord, isPending: isPendingLandlord } =
     api.landlord.create.useMutation({
@@ -165,9 +170,8 @@ export function Sidebar() {
     setIsDialogOpen(true);
   };
 
-
   return (
-    <>
+    <Suspense fallback={<div>Loading...</div>}>
       {isDialogOpen && (
         <div
           className="fixed inset-0 z-[999] bg-black bg-opacity-50"
@@ -230,7 +234,9 @@ export function Sidebar() {
                         <Card className="mt-4 border-primary bg-card-foreground text-primary">
                           <CardHeader className="flex flex-row items-center space-x-2 pb-2">
                             <MapPinIcon className="h-8 w-8 text-primary" />
-                            <CardTitle className="text-xl">Landlord Information</CardTitle>
+                            <CardTitle className="text-xl">
+                              Landlord Information
+                            </CardTitle>
                           </CardHeader>
                           <CardContent className="text-primary-foreground">
                             <div className="grid gap-2">
@@ -249,18 +255,21 @@ export function Sidebar() {
                                 </span>
                               </div>
                               <div className="mt-2 flex items-center space-x-1">
+                                <span className="ml-2 font-medium">
+                                  {avgRating.toFixed(1)}
+                                </span>
                                 {[1, 2, 3, 4, 5].map((star) => (
                                   <Star
                                     key={star}
                                     className={`h-5 w-5 ${
-                                      star <= Math.floor(selectedLandlord.avgRating ?? 0)
+                                      star <= Math.floor(avgRating)
                                         ? "fill-yellow-400 text-yellow-400"
                                         : "text-gray-300"
                                     }`}
                                   />
                                 ))}
-                                <span className="ml-2 text-sm font-medium">
-                                  {selectedLandlord.avgRating?.toFixed(1)}
+                                <span className="ml-2 font-medium">
+                                  ({reviewCount})
                                 </span>
                               </div>
                             </div>
@@ -417,6 +426,6 @@ export function Sidebar() {
           )}
         </main>
       </div>
-    </>
+    </Suspense>
   );
 }

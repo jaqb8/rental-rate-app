@@ -70,7 +70,6 @@ model Landlord {
     createdAt    DateTime @default(now())
     updatedAt    DateTime @updatedAt
     reviews      Review[]
-    avgRating    Float?  @default(0)
 }
 
 model Review {
