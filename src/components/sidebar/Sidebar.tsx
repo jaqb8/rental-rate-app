@@ -135,6 +135,12 @@ export function Sidebar() {
   }
 
   useEffect(() => {
+    if (!!selectedLandlord) {
+      setIsSidebarOpen(true);
+    }
+  }, [selectedLandlord]);
+
+  useEffect(() => {
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 768);
       setIsSidebarOpen(window.innerWidth >= 768);
@@ -182,18 +188,12 @@ export function Sidebar() {
         <aside
           className={`${
             isSidebarOpen ? "w-[30rem]" : "w-16"
-          } bg-secondary-foreground text-secondary transition-all duration-300 ease-in-out ${
+          } border-e-2 border-primary bg-secondary-foreground text-secondary transition-all duration-300 ease-in-out ${
             isMobile && !isSidebarOpen ? "hidden" : ""
           }`}
         >
           <div className="flex h-full flex-col">
             <div className="flex h-16 items-center justify-between px-4">
-              {isSidebarOpen && (
-                <h2 className="flex items-center gap-1 text-2xl font-bold text-primary-foreground">
-                  <House />
-                  Rate Your Landlord
-                </h2>
-              )}
               <Button variant="default" size="icon" onClick={toggleSidebar}>
                 {isSidebarOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
               </Button>
@@ -204,7 +204,7 @@ export function Sidebar() {
                 <div className="mb-4">
                   {isSidebarOpen ? (
                     <div className="flex w-full max-w-sm items-start space-x-2">
-                      <AutosuggestInput />
+                      <AutosuggestInput isSidebarOpen={isSidebarOpen} />
                     </div>
                   ) : (
                     <Button
@@ -219,7 +219,7 @@ export function Sidebar() {
                 </div>
 
                 <div className="mb-4">
-                  {isSidebarOpen ? (
+                  {isSidebarOpen && (
                     <>
                       <Button
                         variant="default"
@@ -293,22 +293,8 @@ export function Sidebar() {
                         </Card>
                       )}
                     </>
-                  ) : (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="w-full"
-                      onClick={toggleSidebar}
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
                   )}
                 </div>
-              </div>
-              <div className="absolute z-[1000] w-full break-words bg-black p-4 text-sm">
-                {JSON.stringify(selectedQuery)}
-                <br />
-                {JSON.stringify(selectedLandlord)}
               </div>
             </ScrollArea>
           </div>

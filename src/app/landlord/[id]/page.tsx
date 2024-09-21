@@ -54,10 +54,7 @@ export default async function LandlordPage({
     revalidatePath(`/landlord/${landlord.id}`);
   };
 
-  const renderStars = (rating: number | null) => {
-    if (!rating) {
-      return 0;
-    }
+  const renderStars = (rating: number) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
@@ -94,7 +91,7 @@ export default async function LandlordPage({
           </AlertDescription>
         </Alert>
       )}
-      <Card className="border-primary bg-card-foreground text-primary-foreground shadow-2xl shadow-primary/80">
+      <Card className="border-primary bg-card-foreground text-primary-foreground">
         <CardHeader className="space-y-1">
           <div className="flex justify-between">
             <div className="flex flex-col">

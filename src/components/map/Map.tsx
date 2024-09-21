@@ -17,7 +17,7 @@ import {
 import { api } from "@/trpc/react";
 
 L.Marker.prototype.options.icon = L.icon({
-  iconUrl: "./marker.png",
+  iconUrl: "./marker2.svg",
   iconSize: [28, 45],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
@@ -82,16 +82,9 @@ function Map({ sidebarOpen }: MapProps) {
   >([]);
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { data: landlords, isLoading } = api.landlord.getAll.useQuery();
+  const { data: landlords } = api.landlord.getAll.useQuery();
   const { selectedQuery, setSelectedQuery } = useSelectedQuery();
   const { setSelectedLandlord, selectedLandlord } = useSelectedLandlord();
-  const queryClient = useQueryClient();
-
-  // const prefetch = (landlordId: string) =>
-  //   queryClient.prefetchQuery({
-  //     queryKey: ["selectedLandlordReviews", { id: landlordId }],
-  //     queryFn: () => trpc.review.getByLandlordId({ landlordId }),
-  //   });
 
   const focusLandlord = useCallback(
     (landlord: Landlord) => {
@@ -120,7 +113,6 @@ function Map({ sidebarOpen }: MapProps) {
       ] as LatLngTuple,
       eventHandlers: {
         click: () => focusLandlord(landlord),
-        mouseover: () => console.log(landlord.id),
       },
       temp: false,
     }));

@@ -25,8 +25,10 @@ export type AddressSuggestion = {
 };
 
 export default function AutosuggestInput({
+  isSidebarOpen,
   suggestionsLimit = 3,
 }: {
+  isSidebarOpen: boolean;
   suggestionsLimit?: number;
 }) {
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -38,7 +40,7 @@ export default function AutosuggestInput({
   const debouncedInputValue = useDebounce(inputValue, 500);
   const [hasSelectedSuggestion, setHasSelectedSuggestion] = useState(false);
 
-  const { setSelectedQuery, selectedQuery } = useSelectedQuery();
+  const { setSelectedQuery } = useSelectedQuery();
   const { setSelectedLandlord, selectedLandlord } = useSelectedLandlord();
   const router = useRouter();
 
@@ -69,6 +71,12 @@ export default function AutosuggestInput({
       setIsOpen(false);
     }
   }, [selectedLandlord]);
+
+  useEffect(() => {
+    if (isSidebarOpen) {
+      inputRef.current?.focus();
+    }
+  }, [isSidebarOpen]);
 
   const fetchAddressSuggestions = async (query: string) => {
     if (query.length < 3) return [];
@@ -160,9 +168,6 @@ export default function AutosuggestInput({
             </div>
           )}
         </div>
-        <Button variant="default" size="icon">
-          <SearchIcon className="h-4 w-10" />
-        </Button>
       </div>
 
       {isOpen && inputValue.length > 2 && (

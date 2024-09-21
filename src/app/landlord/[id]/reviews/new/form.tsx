@@ -61,8 +61,8 @@ export default function AddReviewForm({
 
   const { mutate: createReview, isPending: isPendingReview } =
     api.review.create.useMutation({
-      onSuccess: (data) => {
-        utils.review.getAvgRatingByLandlordId.invalidate({
+      onSuccess: async (data) => {
+        await utils.review.getAvgRatingByLandlordId.invalidate({
           landlordId: landlord.id,
         });
         router.push(`/landlord/${landlord.id}/reviews/${data.id}`);
@@ -86,7 +86,7 @@ export default function AddReviewForm({
   }
 
   return (
-    <div className="mx-auto max-w-2xl overflow-hidden rounded-lg border border-primary bg-card-foreground shadow-2xl shadow-primary/80">
+    <div className="mx-auto max-w-2xl overflow-hidden rounded-lg border border-primary bg-card-foreground">
       <div className="border-b border-primary bg-primary/10 p-6">
         <h1 className="mb-2 text-2xl font-bold text-primary-foreground">
           Add Review
