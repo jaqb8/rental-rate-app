@@ -34,14 +34,7 @@ export default function RootLayout({
         >
           <TRPCReactProvider>
             <ReactQueryDevtools initialIsOpen={false} />
-            <header className="flex items-center justify-between bg-primary px-8 py-3">
-              <Link
-                href="/"
-                className="flex items-center gap-1 text-2xl font-thin text-secondary"
-              >
-                <House className="" /> Rate Your Landlord
-              </Link>
-            </header>
+
             {children}
             <Toaster />
           </TRPCReactProvider>

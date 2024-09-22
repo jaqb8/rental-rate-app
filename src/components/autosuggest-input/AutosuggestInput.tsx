@@ -66,7 +66,7 @@ export default function AutosuggestInput({
   useEffect(() => {
     if (selectedLandlord) {
       setInputValue(
-        `${selectedLandlord.street} ${selectedLandlord.streetNumber} ${selectedLandlord.flatNumber}`,
+        `${selectedLandlord.street} ${selectedLandlord.streetNumber}${selectedLandlord.flatNumber ? "/" + selectedLandlord.flatNumber : ""}, ${selectedLandlord.city}`,
       );
       setIsOpen(false);
     }

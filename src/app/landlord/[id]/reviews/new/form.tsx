@@ -86,7 +86,7 @@ export default function AddReviewForm({
   }
 
   return (
-    <div className="mx-auto max-w-2xl overflow-hidden rounded-lg border border-primary bg-card-foreground">
+    <div className="overflow-hidden rounded-lg border border-primary bg-card-foreground">
       <div className="border-b border-primary bg-primary/10 p-6">
         <h1 className="mb-2 text-2xl font-bold text-primary-foreground">
           Add Review

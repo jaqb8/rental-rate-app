@@ -13,7 +13,9 @@ import {
   MessageSquare,
   Plus,
   SearchIcon,
+  SettingsIcon,
   Star,
+  UserIcon,
 } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import Map from "@/components/map";
@@ -184,21 +186,29 @@ export function Sidebar() {
           aria-hidden="true"
         />
       )}
-      <div className="flex w-full">
+      <div className="flex max-h-[100vh] w-full">
         <aside
           className={`${
-            isSidebarOpen ? "w-[30rem]" : "w-16"
-          } border-e-2 border-primary bg-secondary-foreground text-secondary transition-all duration-300 ease-in-out ${
+            isSidebarOpen ? "w-[32rem]" : "w-16"
+          } bg-secondary-foreground text-secondary transition-all duration-300 ease-in-out ${
             isMobile && !isSidebarOpen ? "hidden" : ""
           }`}
         >
           <div className="flex h-full flex-col">
-            <div className="flex h-16 items-center justify-between px-4">
-              <Button variant="default" size="icon" onClick={toggleSidebar}>
-                {isSidebarOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-              </Button>
+            <div className="mb-4 flex h-16 items-center justify-between border-b border-primary bg-primary/30 px-4">
+              {isSidebarOpen ? (
+                <Link
+                  href="/"
+                  className="flex items-center gap-1 text-2xl font-thin text-secondary"
+                >
+                  <House /> Rate Your Landlord
+                </Link>
+              ) : (
+                <Link href="/" className="flex w-full justify-center">
+                  <House />
+                </Link>
+              )}
             </div>
-
             <ScrollArea className="flex-grow">
               <div className="p-4">
                 <div className="mb-4">
@@ -208,7 +218,7 @@ export function Sidebar() {
                     </div>
                   ) : (
                     <Button
-                      variant="ghost"
+                      variant="secondary"
                       size="icon"
                       className="w-full"
                       onClick={toggleSidebar}
@@ -231,7 +241,7 @@ export function Sidebar() {
                         Add New Landlord
                       </Button>
                       {selectedLandlord && (
-                        <Card className="mt-4 border-primary bg-card-foreground text-primary">
+                        <Card className="mt-4 border-primary bg-primary/30 text-primary">
                           <CardHeader className="flex flex-row items-center space-x-2 pb-2">
                             <MapPinIcon className="h-8 w-8 text-primary" />
                             <CardTitle className="text-xl">
@@ -274,18 +284,22 @@ export function Sidebar() {
                               </div>
                             </div>
                           </CardContent>
-                          <CardFooter className="flex justify-between gap-2">
-                            <Link href={`landlord/${selectedLandlord.id}`}>
-                              <Button variant="secondary">
-                                <Info className="mr-2 h-4 w-4" />
+                          <CardFooter className="flex flex-col justify-between gap-2">
+                            <Link
+                              href={`landlord/${selectedLandlord.id}`}
+                              className="w-full"
+                            >
+                              <Button variant="secondary" className="w-full">
+                                <Info className="mr-1 h-4 w-4" />
                                 Show Details
                               </Button>
                             </Link>
                             <Link
                               href={`landlord/${selectedLandlord.id}/reviews/new`}
+                              className="w-full"
                             >
-                              <Button>
-                                <MessageSquare className="mr-2 h-4 w-4" /> Write
+                              <Button className="w-full">
+                                <MessageSquare className="mr-1 h-4 w-4" /> Write
                                 an opinion
                               </Button>
                             </Link>
@@ -297,15 +311,36 @@ export function Sidebar() {
                 </div>
               </div>
             </ScrollArea>
+            <div className="border-t border-muted-foreground p-4">
+              {isSidebarOpen ? (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <UserIcon className="h-6 w-6" />
+                    <span>John Doe</span>
+                  </div>
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={toggleSidebar}
+                  >
+                    <ChevronLeftIcon className="h-5 w-5" />
+                  </Button>
+                </div>
+              ) : (
+                <Button variant="secondary" size="icon" onClick={toggleSidebar}>
+                  <ChevronRightIcon className="h-6 w-6" />
+                </Button>
+              )}
+            </div>
           </div>
         </aside>
         <Map sidebarOpen={isSidebarOpen} />
         <div className="absolute right-4 top-4 z-[1000]">
           <Dialog open={isDialogOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="z-[1000] bg-card-foreground">
+            <DialogContent className="z-[1000] border border-primary bg-card-foreground">
               <DialogHeader>
                 <DialogTitle>Add New Landlord</DialogTitle>
-                <DialogDescription>
+                <DialogDescription className="text-muted">
                   Enter the details for the new landlord here.
                 </DialogDescription>
               </DialogHeader>
@@ -398,19 +433,6 @@ export function Sidebar() {
             </DialogContent>
           </Dialog>
         </div>
-
-        <main className="flex-grow bg-gray-100">
-          {isMobile && (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={toggleSidebar}
-              className="mb-4 md:hidden"
-            >
-              <MenuIcon />
-            </Button>
-          )}
-        </main>
       </div>
     </Suspense>
   );

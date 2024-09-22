@@ -35,8 +35,6 @@ export default async function LandlordReviewsPage({
   const totalPages = Math.ceil(count / reviewsPerPage);
   const currentPage = parseInt(searchParams.page ?? "1");
 
-  console.log(count);
-
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, index) => (
       <Star
@@ -49,10 +47,8 @@ export default async function LandlordReviewsPage({
   };
 
   return (
-    <div className="min-h-screen p-8 text-white">
-      <h1 className="mb-6 text-3xl font-bold">
-        All Reviews for {landlordName}
-      </h1>
+    <div className="min-h-screen text-white">
+      <h1 className="mb-6 text-3xl font-semibold">{landlordName}</h1>
       <div className="space-y-6">
         {reviews.map((review) => (
           <div

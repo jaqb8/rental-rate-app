@@ -9,11 +9,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useSize } from "@/hooks";
 import { type Landlord } from "@prisma/client";
 import { useSelectedQuery, useSelectedLandlord } from "@/stores";
-import {
-  QueryClient,
-  usePrefetchQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
 import { api } from "@/trpc/react";
 
 L.Marker.prototype.options.icon = L.icon({
@@ -21,8 +16,6 @@ L.Marker.prototype.options.icon = L.icon({
   iconSize: [28, 45],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
-  // shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
-  // shadowSize: [41, 41],
 });
 
 const ResizeMap = ({

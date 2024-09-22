@@ -68,7 +68,7 @@ export default async function LandlordPage({
   };
 
   return (
-    <div className="w-full">
+    <>
       {searchParams.created && (
         <Alert className="mb-4">
           <Check className="h-4 w-4" />
@@ -218,6 +218,6 @@ export default async function LandlordPage({
           </Link>
         </CardFooter>
       </Card>
-    </div>
+    </>
   );
 }
