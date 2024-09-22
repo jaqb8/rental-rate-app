@@ -22,7 +22,7 @@ export const fileRouter = {
     })
     .onUploadComplete(async ({ metadata, file }) => {
       const trpc = createCaller(await createTRPCContext({} as any));
-      await trpc.landlord.update({
+      await trpc.landlord.updatePhoto({
         id: metadata.landlordId,
         data: { photoUrl: file.url },
       });

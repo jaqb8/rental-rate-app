@@ -133,6 +133,7 @@ function Map({ sidebarOpen }: MapProps) {
   }, [searchParams, landlords, setSelectedLandlord]);
 
   useEffect(() => {
+    console.log(selectedQuery, selectedLandlord);
     setMarkers((m) => m.filter((marker) => !marker.temp));
     if (selectedQuery?.boundingbox) {
       setSelectedBoundingBox(selectedQuery.boundingbox);

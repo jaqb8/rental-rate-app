@@ -79,6 +79,6 @@ model Review {
     rating     Int
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
-    landlord   Landlord @relation(fields: [landlordId], references: [id])
+    landlord   Landlord @relation(fields: [landlordId], references: [id], onDelete: Cascade)
     landlordId String
 }

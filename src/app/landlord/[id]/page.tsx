@@ -10,7 +10,7 @@ import { createCaller } from "@/server/api/root";
 import { createTRPCContext } from "@/server/api/trpc";
 import {
   Check,
-  Edit,
+  CircleCheck,
   Ellipsis,
   ImageIcon,
   MapPin,
@@ -18,14 +18,16 @@ import {
   MessageSquarePlus,
   Plus,
   Star,
+  Trash,
+  X,
 } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
 import { UploadFileButton } from "@/components/upload-file-button";
 import { revalidatePath } from "next/cache";
 import DeleteImageButton from "./DeleteImageButton";
-import { calculateAverageRating } from "@/lib/utils";
+import DeleteLandlordAlert from "./DeleteLandlordAlert";
 
 export default async function LandlordPage({
   params,
@@ -67,18 +69,27 @@ export default async function LandlordPage({
     return stars;
   };
 
+  const deleteLandlord = async () => {
+    "use server";
+    const caller = createCaller(await createTRPCContext({} as any));
+    await caller.landlord.delete({ id: landlord.id });
+    redirect("/");
+  };
+
   return (
     <>
       {searchParams.created && (
-        <Alert className="mb-4">
-          <Check className="h-4 w-4" />
-          <AlertTitle className="text-lg text-green-600">
-            New Landlord Added!
-          </AlertTitle>
-          <AlertDescription>
+        <Alert className="mb-4 border border-primary bg-primary/30 text-secondary">
+          <div className="flex items-center gap-1">
+            <CircleCheck className="h-5 w-5 font-bold text-primary" />
+            <AlertTitle className="mb-0 text-lg font-bold">
+              New Landlord Added!
+            </AlertTitle>
+          </div>
+          <AlertDescription className="ps-6 font-thin">
             You have successfully added a new landlord to the database. You can
             now view and manage their information on this page.{" "}
-            <span className="font-bold">
+            <span className="font-normal">
               Also feel free to leave a review for the landlord{" "}
               <Link
                 href={`/landlord/${params.id}/review`}
@@ -89,6 +100,13 @@ export default async function LandlordPage({
               .
             </span>
           </AlertDescription>
+          <Link
+            href={`/landlord/${params.id}/`}
+            className="absolute right-3 top-3 text-secondary hover:text-primary"
+            aria-label="Close alert"
+          >
+            <X className="h-4 w-4" />
+          </Link>
         </Alert>
       )}
       <Card className="border-primary bg-card-foreground text-primary-foreground">
@@ -108,10 +126,7 @@ export default async function LandlordPage({
                 <div>({reviewCount})</div>
               </div>
             </div>
-
-            <Button variant="secondary">
-              <Edit className="mr-2 h-4 w-4" /> Edit
-            </Button>
+            <DeleteLandlordAlert landlordId={landlord.id} />
           </div>
         </CardHeader>
         <div className="relative mb-6 h-48 w-full border-y border-primary bg-primary/30">

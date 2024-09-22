@@ -88,26 +88,95 @@ export const landlordRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         data: z.object({
+          street: z.string().optional(),
+          streetNumber: z.string().optional(),
+          flatNumber: z.string().optional(),
+          city: z.string().optional(),
+          zip: z.string().optional(),
+          country: z.string().optional(),
+        }),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const address = `${input.data.street},${input.data.streetNumber}${input.data.flatNumber ? `/${input.data.flatNumber}` : ""},${input.data.city},${input.data.zip},${input.data.country}`;
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${address}&format=json&limit=1`,
+        {
+          method: "GET",
+        },
+      );
+
+      if (!response.ok) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch coordinates",
+        });
+      }
+
+      const data: { lat: string; lon: string }[] = await response.json();
+      console.log(address, data);
+
+      const lat = data[0]?.lat;
+      const lng = data[0]?.lon;
+
+      if (!lat || !lng) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch coordinates",
+        });
+      }
+
+      return ctx.db.landlord.update({
+        where: { id: input.id },
+        data: {
+          ...input.data,
+          lat,
+          lng,
+        },
+      });
+    }),
+
+  updatePhoto: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        data: z.object({
           photoUrl: z.string().optional(),
         }),
       }),
     )
     .mutation(({ ctx, input }) => {
-      return ctx.db.landlord.update({ where: { id: input.id }, data: input.data });
+      return ctx.db.landlord.update({
+        where: { id: input.id },
+        data: input.data,
+      });
     }),
 
   deleteImage: publicProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const photoCustomId = input.id;
-        const res = await utapi.deleteFiles(photoCustomId, { keyType: "customId" });
-        if (res.deletedCount === 0) {
-          throw new TRPCError({
+      const res = await utapi.deleteFiles(photoCustomId, {
+        keyType: "customId",
+      });
+      if (res.deletedCount === 0) {
+        throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to delete image",
         });
       }
-      return ctx.db.landlord.update({ where: { id: input.id }, data: { photoUrl: null } });
+      return ctx.db.landlord.update({
+        where: { id: input.id },
+        data: { photoUrl: null },
+      });
+    }),
+
+  delete: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(({ ctx, input }) => {
+      return ctx.db.landlord.delete({
+        where: { id: input.id },
+      });
     }),
 
   //   getLatest: protectedProcedure.query(async ({ ctx }) => {
