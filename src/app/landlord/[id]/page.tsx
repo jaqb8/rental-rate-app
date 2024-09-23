@@ -9,8 +9,8 @@ import {
 import { createCaller } from "@/server/api/root";
 import { createTRPCContext } from "@/server/api/trpc";
 import {
-  Check,
   CircleCheck,
+  Edit,
   Ellipsis,
   ImageIcon,
   MapPin,
@@ -18,11 +18,10 @@ import {
   MessageSquarePlus,
   Plus,
   Star,
-  Trash,
   X,
 } from "lucide-react";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import { UploadFileButton } from "@/components/upload-file-button";
 import { revalidatePath } from "next/cache";
@@ -67,13 +66,6 @@ export default async function LandlordPage({
       );
     }
     return stars;
-  };
-
-  const deleteLandlord = async () => {
-    "use server";
-    const caller = createCaller(await createTRPCContext({} as any));
-    await caller.landlord.delete({ id: landlord.id });
-    redirect("/");
   };
 
   return (
@@ -175,10 +167,36 @@ export default async function LandlordPage({
                       className="rounded-md bg-secondary p-3 text-secondary-foreground"
                     >
                       <div className="mb-1 flex items-center justify-between">
-                        <span className="font-medium">{review.title}</span>
-                        <span className="text-sm text-muted-foreground">
-                          {review.createdAt}
-                        </span>
+                        <Button
+                          variant="link"
+                          asChild
+                          className="p-0 text-black"
+                        >
+                          <Link
+                            href={`/landlord/${landlord.id}/reviews/${review.id}`}
+                            className="font-medium"
+                          >
+                            {review.title}
+                          </Link>
+                        </Button>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-muted-foreground">
+                            {review.createdAt}
+                          </span>
+                          <Button
+                            asChild
+                            variant="ghost"
+                            size="icon"
+                            className="text-secondary-foreground hover:text-primary"
+                          >
+                            <Link
+                              href={`/landlord/${landlord.id}/reviews/${review.id}/edit`}
+                            >
+                              <Edit className="h-4 w-4" />
+                              <span className="sr-only">Edit review</span>
+                            </Link>
+                          </Button>
+                        </div>
                       </div>
                       <div className="mb-1 flex items-center">
                         {[...Array(5)].map((_, i) => (

@@ -3,7 +3,6 @@
 import React from "react";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -42,8 +41,8 @@ export default function DeleteLandlordAlert({
 
   const { mutate: deleteLandlord, isPending } = api.landlord.delete.useMutation(
     {
-      onSuccess: () => {
-        utils.landlord.getAll.invalidate();
+      onSuccess: async () => {
+        await utils.landlord.getAll.invalidate();
         setSelectedLandlord(null);
         setSelectedQuery(null);
         router.push("/");

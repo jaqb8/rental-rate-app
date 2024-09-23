@@ -3,6 +3,23 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import dayjs from "dayjs";
 
 export const reviewRouter = createTRPCRouter({
+  getById: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const review = await ctx.db.review.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+      if (!review) {
+        return null;
+      }
+      return {
+        ...review,
+        createdAt: dayjs(review.createdAt).format("DD-MM-YYYY HH:mm"),
+      };
+    }),
+
   getByLandlordId: publicProcedure
     .input(
       z.object({
@@ -100,6 +117,26 @@ export const reviewRouter = createTRPCRouter({
           rating: input.rating,
           landlordId: input.landlordId,
         },
+      });
+    }),
+
+  update: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        data: z.object({
+          title: z.string().optional(),
+          content: z.string().optional(),
+          rating: z.number().int().gte(1).lte(5).optional(),
+        }),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.review.update({
+        where: {
+          id: input.id,
+        },
+        data: input.data,
       });
     }),
 });
