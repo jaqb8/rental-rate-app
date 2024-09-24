@@ -1,8 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AlertTriangle, LoaderCircle, SearchIcon, X } from "lucide-react";
+import { AlertTriangle, LoaderCircle, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDebounce } from "@/hooks";
@@ -37,6 +36,7 @@ export default function AutosuggestInput({
   const suggestionsRef = useRef<HTMLUListElement>(null);
 
   const [inputValue, setInputValue] = useState("");
+  const [inputTouched, setInputTouched] = useState(false);
   const debouncedInputValue = useDebounce(inputValue, 500);
   const [hasSelectedSuggestion, setHasSelectedSuggestion] = useState(false);
 
@@ -45,12 +45,12 @@ export default function AutosuggestInput({
   const router = useRouter();
 
   useEffect(() => {
-    if (inputValue.length > 2 && !selectedLandlord && !hasSelectedSuggestion) {
+    if (inputValue.length > 2 && !hasSelectedSuggestion && inputTouched) {
       setIsOpen(true);
     } else {
       setIsOpen(false);
     }
-  }, [inputValue, selectedLandlord, hasSelectedSuggestion]);
+  }, [inputValue, selectedLandlord, hasSelectedSuggestion, inputTouched]);
 
   useEffect(() => {
     if (isOpen && suggestionsRef.current) {
@@ -97,11 +97,12 @@ export default function AutosuggestInput({
   } = useQuery<AddressSuggestion[]>({
     queryKey: ["addressSuggestions", debouncedInputValue],
     queryFn: () => fetchAddressSuggestions(debouncedInputValue),
-    enabled: isOpen && inputValue.length > 2 && !selectedLandlord,
+    enabled: isOpen && inputValue.length > 2 && inputTouched,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
+    setInputTouched(true);
     setInputValue(newValue);
     setHasSelectedSuggestion(false);
     setSelectedQuery(null);
@@ -131,6 +132,7 @@ export default function AutosuggestInput({
   const handleSelectSuggestion = (suggestion: AddressSuggestion) => {
     setInputValue(suggestion.display_name);
     setSelectedQuery(suggestion);
+    setSelectedLandlord(null);
     setHasSelectedSuggestion(true);
     setIsOpen(false);
   };

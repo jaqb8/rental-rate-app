@@ -10,13 +10,22 @@ import { useSize } from "@/hooks";
 import { type Landlord } from "@prisma/client";
 import { useSelectedQuery, useSelectedLandlord } from "@/stores";
 import { api } from "@/trpc/react";
+import { get } from "http";
 
-L.Marker.prototype.options.icon = L.icon({
-  iconUrl: "./marker2.svg",
-  iconSize: [28, 45],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-});
+// L.Marker.prototype.options.icon = L.icon({
+//   iconUrl: "./marker2.svg",
+//   iconSize: [28, 45],
+//   iconAnchor: [12, 41],
+//   popupAnchor: [1, -34],
+// });
+
+const getMarkerIcon = ({ temp } = { temp: false }) =>
+  L.icon({
+    iconUrl: `./marker${temp ? "1" : "2"}.svg`,
+    iconSize: [28, 45],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+  });
 
 const ResizeMap = ({
   containerRef,
@@ -71,6 +80,7 @@ function Map({ sidebarOpen }: MapProps) {
       position: LatLngTuple;
       eventHandlers?: L.LeafletEventHandlerFnMap;
       temp: boolean;
+      icon: L.Icon<L.IconOptions> | L.DivIcon | undefined;
     }[]
   >([]);
   const searchParams = useSearchParams();
@@ -108,6 +118,7 @@ function Map({ sidebarOpen }: MapProps) {
         click: () => focusLandlord(landlord),
       },
       temp: false,
+      icon: getMarkerIcon(),
     }));
     setMarkers(positions);
   }, [landlords, focusLandlord]);
@@ -133,7 +144,6 @@ function Map({ sidebarOpen }: MapProps) {
   }, [searchParams, landlords, setSelectedLandlord]);
 
   useEffect(() => {
-    console.log(selectedQuery, selectedLandlord);
     setMarkers((m) => m.filter((marker) => !marker.temp));
     if (selectedQuery?.boundingbox) {
       setSelectedBoundingBox(selectedQuery.boundingbox);
@@ -146,6 +156,7 @@ function Map({ sidebarOpen }: MapProps) {
             parseFloat(selectedQuery.lon),
           ] as LatLngTuple,
           temp: true,
+          icon: getMarkerIcon({ temp: true }),
         },
       ]);
     } else if (!selectedQuery && !selectedLandlord) {
@@ -171,6 +182,7 @@ function Map({ sidebarOpen }: MapProps) {
             key={marker.id}
             position={marker.position}
             eventHandlers={marker.eventHandlers}
+            icon={marker.icon}
           ></Marker>
         ))}
         <BoundingBoxZoom boundingBox={selectedBoundingBox} />
