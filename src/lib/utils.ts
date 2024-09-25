@@ -14,3 +14,8 @@ export function calculateAverageRating(reviews: { rating: number }[]) {
   }
   return ratings.reduce((acc, rating) => acc + rating, 0) / ratings.length;
 }
+
+export function capitalizeFirstLetter(string?: string) {
+  if (!string) return null;
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}

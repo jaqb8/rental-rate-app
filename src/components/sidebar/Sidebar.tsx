@@ -3,17 +3,17 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
+  Building2,
   ChevronLeftIcon,
   ChevronRightIcon,
   House,
   Info,
   Loader2,
+  MapPin,
   MapPinIcon,
-  MenuIcon,
   MessageSquare,
   Plus,
   SearchIcon,
-  SettingsIcon,
   Star,
   UserIcon,
 } from "lucide-react";
@@ -51,6 +51,7 @@ import {
 } from "../ui/card";
 import Link from "next/link";
 import { useSelectedQuery, useSelectedLandlord } from "@/stores";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 const formSchema = z.object({
   street: z.string().min(2, {
@@ -231,20 +232,11 @@ export function Sidebar() {
                 <div className="mb-4">
                   {isSidebarOpen && (
                     <>
-                      <Button
-                        variant="default"
-                        className="w-full"
-                        disabled={!selectedQuery}
-                        onClick={handleOpenDialog}
-                      >
-                        <Plus />
-                        Add New Landlord
-                      </Button>
                       {selectedLandlord && (
-                        <Card className="mt-4 border-primary bg-primary/30 text-primary">
+                        <Card className="mt-4 border-primary bg-primary/10 text-primary">
                           <CardHeader className="flex flex-row items-center space-x-2 pb-2">
                             <MapPinIcon className="h-8 w-8 text-primary" />
-                            <CardTitle className="text-xl">
+                            <CardTitle className="text-xl text-secondary">
                               Landlord Information
                             </CardTitle>
                           </CardHeader>
@@ -284,7 +276,7 @@ export function Sidebar() {
                               </div>
                             </div>
                           </CardContent>
-                          <CardFooter className="flex flex-col justify-between gap-2">
+                          <CardFooter className="flex flex-col justify-between gap-2 rounded-b-md bg-primary/40 px-6 py-4">
                             <Link
                               href={`landlord/${selectedLandlord.id}`}
                               className="w-full"
@@ -303,6 +295,40 @@ export function Sidebar() {
                                 an opinion
                               </Button>
                             </Link>
+                          </CardFooter>
+                        </Card>
+                      )}
+                      {selectedQuery && !selectedLandlord && (
+                        <Card className="border-primary bg-primary/10 text-white">
+                          <CardContent className="p-6">
+                            <div className="mb-4 flex items-center gap-2">
+                              <MapPin className="h-8 w-8 text-primary" />
+                              <h2 className="text-xl font-semibold">
+                                Selected Address
+                              </h2>
+                            </div>
+                            <p className="mb-2 text-lg font-medium">
+                              {selectedQuery.display_name}
+                            </p>
+                            <div className="flex items-center gap-2 text-sm text-slate-400">
+                              <Building2 className="h-4 w-4" />
+                              <span>
+                                {capitalizeFirstLetter(selectedQuery.type) ??
+                                  capitalizeFirstLetter(
+                                    selectedQuery.addresstype,
+                                  )}
+                              </span>
+                            </div>
+                          </CardContent>
+                          <CardFooter className="rounded-b-md bg-primary/40 px-6 py-4">
+                            <Button
+                              onClick={handleOpenDialog}
+                              variant="secondary"
+                              className="w-full"
+                            >
+                              <Plus className="mr-2 h-4 w-4" />
+                              Add New Landlord
+                            </Button>
                           </CardFooter>
                         </Card>
                       )}
@@ -337,17 +363,18 @@ export function Sidebar() {
         <Map sidebarOpen={isSidebarOpen} />
         <div className="absolute right-4 top-4 z-[1000]">
           <Dialog open={isDialogOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="z-[1000] border border-primary bg-card-foreground">
-              <DialogHeader>
+            <DialogContent className="z-[1000] border-0 border-primary bg-secondary-foreground p-0">
+              <DialogHeader className="rounded-t-md bg-primary/40 px-8 py-5">
                 <DialogTitle>Add New Landlord</DialogTitle>
                 <DialogDescription className="text-muted">
                   Enter the details for the new landlord here.
                 </DialogDescription>
               </DialogHeader>
+
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-4"
+                  className="space-y-4 px-8 pb-5"
                 >
                   <div className="flex gap-2">
                     <FormField

@@ -13,6 +13,8 @@ export type AddressSuggestion = {
   display_name: string;
   lat: string;
   lon: string;
+  type?: string;
+  addresstype?: string;
   address: {
     road?: string;
     house_number?: string;
