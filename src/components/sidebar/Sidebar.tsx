@@ -339,23 +339,37 @@ export function Sidebar() {
             </ScrollArea>
             <div className="border-t border-muted-foreground p-4">
               {isSidebarOpen ? (
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <UserIcon className="h-6 w-6" />
-                    <span>John Doe</span>
+                <div className="flex flex-col space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <UserIcon className="h-6 w-6" />
+                      <span>John Doe</span>
+                    </div>
+                    <Button
+                      variant="secondary"
+                      size="icon"
+                      onClick={toggleSidebar}
+                    >
+                      <ChevronLeftIcon className="h-5 w-5" />
+                    </Button>
                   </div>
+                  <div className="flex justify-center text-xs text-gray-400">
+                    Version {process.env.NEXT_PUBLIC_APP_VERSION}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center space-y-2">
                   <Button
                     variant="secondary"
                     size="icon"
                     onClick={toggleSidebar}
                   >
-                    <ChevronLeftIcon className="h-5 w-5" />
+                    <ChevronRightIcon className="h-6 w-6" />
                   </Button>
+                  <div className="text-xs text-gray-400">
+                    v{process.env.NEXT_PUBLIC_APP_VERSION}
+                  </div>
                 </div>
-              ) : (
-                <Button variant="secondary" size="icon" onClick={toggleSidebar}>
-                  <ChevronRightIcon className="h-6 w-6" />
-                </Button>
               )}
             </div>
           </div>
