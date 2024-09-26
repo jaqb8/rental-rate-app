@@ -9,6 +9,7 @@ import {
   House,
   Info,
   Loader2,
+  LogInIcon,
   MapPin,
   MapPinIcon,
   MessageSquare,
@@ -70,6 +71,7 @@ const formSchema = z.object({
 });
 
 export function Sidebar() {
+  const [isAuth, setIsAuth] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -341,10 +343,23 @@ export function Sidebar() {
               {isSidebarOpen ? (
                 <div className="flex flex-col space-y-2">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <UserIcon className="h-6 w-6" />
-                      <span>John Doe</span>
-                    </div>
+                    {isAuth ? (
+                      <div className="flex items-center space-x-2">
+                        <UserIcon className="h-6 w-6" />
+                        <span>John Doe</span>
+                      </div>
+                    ) : (
+                      <Button
+                        variant="default"
+                        className="w-[19.5rem] justify-center"
+                        asChild
+                      >
+                        <Link href="/login">
+                          <LogInIcon className="mr-2 h-4 w-4" />
+                          Sign In
+                        </Link>
+                      </Button>
+                    )}
                     <Button
                       variant="secondary"
                       size="icon"
