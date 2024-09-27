@@ -7,8 +7,6 @@ import { TRPCReactProvider } from "@/trpc/react";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import Link from "next/link";
-import { House } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Rate Your Landlord",
@@ -34,7 +32,6 @@ export default function RootLayout({
         >
           <TRPCReactProvider>
             <ReactQueryDevtools initialIsOpen={false} />
-
             {children}
             <Toaster />
           </TRPCReactProvider>

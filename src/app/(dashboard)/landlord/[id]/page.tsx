@@ -84,7 +84,7 @@ export default async function LandlordPage({
             <span className="font-normal">
               Also feel free to leave a review for the landlord{" "}
               <Link
-                href={`/landlord/${params.id}/review`}
+                href={`/landlord/${params.id}/reviews/new`}
                 className="underline hover:text-blue-500"
               >
                 here

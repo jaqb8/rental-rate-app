@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import Loading from "./loading";
+import Loading from "../../components/loading/loading";
 import Link from "next/link";
 import { House } from "lucide-react";
 
@@ -15,7 +15,7 @@ export default function LandlordLayout({
           href="/"
           className="flex items-center gap-1 text-2xl font-thin text-secondary"
         >
-          <House className="" /> Rate Your Landlord
+          <House /> Rate Your Landlord
         </Link>
       </header>
       <section className="px-8 py-12 md:px-24 lg:px-64">
