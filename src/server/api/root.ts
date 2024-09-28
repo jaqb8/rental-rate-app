@@ -9,7 +9,7 @@ import { reviewRouter } from "./routers/review";
  */
 export const appRouter = createTRPCRouter({
   landlord: landlordRouter,
-  review: reviewRouter
+  review: reviewRouter,
 });
 
 // export type definition of API
