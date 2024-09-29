@@ -54,12 +54,12 @@ import {
 import Link from "next/link";
 import { useSelectedQuery, useSelectedLandlord } from "@/stores";
 import { capitalizeFirstLetter } from "@/lib/utils";
-import { type User } from "lucia";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu";
+import { useSession } from "@/context";
 
 const formSchema = z.object({
   street: z.string().min(2, {
@@ -77,7 +77,8 @@ const formSchema = z.object({
   }),
 });
 
-export function Sidebar({ user }: { user: User | null }) {
+export function Sidebar() {
+  const { user } = useSession();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);

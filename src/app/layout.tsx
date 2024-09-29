@@ -7,6 +7,8 @@ import { TRPCReactProvider } from "@/trpc/react";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { validateRequest } from "@/auth/validate-request";
+import { SessionProvider } from "@/context";
 
 export const metadata: Metadata = {
   title: "Rate Your Landlord",
@@ -14,9 +16,11 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const sessionData = await validateRequest();
+
   return (
     <html
       lang="en"
@@ -24,18 +28,20 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body>
-        <ThemeProvider
-          attribute="className"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <TRPCReactProvider>
-            <ReactQueryDevtools initialIsOpen={false} />
-            {children}
-            <Toaster />
-          </TRPCReactProvider>
-        </ThemeProvider>
+        <SessionProvider value={sessionData}>
+          <ThemeProvider
+            attribute="className"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <TRPCReactProvider>
+              <ReactQueryDevtools initialIsOpen={false} />
+              {children}
+              <Toaster />
+            </TRPCReactProvider>
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );
