@@ -12,6 +12,7 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "@/server/db";
+import { validateRequest } from "@/auth/validate-request";
 
 /**
  * 1. CONTEXT
@@ -119,14 +120,15 @@ export const publicProcedure = t.procedure.use(timingMiddleware);
  */
 export const protectedProcedure = t.procedure
   .use(timingMiddleware)
-  .use(({ ctx, next }) => {
-    // if (!ctx.session || !ctx.session.user) {
-    //   throw new TRPCError({ code: "UNAUTHORIZED" });
-    // }
+  .use(async ({ ctx, next }) => {
+    const { session } = await validateRequest();
+    if (!session?.userId) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
     return next({
       ctx: {
         // infers the `session` as non-nullable
-        // session: { ...ctx.session, user: ctx.session.user },
+        session,
       },
     });
   });

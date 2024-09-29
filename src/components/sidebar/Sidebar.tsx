@@ -10,6 +10,7 @@ import {
   Info,
   Loader2,
   LogInIcon,
+  LogOutIcon,
   MapPin,
   MapPinIcon,
   MessageSquare,
@@ -42,7 +43,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -53,6 +54,12 @@ import {
 import Link from "next/link";
 import { useSelectedQuery, useSelectedLandlord } from "@/stores";
 import { capitalizeFirstLetter } from "@/lib/utils";
+import { type User } from "lucia";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+} from "@radix-ui/react-dropdown-menu";
+import { DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu";
 
 const formSchema = z.object({
   street: z.string().min(2, {
@@ -70,8 +77,7 @@ const formSchema = z.object({
   }),
 });
 
-export function Sidebar() {
-  const [isAuth, setIsAuth] = useState(false);
+export function Sidebar({ user }: { user: User | null }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -179,6 +185,16 @@ export function Sidebar() {
 
     setIsSidebarOpen(false);
     setIsDialogOpen(true);
+  };
+
+  const { mutate: logout } = api.auth.logout.useMutation({
+    onSuccess: () => {
+      router.push("/");
+    },
+  });
+
+  const onLogout = () => {
+    logout();
   };
 
   return (
@@ -343,15 +359,31 @@ export function Sidebar() {
               {isSidebarOpen ? (
                 <div className="flex flex-col space-y-2">
                   <div className="flex items-center justify-between">
-                    {isAuth ? (
-                      <div className="flex items-center space-x-2">
-                        <UserIcon className="h-6 w-6" />
-                        <span>John Doe</span>
-                      </div>
+                    {user ? (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            className="flex w-[19.5rem] items-center justify-start space-x-2 bg-secondary-foreground hover:bg-secondary/20 hover:text-secondary"
+                          >
+                            <UserIcon className="h-6 w-6" />
+                            <span>{user.email}</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-[19.5rem]">
+                          <DropdownMenuItem
+                            className="cursor-pointer"
+                            onClick={onLogout}
+                          >
+                            <LogOutIcon className="mr-2 h-4 w-4" />
+                            <span>Log out</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     ) : (
                       <Button
                         variant="default"
-                        className="w-[19.5rem] justify-center"
+                        className="w-[18rem] justify-center"
                         asChild
                       >
                         <Link href="/login">

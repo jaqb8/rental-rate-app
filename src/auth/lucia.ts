@@ -12,6 +12,12 @@ export const lucia = new Lucia(adapter, {
       secure: process.env.NODE_ENV === "production",
     },
   },
+  getUserAttributes: (attributes) => {
+    return {
+      id: attributes.id,
+      email: attributes.email,
+    };
+  },
 });
 
 export type Auth = typeof lucia;
