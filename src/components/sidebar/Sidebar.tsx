@@ -78,7 +78,7 @@ const formSchema = z.object({
 });
 
 export function Sidebar() {
-  const { user } = useSession();
+  const { user, clearSessionContext } = useSession();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -190,13 +190,10 @@ export function Sidebar() {
 
   const { mutate: logout } = api.auth.logout.useMutation({
     onSuccess: () => {
+      clearSessionContext();
       router.push("/");
     },
   });
-
-  const onLogout = () => {
-    logout();
-  };
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -374,7 +371,7 @@ export function Sidebar() {
                         <DropdownMenuContent className="w-[19.5rem]">
                           <DropdownMenuItem
                             className="cursor-pointer"
-                            onClick={onLogout}
+                            onClick={() => logout()}
                           >
                             <LogOutIcon className="mr-2 h-4 w-4" />
                             <span>Log out</span>

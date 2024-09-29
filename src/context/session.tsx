@@ -1,23 +1,38 @@
 "use client";
 import type { Session, User } from "lucia";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState } from "react";
 
 interface SessionProviderProps {
   user: User | null;
   session: Session | null;
+  clearSessionContext: () => void;
 }
 
-const SessionContext = createContext<SessionProviderProps>(
-  {} as SessionProviderProps,
+const SessionContext = createContext<SessionProviderProps | undefined>(
+  undefined,
 );
 
 export const SessionProvider = ({
   children,
-  value,
+  initialValue,
 }: {
   children: React.ReactNode;
-  value: SessionProviderProps;
+  initialValue: Omit<SessionProviderProps, "clearSessionContext">;
 }) => {
+  const [sessionData, setSessionData] = useState(initialValue);
+
+  const clearSessionContext = () => {
+    setSessionData({
+      user: null,
+      session: null,
+    });
+  };
+
+  const value = {
+    ...sessionData,
+    clearSessionContext,
+  };
+
   return (
     <SessionContext.Provider value={value}>{children}</SessionContext.Provider>
   );

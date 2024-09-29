@@ -28,7 +28,7 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body>
-        <SessionProvider value={sessionData}>
+        <SessionProvider initialValue={sessionData}>
           <ThemeProvider
             attribute="className"
             defaultTheme="dark"
