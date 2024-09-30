@@ -8,6 +8,7 @@ import { hash, verify } from "@node-rs/argon2";
 import { generateIdFromEntropySize } from "lucia";
 import { lucia } from "@/auth/lucia";
 import { cookies } from "next/headers";
+import { setCookie } from "cookies-next";
 
 export const authRouter = createTRPCRouter({
   signUp: publicProcedure
@@ -44,7 +45,7 @@ export const authRouter = createTRPCRouter({
         password: z.string().min(6).max(255),
       }),
     )
-    .query(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       const existingUser = await ctx.db.user.findUnique({
         where: { email: input.email },
       });

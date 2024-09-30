@@ -20,6 +20,7 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const sessionData = await validateRequest();
+  console.log("sessionData", sessionData);
 
   return (
     <html
@@ -28,7 +29,10 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body>
-        <SessionProvider initialValue={sessionData}>
+        <SessionProvider
+          key={sessionData.session?.id}
+          initialValue={sessionData}
+        >
           <ThemeProvider
             attribute="className"
             defaultTheme="dark"
