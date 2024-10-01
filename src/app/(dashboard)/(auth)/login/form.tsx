@@ -14,46 +14,38 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Loader2 } from "lucide-react";
-import { api } from "@/trpc/react";
-import { useRouter } from "next/navigation";
-
-export const loginFormScheme = z.object({
-  email: z.string().email({
-    message: "Email is required.",
-  }),
-  password: z
-    .string()
-    .min(6, {
-      message: "Password is required.",
-    })
-    .max(255),
-});
+import { login } from "@/auth/actions";
+import { type z } from "zod";
+import { useFormState, useFormStatus } from "react-dom";
+import { loginFormSchema } from "@/lib/schemas/login";
+import { Sub } from "@radix-ui/react-dropdown-menu";
+import { SubmitButton } from "./submitButton";
 
 export default function LoginForm() {
-  const form = useForm<z.infer<typeof loginFormScheme>>({
-    resolver: zodResolver(loginFormScheme),
+  const form = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const router = useRouter();
+  const [state, formAction] = useFormState(login, null);
+  const { pending } = useFormStatus();
 
-  const { mutate: login, isPending: isLoading } = api.auth.login.useMutation({
-    onSuccess: () => router.push("/"),
-  });
-
-  function onSubmit(formData: z.infer<typeof loginFormScheme>) {
-    login(formData);
-  }
+  // function onSubmit(formData: z.infer<typeof loginFormSchema>) {
+  //   formAction(formData);
+  // }
 
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          action={formAction}
+          // onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4"
+        >
           <FormField
             control={form.control}
             name="email"
@@ -84,15 +76,20 @@ export default function LoginForm() {
               </FormItem>
             )}
           />
-          <Button disabled={isLoading} className="w-full" type="submit">
-            {isLoading && (
-              <>
-                <Loader2 className="mr-2 animate-spin" />
-                <span>Processing...</span>
-              </>
-            )}
-            {!isLoading && "Login"}
-          </Button>
+          {state?.fieldError ? (
+            <p className="flex flex-col space-y-1 rounded-lg border border-destructive bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
+              {Object.values(state.fieldError).map((err) => (
+                <span className="ml-1" key={err}>
+                  {err}
+                </span>
+              ))}
+            </p>
+          ) : state?.formError ? (
+            <p className="rounded-lg border border-destructive bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
+              {state?.formError}
+            </p>
+          ) : null}
+          <SubmitButton className="w-full">Login</SubmitButton>
         </form>
       </Form>
       <div className="relative">
@@ -105,15 +102,15 @@ export default function LoginForm() {
           </span>
         </div>
       </div>
-      <Button disabled={isLoading} variant="secondary" className="w-full">
+      <Button variant="secondary" className="w-full">
         <Image
           src="./google.svg"
           alt="Google icon"
           width={20}
           height={20}
-          className={`mr-2 ${isLoading ? "animate-spin" : ""}`}
+          className="mr-2"
         />
-        {isLoading ? "Processing..." : "Login with Google"}
+        Login with Google
       </Button>
     </>
   );

@@ -4,11 +4,10 @@ import {
   protectedProcedure,
 } from "@/server/api/trpc";
 import { z } from "zod";
-import { hash, verify } from "@node-rs/argon2";
+import { hash } from "@node-rs/argon2";
 import { generateIdFromEntropySize } from "lucia";
 import { lucia } from "@/auth/lucia";
 import { cookies } from "next/headers";
-import { setCookie } from "cookies-next";
 
 export const authRouter = createTRPCRouter({
   signUp: publicProcedure
@@ -30,50 +29,6 @@ export const authRouter = createTRPCRouter({
         data: { id: userId, email: input.email, passwordHash },
       });
       const session = await lucia.createSession(userId, {});
-      const sessionCookie = lucia.createSessionCookie(session.id);
-      cookies().set(
-        sessionCookie.name,
-        sessionCookie.value,
-        sessionCookie.attributes,
-      );
-    }),
-
-  login: publicProcedure
-    .input(
-      z.object({
-        email: z.string().email(),
-        password: z.string().min(6).max(255),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const existingUser = await ctx.db.user.findUnique({
-        where: { email: input.email },
-      });
-
-      if (!existingUser) {
-        return {
-          error: "Incorrect email or password",
-        };
-      }
-
-      const validPassword = await verify(
-        existingUser.passwordHash,
-        input.password,
-        {
-          memoryCost: 19456,
-          timeCost: 2,
-          outputLen: 32,
-          parallelism: 1,
-        },
-      );
-
-      if (!validPassword) {
-        return {
-          error: "Incorrect email or password",
-        };
-      }
-
-      const session = await lucia.createSession(existingUser.id, {});
       const sessionCookie = lucia.createSessionCookie(session.id);
       cookies().set(
         sessionCookie.name,
