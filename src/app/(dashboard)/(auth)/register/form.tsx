@@ -1,7 +1,15 @@
 "use client";
 
+import { signUp } from "@/auth/actions";
 import { Button } from "@/components/ui/button";
+import { signUpFormSchema } from "@/lib/schemas/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React from "react";
+import { useFormState } from "react-dom";
+import { useForm } from "react-hook-form";
+import { type z } from "zod";
 import Image from "next/image";
+import { SubmitButton } from "../components/submit-button";
 import {
   Form,
   FormControl,
@@ -11,25 +19,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
-import { useForm } from "react-hook-form";
-import { login } from "@/auth/actions";
-import { type z } from "zod";
-import { useFormState } from "react-dom";
-import { loginFormSchema } from "@/lib/schemas/auth";
-import { SubmitButton } from "../components/submit-button";
 
-export default function LoginForm() {
-  const form = useForm<z.infer<typeof loginFormSchema>>({
-    resolver: zodResolver(loginFormSchema),
+export default function SignUpForm() {
+  const form = useForm<z.infer<typeof signUpFormSchema>>({
+    resolver: zodResolver(signUpFormSchema),
     defaultValues: {
       email: "",
       password: "",
+      password2: "",
     },
   });
 
-  const [state, formAction] = useFormState(login, null);
+  const [state, formAction] = useFormState(signUp, null);
 
   return (
     <>
@@ -65,6 +66,23 @@ export default function LoginForm() {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="password2"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirm Password</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="Confirm your password"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           {state?.fieldError ? (
             <p className="flex flex-col space-y-1 rounded-lg border border-destructive bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
               {Object.values(state.fieldError).map((err) => (
@@ -78,7 +96,7 @@ export default function LoginForm() {
               {state?.formError}
             </p>
           ) : null}
-          <SubmitButton className="w-full">Login</SubmitButton>
+          <SubmitButton className="w-full">Sign Up</SubmitButton>
         </form>
       </Form>
       <div className="relative">
@@ -97,7 +115,7 @@ export default function LoginForm() {
           alt="Google icon"
           width={20}
           height={20}
-          className="mr-2"
+          className="mr-1"
         />
         Login with Google
       </Button>

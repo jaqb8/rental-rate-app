@@ -20,7 +20,6 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const sessionData = await validateRequest();
-  console.log("sessionData", sessionData);
 
   return (
     <html
