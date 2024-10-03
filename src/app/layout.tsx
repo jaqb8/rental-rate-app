@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { validateRequest } from "@/auth/validate-request";
 import { SessionProvider } from "@/context";
+import { cache } from "react";
 
 export const metadata: Metadata = {
   title: "Rate Your Landlord",
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const sessionData = await validateRequest();
+  const sessionData = await cache(validateRequest)();
 
   return (
     <html
