@@ -10,6 +10,8 @@ import { loginFormSchema, signUpFormSchema } from "@/lib/schemas/auth";
 import { generateIdFromEntropySize } from "lucia";
 import { EmailTemplate, sendMail } from "@/lib/email";
 import { validateRequest } from "./validate-request";
+import { createActivationCode } from "./activation";
+import { env } from "@/env";
 
 export interface ActionResponse<T> {
   fieldError?: Partial<Record<keyof T, string | undefined>>;
@@ -61,18 +63,12 @@ export async function signUp(
     },
   });
 
+  const activationCode = await createActivationCode(userId);
+
   // TODO: consider using a queue for sending emails
   await sendMail(email, EmailTemplate.EmailVerification, {
-    verificationLink: "https://example.com/verify-email",
+    verificationLink: `${env.APP_URL}/activation?code=${activationCode}`,
   });
-
-  const session = await lucia.createSession(userId, {});
-  const sessionCookie = lucia.createSessionCookie(session.id);
-  cookies().set(
-    sessionCookie.name,
-    sessionCookie.value,
-    sessionCookie.attributes,
-  );
 
   return redirect("/verify-email");
 }
@@ -97,12 +93,17 @@ export async function login(
   const { email, password } = parsed.data;
 
   const existingUser = await db.user.findUnique({
-    where: { email },
+    where: {
+      email,
+      emailVerified: {
+        not: null,
+      },
+    },
   });
 
   if (!existingUser) {
     return {
-      formError: "Incorrect email or password",
+      formError: "Account not activated or does not exist",
     };
   }
 

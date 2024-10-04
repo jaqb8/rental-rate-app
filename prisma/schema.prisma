@@ -8,6 +8,7 @@ generator client {
 datasource db {
     provider = "postgresql"
     url      = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
 }
 
 model Session {
@@ -15,6 +16,16 @@ model Session {
     userId       String
     expiresAt    DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Activation {
+    id           String   @id @default(cuid())
+    userId       String
+    code         String
+    expiresAt    DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([code])
 }
 
 model User {
@@ -25,6 +36,7 @@ model User {
     emailVerified DateTime?
     image         String?
     sessions      Session[]
+    activations   Activation[]
 }
 
 model VerificationToken {
