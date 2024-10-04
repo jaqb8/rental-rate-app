@@ -12,7 +12,8 @@
     "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "email:dev": "email dev --dir ./src/lib/email"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -30,6 +31,9 @@
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-toast": "^1.2.1",
+    "@react-email/components": "0.0.25",
+    "@react-email/render": "1.0.1",
+    "@react-email/tailwind": "0.1.0",
     "@t3-oss/env-nextjs": "^0.10.1",
     "@tanstack/react-query": "^5.50.0",
     "@tanstack/react-query-devtools": "^5.56.2",
@@ -47,6 +51,7 @@
     "lucide-react": "^0.439.0",
     "next": "^14.2.4",
     "next-themes": "^0.3.0",
+    "nodemailer": "^6.9.15",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.0",
@@ -64,6 +69,7 @@
     "@types/eslint": "^8.56.10",
     "@types/leaflet": "^1.9.12",
     "@types/node": "^20.14.10",
+    "@types/nodemailer": "^6.4.16",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/uuid": "^10.0.0",
@@ -75,6 +81,7 @@
     "prettier": "^3.3.2",
     "prettier-plugin-tailwindcss": "^0.6.5",
     "prisma": "^5.20.0",
+    "react-email": "3.0.1",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.5.3"
   },

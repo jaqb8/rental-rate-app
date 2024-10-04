@@ -60,6 +60,7 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 import { DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu";
 import { useSession } from "@/context";
+import { logout } from "@/auth/actions";
 
 const formSchema = z.object({
   street: z.string().min(2, {
@@ -79,6 +80,7 @@ const formSchema = z.object({
 
 export function Sidebar() {
   const { user, clearSessionContext } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -188,12 +190,29 @@ export function Sidebar() {
     setIsDialogOpen(true);
   };
 
-  const { mutate: logout } = api.auth.logout.useMutation({
-    onSuccess: () => {
+  const handleLogout = async () => {
+    setIsLoading(true);
+    try {
+      await logout();
+      toast({
+        title: "Success",
+        description: "You have been logged out.",
+        duration: 3000,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+          duration: 3000,
+        });
+      }
+    } finally {
       clearSessionContext();
-      router.push("/");
-    },
-  });
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -371,10 +390,20 @@ export function Sidebar() {
                         <DropdownMenuContent className="w-[19.5rem]">
                           <DropdownMenuItem
                             className="cursor-pointer"
-                            onClick={() => logout()}
+                            onClick={handleLogout}
+                            disabled={isLoading}
                           >
-                            <LogOutIcon className="mr-2 h-4 w-4" />
-                            <span>Log out</span>
+                            {isLoading ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Processing...
+                              </>
+                            ) : (
+                              <>
+                                <LogOutIcon className="mr-2 h-4 w-4" />
+                                Log out
+                              </>
+                            )}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

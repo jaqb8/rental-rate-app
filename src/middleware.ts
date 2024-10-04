@@ -5,7 +5,7 @@ import type { NextRequest } from "next/server";
 export async function middleware(request: NextRequest) {
   const sessionData = await validateRequest();
 
-  if (sessionData) {
+  if (sessionData.session) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 

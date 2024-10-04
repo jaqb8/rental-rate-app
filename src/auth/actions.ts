@@ -8,6 +8,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { loginFormSchema, signUpFormSchema } from "@/lib/schemas/auth";
 import { generateIdFromEntropySize } from "lucia";
+import { EmailTemplate, sendMail } from "@/lib/email";
+import { validateRequest } from "./validate-request";
 
 export interface ActionResponse<T> {
   fieldError?: Partial<Record<keyof T, string | undefined>>;
@@ -58,7 +60,12 @@ export async function signUp(
       passwordHash,
     },
   });
-  // TODO: send email verification
+
+  // TODO: consider using a queue for sending emails
+  await sendMail(email, EmailTemplate.EmailVerification, {
+    verificationLink: "https://example.com/verify-email",
+  });
+
   const session = await lucia.createSession(userId, {});
   const sessionCookie = lucia.createSessionCookie(session.id);
   cookies().set(
@@ -114,6 +121,23 @@ export async function login(
 
   const session = await lucia.createSession(existingUser.id, {});
   const sessionCookie = lucia.createSessionCookie(session.id);
+  cookies().set(
+    sessionCookie.name,
+    sessionCookie.value,
+    sessionCookie.attributes,
+  );
+  return redirect("/");
+}
+
+export async function logout(): Promise<{ error: string } | void> {
+  const { session } = await validateRequest();
+  if (!session) {
+    return {
+      error: "No session found",
+    };
+  }
+  await lucia.invalidateSession(session.id);
+  const sessionCookie = lucia.createBlankSessionCookie();
   cookies().set(
     sessionCookie.name,
     sessionCookie.value,
