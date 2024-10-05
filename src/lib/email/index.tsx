@@ -1,11 +1,9 @@
-import "server-only";
-
 import { render } from "@react-email/render";
 import { env } from "@/env";
-import { EMAIL_SENDER } from "@/lib/constants";
 import { createTransport, type TransportOptions } from "nodemailer";
 import type { ComponentProps } from "react";
 import { EmailVerificationTemplate } from "./templates/email-verification";
+import { emailQueue } from "@/workers/email-worker";
 
 export enum EmailTemplate {
   EmailVerification = "EmailVerification",
@@ -17,7 +15,7 @@ export type PropsMap = {
   >;
 };
 
-const getEmailTemplate = async <T extends EmailTemplate>(
+export const getEmailTemplate = async <T extends EmailTemplate>(
   template: T,
   props: PropsMap[NoInfer<T>],
 ) => {
@@ -45,26 +43,17 @@ const smtpConfig = {
   },
 };
 
-const transporter = createTransport(smtpConfig as TransportOptions);
+export const transporter = createTransport(smtpConfig as TransportOptions);
 
-export const sendMail = async <T extends EmailTemplate>(
-  to: string,
-  template: T,
-  props: PropsMap[NoInfer<T>],
-) => {
-  if (env.MOCK_SEND_EMAIL) {
-    console.info(
-      "📨 Email sent to:",
-      to,
-      "with template:",
-      template,
-      "and props:",
-      props,
-    );
-    return;
-  }
-
+export const sendMail = async <T extends EmailTemplate>({
+  to,
+  template,
+  props,
+}: {
+  to: string;
+  template: T;
+  props: PropsMap[NoInfer<T>];
+}) => {
   const { subject, body } = await getEmailTemplate(template, props);
-
-  return transporter.sendMail({ from: EMAIL_SENDER, to, subject, html: body });
+  await emailQueue.add("sendMail", { to, subject, body });
 };

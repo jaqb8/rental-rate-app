@@ -65,9 +65,12 @@ export async function signUp(
 
   const activationCode = await createActivationCode(userId);
 
-  // TODO: consider using a queue for sending emails
-  await sendMail(email, EmailTemplate.EmailVerification, {
-    verificationLink: `${env.APP_URL}/activation?code=${activationCode}`,
+  await sendMail({
+    to: email,
+    template: EmailTemplate.EmailVerification,
+    props: {
+      verificationLink: `${env.APP_URL}/activation?code=${activationCode}`,
+    },
   });
 
   return redirect("/verify-email");
