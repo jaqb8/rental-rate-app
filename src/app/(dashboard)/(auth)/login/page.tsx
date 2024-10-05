@@ -2,14 +2,6 @@ import LoginForm from "./form";
 import Link from "next/link";
 
 export default function LoginPage() {
-  // async function onSubmit(formData: FormData) {
-  //   "use server";
-  //   const email = formData.get("email") as string;
-  //   const password = formData.get("password") as string;
-  //   await api.auth.login({ email, password });
-  //   redirect("/");
-  // }
-
   return (
     <div className="w-full">
       <div className="flex items-center justify-center py-12">

@@ -17,7 +17,7 @@ export const SessionProvider = ({
   initialValue,
 }: {
   children: React.ReactNode;
-  initialValue: Omit<SessionProviderProps, "clearSessionContext">;
+  initialValue: { user: User | null; session: Session | null };
 }) => {
   const [sessionData, setSessionData] = useState(initialValue);
 

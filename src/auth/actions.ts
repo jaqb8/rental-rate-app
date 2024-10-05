@@ -103,7 +103,7 @@ export async function login(
 
   if (!existingUser) {
     return {
-      formError: "Account not activated or does not exist",
+      formError: "Account does not exist or email is not verified",
     };
   }
 

@@ -14,15 +14,15 @@ export default function ActivationSuccess() {
           Your email has been verified and your account is now active.
         </p>
         <p className="mb-8 text-center text-gray-300">
-          Thank you for joining Rate Your Landlord. You can now access all
-          features of our platform.
+          Thank you for joining Rate Your Landlord. You can now login and access
+          all features of our platform.
         </p>
         <div className="w-full space-y-4">
           <Button asChild className="w-full">
-            <Link href="/">Go to Home Page</Link>
+            <Link href="/login">Go to Login Page</Link>
           </Button>
           <Button asChild variant="secondary" className="w-full">
-            <Link href="/profile">Complete Your Profile</Link>
+            <Link href="/">Go to Home Page</Link>
           </Button>
         </div>
       </div>

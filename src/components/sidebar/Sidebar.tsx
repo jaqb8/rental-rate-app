@@ -222,10 +222,10 @@ export function Sidebar() {
           aria-hidden="true"
         />
       )}
-      <div className="flex max-h-[100vh] w-full">
+      <div className="flex h-[100vh] w-full">
         <aside
           className={`${
-            isSidebarOpen ? "w-[32rem]" : "w-16"
+            isSidebarOpen ? "w-[1/3vw]" : "w-16"
           } bg-secondary-foreground text-secondary transition-all duration-300 ease-in-out ${
             isMobile && !isSidebarOpen ? "hidden" : ""
           }`}
