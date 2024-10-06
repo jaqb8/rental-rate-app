@@ -42,7 +42,7 @@ export default function AutosuggestInput({
   const debouncedInputValue = useDebounce(inputValue, 500);
   const [hasSelectedSuggestion, setHasSelectedSuggestion] = useState(false);
 
-  const { setSelectedQuery } = useSelectedQuery();
+  const { setSelectedQuery, selectedQuery } = useSelectedQuery();
   const { setSelectedLandlord, selectedLandlord } = useSelectedLandlord();
   const router = useRouter();
 
@@ -72,7 +72,11 @@ export default function AutosuggestInput({
       );
       setIsOpen(false);
     }
-  }, [selectedLandlord]);
+    if (selectedQuery) {
+      setInputValue(selectedQuery.display_name);
+      setIsOpen(false);
+    }
+  }, [selectedLandlord, selectedQuery]);
 
   useEffect(() => {
     if (isSidebarOpen) {

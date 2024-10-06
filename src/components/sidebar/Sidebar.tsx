@@ -43,7 +43,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -61,6 +61,8 @@ import {
 import { DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu";
 import { useSession } from "@/context";
 import { logout } from "@/auth/actions";
+import { useDialogStore } from "@/stores/dialog";
+import Loading from "../loading";
 
 const formSchema = z.object({
   street: z.string().min(2, {
@@ -83,24 +85,35 @@ export function Sidebar() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { selectedQuery } = useSelectedQuery();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      street: "",
-      streetNumber: "",
+      street: selectedQuery?.address.road ?? "",
+      streetNumber: selectedQuery?.address.house_number ?? "",
       flatNumber: "",
-      city: "",
-      zipCode: "",
+      city: selectedQuery?.address.city ?? "",
+      zipCode: selectedQuery?.address.postcode ?? "",
     },
   });
   const { toast } = useToast();
   const router = useRouter();
-  const { setSelectedQuery, selectedQuery } = useSelectedQuery();
   const { selectedLandlord } = useSelectedLandlord();
+  const { setDialogOpen, isOpen: isDialogOpen } = useDialogStore();
 
-  const [{ avgRating, count: reviewCount }, avgRatingQuery] =
-    api.review.getAvgRatingByLandlordId.useSuspenseQuery({
+  const handleOpenDialog = () => {
+    form.reset();
+    form.setValue("street", selectedQuery?.address.road ?? "");
+    form.setValue("streetNumber", selectedQuery?.address.house_number ?? "");
+    form.setValue("city", selectedQuery?.address.city ?? "");
+    form.setValue("zipCode", selectedQuery?.address.postcode ?? "");
+
+    setDialogOpen(true);
+  };
+
+  const { data: avgRatingData, isLoading: isAvgRatingLoading } =
+    api.review.getAvgRatingByLandlordId.useQuery({
       landlordId: selectedLandlord?.id ?? "",
     });
 
@@ -171,23 +184,8 @@ export function Sidebar() {
   };
 
   const onOpenChange = (open: boolean) => {
-    if (!open) {
-      setSelectedQuery(null);
-    }
-
     setIsSidebarOpen(!open);
-    setIsDialogOpen(open);
-  };
-
-  const handleOpenDialog = () => {
-    form.reset();
-    form.setValue("street", selectedQuery?.address.road ?? "");
-    form.setValue("streetNumber", selectedQuery?.address.house_number ?? "");
-    form.setValue("city", selectedQuery?.address.city ?? "");
-    form.setValue("zipCode", selectedQuery?.address.postcode ?? "");
-
-    setIsSidebarOpen(false);
-    setIsDialogOpen(true);
+    setDialogOpen(open);
   };
 
   const handleLogout = async () => {
@@ -215,7 +213,7 @@ export function Sidebar() {
   };
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <>
       {isDialogOpen && (
         <div
           className="fixed inset-0 z-[999] bg-black bg-opacity-50"
@@ -225,12 +223,12 @@ export function Sidebar() {
       <div className="flex h-[100vh] w-full">
         <aside
           className={`${
-            isSidebarOpen ? "w-[1/3vw]" : "w-16"
-          } bg-secondary-foreground text-secondary transition-all duration-300 ease-in-out ${
+            isSidebarOpen ? "w-[25rem]" : "w-16"
+          } transform bg-secondary-foreground text-secondary transition-all duration-300 ease-in-out ${
             isMobile && !isSidebarOpen ? "hidden" : ""
           }`}
         >
-          <div className="flex h-full flex-col">
+          <div className="w-inherit flex h-full flex-col">
             <div className="mb-4 flex h-16 items-center justify-between border-b border-primary bg-primary/30 px-4">
               {isSidebarOpen ? (
                 <Link
@@ -249,7 +247,7 @@ export function Sidebar() {
               <div className="p-4">
                 <div className="mb-4">
                   {isSidebarOpen ? (
-                    <div className="flex w-full max-w-sm items-start space-x-2">
+                    <div className="flex w-full max-w-[100%] items-start space-x-2">
                       <AutosuggestInput isSidebarOpen={isSidebarOpen} />
                     </div>
                   ) : (
@@ -267,7 +265,8 @@ export function Sidebar() {
                 <div className="mb-4">
                   {isSidebarOpen && (
                     <>
-                      {selectedLandlord && (
+                      {selectedLandlord && isAvgRatingLoading && <Loading />}
+                      {selectedLandlord && !isAvgRatingLoading && (
                         <Card className="mt-4 border-primary bg-primary/10 text-primary">
                           <CardHeader className="flex flex-row items-center space-x-2 pb-2">
                             <MapPinIcon className="h-8 w-8 text-primary" />
@@ -293,20 +292,21 @@ export function Sidebar() {
                               </div>
                               <div className="mt-2 flex items-center space-x-1">
                                 <span className="ml-2 font-medium">
-                                  {avgRating.toFixed(1)}
+                                  {avgRatingData?.avgRating.toFixed(1)}
                                 </span>
                                 {[1, 2, 3, 4, 5].map((star) => (
                                   <Star
                                     key={star}
                                     className={`h-5 w-5 ${
-                                      star <= Math.floor(avgRating)
+                                      star <=
+                                      Math.floor(avgRatingData?.avgRating ?? 0)
                                         ? "fill-yellow-400 text-yellow-400"
                                         : "text-gray-300"
                                     }`}
                                   />
                                 ))}
                                 <span className="ml-2 font-medium">
-                                  ({reviewCount})
+                                  ({avgRatingData?.count})
                                 </span>
                               </div>
                             </div>
@@ -334,7 +334,7 @@ export function Sidebar() {
                         </Card>
                       )}
                       {selectedQuery && !selectedLandlord && (
-                        <Card className="border-primary bg-primary/10 text-white">
+                        <Card className="max-w-[100%] border-primary bg-primary/10 text-white">
                           <CardContent className="p-6">
                             <div className="mb-4 flex items-center gap-2">
                               <MapPin className="h-8 w-8 text-primary" />
@@ -356,14 +356,27 @@ export function Sidebar() {
                             </div>
                           </CardContent>
                           <CardFooter className="rounded-b-md bg-primary/40 px-6 py-4">
-                            <Button
-                              onClick={handleOpenDialog}
-                              variant="secondary"
-                              className="w-full"
-                            >
-                              <Plus className="mr-2 h-4 w-4" />
-                              Add New Landlord
-                            </Button>
+                            {user ? (
+                              <Button
+                                onClick={handleOpenDialog}
+                                variant="secondary"
+                                className="w-full"
+                              >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add New Landlord
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="secondary"
+                                asChild
+                                className="w-full"
+                              >
+                                <Link href="/login?dialog=true">
+                                  <LogInIcon className="mr-2 h-4 w-4" />
+                                  Login to add landlord
+                                </Link>
+                              </Button>
+                            )}
                           </CardFooter>
                         </Card>
                       )}
@@ -410,7 +423,7 @@ export function Sidebar() {
                     ) : (
                       <Button
                         variant="default"
-                        className="w-[18rem] justify-center"
+                        className="mr-4 w-full justify-center"
                         asChild
                       >
                         <Link href="/login">
@@ -549,6 +562,6 @@ export function Sidebar() {
           </Dialog>
         </div>
       </div>
-    </Suspense>
+    </>
   );
 }

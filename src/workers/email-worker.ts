@@ -1,10 +1,5 @@
 import { EMAIL_SENDER } from "@/lib/constants";
-import {
-  EmailTemplate,
-  getEmailTemplate,
-  PropsMap,
-  transporter,
-} from "@/lib/email";
+import { transporter } from "@/lib/email";
 import { Worker, Queue } from "bullmq";
 import Redis from "ioredis";
 
@@ -40,7 +35,7 @@ const worker = new Worker<{ to: string; subject: string; body: string }>(
       return;
     }
 
-    transporter.sendMail({
+    await transporter.sendMail({
       from: EMAIL_SENDER,
       to,
       subject,

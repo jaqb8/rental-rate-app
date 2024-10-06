@@ -12,13 +12,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { login } from "@/auth/actions";
 import { type z } from "zod";
 import { useFormState } from "react-dom";
 import { loginFormSchema } from "@/lib/schemas/auth";
 import { SubmitButton } from "../components/submit-button";
+import { useSearchParams } from "next/navigation";
+import { useDialogStore } from "@/stores/dialog";
 
 export default function LoginForm() {
   const form = useForm<z.infer<typeof loginFormSchema>>({
@@ -28,6 +30,13 @@ export default function LoginForm() {
       password: "",
     },
   });
+  const searchParams = useSearchParams();
+  const { setDialogOpen } = useDialogStore();
+  useEffect(() => {
+    if (searchParams.get("dialog")) {
+      setDialogOpen(searchParams.get("dialog") === "true");
+    }
+  }, [setDialogOpen, searchParams]);
 
   const [state, formAction] = useFormState(login, null);
 

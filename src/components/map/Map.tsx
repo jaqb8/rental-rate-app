@@ -10,7 +10,8 @@ import { useSize } from "@/hooks";
 import { type Landlord } from "@prisma/client";
 import { useSelectedQuery, useSelectedLandlord } from "@/stores";
 import { api } from "@/trpc/react";
-import { get } from "http";
+import Loading from "../loading";
+import { usePrefetchQuery } from "@tanstack/react-query";
 
 // L.Marker.prototype.options.icon = L.icon({
 //   iconUrl: "./marker2.svg",
@@ -88,6 +89,7 @@ function Map({ sidebarOpen }: MapProps) {
   const { data: landlords } = api.landlord.getAll.useQuery();
   const { selectedQuery, setSelectedQuery } = useSelectedQuery();
   const { setSelectedLandlord, selectedLandlord } = useSelectedLandlord();
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
 
   const focusLandlord = useCallback(
     (landlord: Landlord) => {
@@ -166,6 +168,7 @@ function Map({ sidebarOpen }: MapProps) {
 
   return (
     <div className="z-1 h-[100vh] w-[100vw]" ref={containerRef}>
+      {!isMapLoaded && <Loading />}
       <MapContainer
         key={key}
         center={[40.609787846393196, 20.7890265133657]}
@@ -174,6 +177,10 @@ function Map({ sidebarOpen }: MapProps) {
       >
         <ResizeMap containerRef={containerRef} />
         <TileLayer
+          eventHandlers={{
+            loading: () => setIsMapLoaded(false),
+            load: () => setIsMapLoaded(true),
+          }}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url={`https://tile.jawg.io/jawg-sunny/{z}/{x}/{y}{r}.png?access-token=${env.NEXT_PUBLIC_JAWG_ACCESS_TOKEN}`}
         />
