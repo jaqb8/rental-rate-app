@@ -17,7 +17,7 @@ export default async function AddReview({
     notFound();
   }
 
-  const invalidateLandlordPage = async (id: number) => {
+  const invalidateLandlordPage = async (id: string) => {
     "use server";
     revalidatePath("/landlord/[id]");
     redirect(`/landlord/${landlord.id}/reviews/${id}`);

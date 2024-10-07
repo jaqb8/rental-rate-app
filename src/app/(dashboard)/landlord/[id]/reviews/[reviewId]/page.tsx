@@ -15,7 +15,7 @@ export default async function ReviewPage({
 }) {
   const trpc = createCaller(await createTRPCContext({} as any));
   const landlord = await trpc.landlord.getById({ id: params.id });
-  const review = await trpc.review.getById({ id: parseInt(params.reviewId) });
+  const review = await trpc.review.getById({ id: params.reviewId });
 
   if (!review || !landlord) {
     notFound();

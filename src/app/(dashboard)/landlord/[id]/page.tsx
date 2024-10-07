@@ -27,6 +27,8 @@ import { UploadFileButton } from "@/components/upload-file-button";
 import { revalidatePath } from "next/cache";
 import DeleteImageButton from "./DeleteImageButton";
 import DeleteLandlordAlert from "./DeleteLandlordAlert";
+import { validateRequest } from "@/auth/validate-request";
+import { cache } from "react";
 
 export default async function LandlordPage({
   params,
@@ -35,6 +37,7 @@ export default async function LandlordPage({
   params: { id: string };
   searchParams: Record<string, string | string[] | undefined>;
 }) {
+  const { user } = await cache(validateRequest)();
   const trpc = createCaller(await createTRPCContext({} as any));
   const landlord = await trpc.landlord.getById({ id: params.id });
   const reviews = await trpc.review.getByLandlordId({
@@ -118,7 +121,9 @@ export default async function LandlordPage({
                 <div>({reviewCount})</div>
               </div>
             </div>
-            <DeleteLandlordAlert landlordId={landlord.id} />
+            {user?.id === landlord.userId && (
+              <DeleteLandlordAlert landlordId={landlord.id} />
+            )}
           </div>
         </CardHeader>
         <div className="relative mb-6 h-48 w-full border-y border-primary bg-primary/30">
@@ -130,20 +135,24 @@ export default async function LandlordPage({
                 fill={true}
                 className="object-cover"
               />
-              <DeleteImageButton
-                landlordId={landlord.id}
-                onDeleteComplete={invalidateLandlordPage}
-              />
+              {user?.id === landlord.userId && (
+                <DeleteImageButton
+                  landlordId={landlord.id}
+                  onDeleteComplete={invalidateLandlordPage}
+                />
+              )}
             </>
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center space-y-2">
               <ImageIcon className="h-14 w-14 text-muted" />
-              <UploadFileButton
-                landlordId={landlord.id}
-                onUploadComplete={invalidateLandlordPage}
-              >
-                Upload Photo
-              </UploadFileButton>
+              {user?.id === landlord.userId && (
+                <UploadFileButton
+                  landlordId={landlord.id}
+                  onUploadComplete={invalidateLandlordPage}
+                >
+                  Upload Photo
+                </UploadFileButton>
+              )}
             </div>
           )}
         </div>

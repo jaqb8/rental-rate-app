@@ -37,6 +37,8 @@ model User {
     image         String?
     sessions      Session[]
     activations   Activation[]
+    landlords     Landlord[]
+    reviews       Review[]
 }
 
 model VerificationToken {
@@ -61,10 +63,12 @@ model Landlord {
     createdAt    DateTime @default(now())
     updatedAt    DateTime @updatedAt
     reviews      Review[]
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId       String
 }
 
 model Review {
-    id         Int      @id @default(autoincrement())
+    id         String   @id @default(cuid())
     title      String
     content    String
     rating     Int
@@ -72,4 +76,6 @@ model Review {
     updatedAt  DateTime @updatedAt
     landlord   Landlord @relation(fields: [landlordId], references: [id], onDelete: Cascade)
     landlordId String
+    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId     String
 }

@@ -23,7 +23,7 @@ export const landlordRouter = createTRPCRouter({
       return landlord ?? null;
     }),
 
-  create: publicProcedure
+  create: protectedProcedure
     .input(
       z.object({
         street: z.string().min(1),
@@ -79,11 +79,12 @@ export const landlordRouter = createTRPCRouter({
           country: input.country,
           lat,
           lng,
+          userId: ctx.userId,
         },
       });
     }),
 
-  update: publicProcedure
+  update: protectedProcedure
     .input(
       z.object({
         id: z.string(),
@@ -114,7 +115,6 @@ export const landlordRouter = createTRPCRouter({
       }
 
       const data: { lat: string; lon: string }[] = await response.json();
-      console.log(address, data);
 
       const lat = data[0]?.lat;
       const lng = data[0]?.lon;
@@ -126,17 +126,25 @@ export const landlordRouter = createTRPCRouter({
         });
       }
 
-      return ctx.db.landlord.update({
-        where: { id: input.id },
+      const result = await ctx.db.landlord.updateMany({
+        where: { id: input.id, userId: ctx.userId },
         data: {
           ...input.data,
           lat,
           lng,
         },
       });
+      if (result.count === 0) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message:
+            "You are not allowed to update this landlord or it does not exist",
+        });
+      }
+      return result;
     }),
 
-  updatePhoto: publicProcedure
+  updatePhoto: protectedProcedure
     .input(
       z.object({
         id: z.string(),
@@ -145,50 +153,61 @@ export const landlordRouter = createTRPCRouter({
         }),
       }),
     )
-    .mutation(({ ctx, input }) => {
-      return ctx.db.landlord.update({
-        where: { id: input.id },
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db.landlord.updateMany({
+        where: { id: input.id, userId: ctx.userId },
         data: input.data,
       });
+      if (result.count === 0) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message:
+            "You are not allowed to update this landlord or it does not exist",
+        });
+      }
+      return result;
     }),
 
-  deleteImage: publicProcedure
+  deleteImage: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const photoCustomId = input.id;
-      const res = await utapi.deleteFiles(photoCustomId, {
+      const utResult = await utapi.deleteFiles(photoCustomId, {
         keyType: "customId",
       });
-      if (res.deletedCount === 0) {
+      if (utResult.deletedCount === 0) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to delete image",
         });
       }
-      return ctx.db.landlord.update({
-        where: { id: input.id },
+      const dbResult = await ctx.db.landlord.updateMany({
+        where: { id: input.id, userId: ctx.userId },
         data: { photoUrl: null },
       });
+      if (dbResult.count === 0) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message:
+            "You are not allowed to update this landlord or it does not exist",
+        });
+      }
+      return dbResult;
     }),
 
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(({ ctx, input }) => {
-      return ctx.db.landlord.delete({
-        where: { id: input.id },
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db.landlord.deleteMany({
+        where: { id: input.id, userId: ctx.userId },
       });
+      if (result.count === 0) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message:
+            "You are not allowed to delete this landlord or it does not exist",
+        });
+      }
+      return result;
     }),
-
-  //   getLatest: protectedProcedure.query(async ({ ctx }) => {
-  //     const post = await ctx.db.post.findFirst({
-  //       orderBy: { createdAt: "desc" },
-  //       where: { createdBy: { id: ctx.session.user.id } },
-  //     });
-
-  //     return post ?? null;
-  //   }),
-
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
-  }),
 });

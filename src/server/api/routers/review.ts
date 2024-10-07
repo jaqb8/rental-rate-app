@@ -1,10 +1,11 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import dayjs from "dayjs";
+import { TRPCError } from "@trpc/server";
 
 export const reviewRouter = createTRPCRouter({
   getById: publicProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const review = await ctx.db.review.findUnique({
         where: {
@@ -100,7 +101,7 @@ export const reviewRouter = createTRPCRouter({
       };
     }),
 
-  create: publicProcedure
+  create: protectedProcedure
     .input(
       z.object({
         title: z.string().min(1),
@@ -110,20 +111,22 @@ export const reviewRouter = createTRPCRouter({
       }),
     )
     .mutation(({ ctx, input }) => {
+      console.log(input);
       return ctx.db.review.create({
         data: {
           title: input.title,
           content: input.content,
           rating: input.rating,
           landlordId: input.landlordId,
+          userId: ctx.userId,
         },
       });
     }),
 
-  update: publicProcedure
+  update: protectedProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
         data: z.object({
           title: z.string().optional(),
           content: z.string().optional(),
@@ -132,11 +135,38 @@ export const reviewRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.review.update({
+      const result = await ctx.db.review.updateMany({
         where: {
           id: input.id,
+          userId: ctx.userId,
         },
         data: input.data,
       });
+      if (result.count === 0) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message:
+            "You are not allowed to update this review or it does not exist",
+        });
+      }
+      return result;
+    }),
+
+  delete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db.review.deleteMany({
+        where: {
+          id: input.id,
+        },
+      });
+      if (result.count === 0) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message:
+            "You are not allowed to delete this review or it does not exist",
+        });
+      }
+      return result;
     }),
 });

@@ -27,11 +27,12 @@ import { validateRequest } from "@/auth/validate-request";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  // const session = await getServerAuthSession();
+  const { user } = await validateRequest();
+  const userId = user?.id ?? null;
 
   return {
     db,
-    // session,
+    userId,
     ...opts,
   };
 };
@@ -108,7 +109,7 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * guarantee that a user querying is authorized, but you can still access user session data if they
  * are logged in.
  */
-export const publicProcedure = t.procedure.use(timingMiddleware);
+export const publicProcedure = t.procedure;
 
 /**
  * Protected (authenticated) procedure
@@ -118,17 +119,17 @@ export const publicProcedure = t.procedure.use(timingMiddleware);
  *
  * @see https://trpc.io/docs/procedures
  */
-export const protectedProcedure = t.procedure
-  .use(timingMiddleware)
-  .use(async ({ ctx, next }) => {
-    const { session } = await validateRequest();
-    if (!session?.userId) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
-    }
-    return next({
-      ctx: {
-        // infers the `session` as non-nullable
-        session,
-      },
-    });
+
+const enforceUserIdAuthed = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.userId) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      ...ctx,
+      userId: ctx.userId,
+    },
   });
+});
+
+export const protectedProcedure = t.procedure.use(enforceUserIdAuthed);

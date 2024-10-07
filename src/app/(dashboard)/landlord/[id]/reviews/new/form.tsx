@@ -13,7 +13,7 @@ export default function AddReviewForm({
   onAddComplete,
 }: {
   landlord: Landlord;
-  onAddComplete: (id: number) => void;
+  onAddComplete: (id: string) => void;
 }) {
   const { toast } = useToast();
   const utils = api.useUtils();
