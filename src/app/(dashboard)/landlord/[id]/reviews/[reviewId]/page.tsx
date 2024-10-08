@@ -14,8 +14,12 @@ export default async function ReviewPage({
   params: { id: string; reviewId: string };
 }) {
   const trpc = createCaller(await createTRPCContext({} as any));
-  const landlord = await trpc.landlord.getById({ id: params.id });
-  const review = await trpc.review.getById({ id: params.reviewId });
+  const landlordPromise = trpc.landlord.getById({ id: params.id });
+  const reviewPromise = trpc.review.getById({ id: params.reviewId });
+  const [landlord, review] = await Promise.all([
+    landlordPromise,
+    reviewPromise,
+  ]);
 
   if (!review || !landlord) {
     notFound();
@@ -49,16 +53,13 @@ export default async function ReviewPage({
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Avatar>
-                <AvatarImage
-                  src="https://i.pravatar.cc/150?img=1"
-                  alt={review.title}
-                />
-                <AvatarFallback>
-                  {review.title.slice(0, 2).toUpperCase()}
+                <AvatarImage src={review.userImage} alt={review.title} />
+                <AvatarFallback className="bg-muted-foreground">
+                  {review.username?.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h2 className="text-xl font-semibold">{review.title}</h2>
+                <h2 className="text-xl font-semibold">{review.username}</h2>
                 <p className="text-sm text-gray-400">{review.createdAt}</p>
               </div>
             </div>

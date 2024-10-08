@@ -29,6 +29,8 @@ import DeleteImageButton from "./DeleteImageButton";
 import DeleteLandlordAlert from "./DeleteLandlordAlert";
 import { validateRequest } from "@/auth/validate-request";
 import { cache } from "react";
+import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default async function LandlordPage({
   params,
@@ -173,49 +175,59 @@ export default async function LandlordPage({
                   {reviews.map((review) => (
                     <li
                       key={review.id}
-                      className="rounded-md bg-secondary p-3 text-secondary-foreground"
+                      className="rounded-md bg-secondary p-3 text-secondary-foreground hover:bg-secondary/95"
                     >
-                      <div className="mb-1 flex items-center justify-between">
-                        <Button
-                          variant="link"
-                          asChild
-                          className="p-0 text-black"
-                        >
-                          <Link
-                            href={`/landlord/${landlord.id}/reviews/${review.id}`}
-                            className="font-medium"
-                          >
-                            {review.title}
-                          </Link>
-                        </Button>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-muted-foreground">
-                            {review.createdAt}
-                          </span>
-                          <Button
-                            asChild
-                            variant="ghost"
-                            size="icon"
-                            className="text-secondary-foreground hover:text-primary"
-                          >
-                            <Link
-                              href={`/landlord/${landlord.id}/reviews/${review.id}/edit`}
+                      <Link
+                        href={`/landlord/${landlord.id}/reviews/${review.id}`}
+                      >
+                        <div className="mb-1 flex items-center justify-between">
+                          <div className="flex gap-3">
+                            <Avatar>
+                              <AvatarImage
+                                src={review.userImage}
+                                alt={review.title}
+                              />
+                              <AvatarFallback className="bg-muted-foreground/30">
+                                {review.username?.slice(0, 2).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <span className="font-medium">
+                                {review.username}
+                              </span>
+                              <div className="mb-1 flex items-center">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`h-4 w-4 ${i < review.rating ? "fill-current text-yellow-400" : "text-gray-300"}`}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-muted-foreground">
+                              {review.createdAt}
+                            </span>
+                            <Button
+                              asChild
+                              variant="ghost"
+                              size="icon"
+                              className="text-secondary-foreground hover:text-primary"
                             >
-                              <Edit className="h-4 w-4" />
-                              <span className="sr-only">Edit review</span>
-                            </Link>
-                          </Button>
+                              {user?.id === review.userId && (
+                                <Link
+                                  href={`/landlord/${landlord.id}/reviews/${review.id}/edit`}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                  <span className="sr-only">Edit review</span>
+                                </Link>
+                              )}
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                      <div className="mb-1 flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`h-4 w-4 ${i < review.rating ? "fill-current text-yellow-400" : "text-gray-300"}`}
-                          />
-                        ))}
-                      </div>
-                      <p className="text-sm">{review.content}</p>
+                        <p className="pt-2 text-sm">{review.content}</p>
+                      </Link>
                     </li>
                   ))}
                 </ul>

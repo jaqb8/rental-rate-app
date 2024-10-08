@@ -15,9 +15,17 @@ export const reviewRouter = createTRPCRouter({
       if (!review) {
         return null;
       }
+      const user = await ctx.db.user.findUnique({
+        where: {
+          id: review.userId,
+        },
+      });
+
       return {
         ...review,
         createdAt: dayjs(review.createdAt).format("DD-MM-YYYY HH:mm"),
+        username: user?.name ?? user?.email,
+        userImage: user?.image ?? "",
       };
     }),
 
@@ -38,9 +46,36 @@ export const reviewRouter = createTRPCRouter({
         },
         take: input.limit,
       });
+      const userIds = reviews.map((review) => review.userId);
+      const users = await ctx.db.user.findMany({
+        where: {
+          id: {
+            in: userIds,
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      });
+      const userMap = users.reduce(
+        (acc, user) => {
+          acc[user.id] = {
+            userName: user.name ?? user.email,
+            userImage: user.image ?? "",
+          };
+          return acc;
+        },
+        {} as Record<string, { userName: string; userImage: string }>,
+      );
+
       return reviews.map((review) => ({
         ...review,
         createdAt: dayjs(review.createdAt).format("DD-MM-YYYY HH:mm"),
+        username: userMap[review.userId]?.userName,
+        userImage: userMap[review.userId]?.userImage,
       }));
     }),
 

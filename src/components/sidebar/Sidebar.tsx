@@ -43,7 +43,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -85,7 +85,7 @@ export function Sidebar() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const { selectedQuery } = useSelectedQuery();
+  const { selectedQuery, setSelectedQuery } = useSelectedQuery();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -108,7 +108,6 @@ export function Sidebar() {
     form.setValue("streetNumber", selectedQuery?.address.house_number ?? "");
     form.setValue("city", selectedQuery?.address.city ?? "");
     form.setValue("zipCode", selectedQuery?.address.postcode ?? "");
-
     setDialogOpen(true);
   };
 
@@ -120,7 +119,9 @@ export function Sidebar() {
   const { mutate: createLandlord, isPending: isPendingLandlord } =
     api.landlord.create.useMutation({
       onSuccess: (data) => {
-        void router.push(`/landlord/${data.id}?created=true`);
+        router.push(`/landlord/${data.id}?created=true`);
+        setDialogOpen(false);
+        setSelectedQuery(null);
       },
       onError: (error) => {
         console.error(error);
@@ -228,7 +229,7 @@ export function Sidebar() {
             isMobile && !isSidebarOpen ? "hidden" : ""
           }`}
         >
-          <div className="w-inherit flex h-full flex-col">
+          <div className="flex h-full w-inherit flex-col">
             <div className="mb-4 flex h-16 items-center justify-between border-b border-primary bg-primary/30 px-4">
               {isSidebarOpen ? (
                 <Link
