@@ -63,6 +63,7 @@ import { useSession } from "@/context";
 import { logout } from "@/auth/actions";
 import { useDialogStore } from "@/stores/dialog";
 import Loading from "../loading";
+import { Skeleton } from "../ui/skeleton";
 
 const formSchema = z.object({
   street: z.string().min(2, {
@@ -250,7 +251,15 @@ export function Sidebar() {
                 <div className="mb-4">
                   {isSidebarOpen && (
                     <>
-                      {selectedLandlord && isAvgRatingLoading && <Loading />}
+                      {selectedLandlord && isAvgRatingLoading && (
+                        <Skeleton className="flex h-72 w-full flex-col justify-between rounded-xl border border-primary px-6 py-4">
+                          <MapPinIcon className="h-8 w-8 text-primary/50" />
+                          <div className="flex flex-col gap-2">
+                            <Skeleton className="h-8 w-full" />
+                            <Skeleton className="h-8 w-full" />
+                          </div>
+                        </Skeleton>
+                      )}
                       {selectedLandlord && !isAvgRatingLoading && (
                         <Card className="mt-4 border-primary bg-primary/10 text-primary">
                           <CardHeader className="flex flex-row items-center space-x-2 pb-2">
