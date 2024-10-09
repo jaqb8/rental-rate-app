@@ -135,30 +135,14 @@ export function Sidebar() {
     });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    let payload = {
+    const payload = {
       street: values.street,
       streetNumber: values.streetNumber,
       flatNumber: values.flatNumber,
       city: values.city,
       zip: values.zipCode,
       country: selectedQuery?.address.country ?? "",
-      lat: "",
-      lng: "",
     };
-
-    if (
-      selectedQuery?.address.road &&
-      selectedQuery?.address.house_number &&
-      selectedQuery?.address.city &&
-      selectedQuery?.address.postcode
-    ) {
-      payload = {
-        ...payload,
-        lat: selectedQuery?.lat ?? "",
-        lng: selectedQuery?.lon ?? "",
-      };
-    }
-
     createLandlord(payload);
   }
 

@@ -86,7 +86,8 @@ function Map({ sidebarOpen }: MapProps) {
   >([]);
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { data: landlords } = api.landlord.getAll.useQuery();
+  const { data: landlords, isLoading: isLandlordsLoading } =
+    api.landlord.getAll.useQuery();
   const { selectedQuery, setSelectedQuery } = useSelectedQuery();
   const { setSelectedLandlord, selectedLandlord } = useSelectedLandlord();
   const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -166,9 +167,16 @@ function Map({ sidebarOpen }: MapProps) {
     }
   }, [selectedQuery, selectedLandlord]);
 
+  if (isLandlordsLoading) {
+    return (
+      <div className="h-[100vh] w-[100vw] bg-card-foreground">
+        <Loading />
+      </div>
+    );
+  }
+
   return (
     <div className="z-1 h-[100vh] w-[100vw]" ref={containerRef}>
-      {!isMapLoaded && <Loading />}
       <MapContainer
         key={key}
         center={[40.609787846393196, 20.7890265133657]}

@@ -32,41 +32,33 @@ export const landlordRouter = createTRPCRouter({
         city: z.string().min(1),
         zip: z.string().min(1),
         country: z.string().min(1),
-        lat: z.string().optional(),
-        lng: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      let lat = input.lat;
-      let lng = input.lng;
+      const address = `${input.street},${input.streetNumber},${input.flatNumber},${input.city},${input.zip},${input.country}`;
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${address}&format=json&limit=1`,
+        {
+          method: "GET",
+        },
+      );
+
+      if (!response.ok) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch coordinates",
+        });
+      }
+
+      const data: { lat: string; lon: string }[] = await response.json();
+      const lat = data[0]?.lat;
+      const lng = data[0]?.lon;
 
       if (!lat || !lng) {
-        const address = `${input.street}, ${input.streetNumber}, ${input.flatNumber}, ${input.city}, ${input.zip}, ${input.country}`;
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?q=${address}&format=json&limit=1`,
-          {
-            method: "GET",
-          },
-        );
-
-        if (!response.ok) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to fetch coordinates",
-          });
-        }
-
-        const data: { lat: string; lon: string }[] = await response.json();
-
-        lat = data[0]?.lat;
-        lng = data[0]?.lon;
-
-        if (!lat || !lng) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to fetch coordinates",
-          });
-        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch coordinates",
+        });
       }
 
       return ctx.db.landlord.create({
