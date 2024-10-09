@@ -306,15 +306,24 @@ export function Sidebar() {
                                 Show Details
                               </Button>
                             </Link>
-                            <Link
-                              href={`landlord/${selectedLandlord.id}/reviews/new`}
-                              className="w-full"
-                            >
-                              <Button className="w-full">
-                                <MessageSquare className="mr-1 h-4 w-4" /> Write
-                                an opinion
-                              </Button>
-                            </Link>
+                            <Button className="w-full" asChild>
+                              {user ? (
+                                <Link
+                                  href={`landlord/${selectedLandlord.id}/reviews/new`}
+                                  className="w-full"
+                                >
+                                  <MessageSquare className="mr-1 h-4 w-4" /> Add
+                                  new opinion
+                                </Link>
+                              ) : (
+                                <Link
+                                  href={`/login?redirect=landlord/${selectedLandlord.id}/reviews/new`}
+                                >
+                                  <LogInIcon className="mr-2 h-4 w-4" />
+                                  Login to add new opinion
+                                </Link>
+                              )}
+                            </Button>
                           </CardFooter>
                         </Card>
                       )}
