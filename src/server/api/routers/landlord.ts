@@ -7,6 +7,7 @@ import {
 } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { utapi } from "@/server/uploadthing";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 export const landlordRouter = createTRPCRouter({
   getAll: publicProcedure.query(({ ctx }) => {
@@ -63,12 +64,12 @@ export const landlordRouter = createTRPCRouter({
 
       return ctx.db.landlord.create({
         data: {
-          street: input.street,
+          street: capitalizeFirstLetter(input.street),
           streetNumber: input.streetNumber,
           flatNumber: input.flatNumber,
-          city: input.city,
+          city: capitalizeFirstLetter(input.city),
           zip: input.zip,
-          country: input.country,
+          country: capitalizeFirstLetter(input.country),
           lat,
           lng,
           userId: ctx.userId,

@@ -77,6 +77,7 @@ export async function signUp(
 }
 
 export async function login(
+  redirectUrl: string,
   _: any,
   formData: FormData,
 ): Promise<ActionResponse<z.infer<typeof loginFormSchema>>> {
@@ -130,7 +131,7 @@ export async function login(
     sessionCookie.value,
     sessionCookie.attributes,
   );
-  return redirect("/");
+  return redirect(redirectUrl);
 }
 
 export async function logout(): Promise<{ error: string } | void> {

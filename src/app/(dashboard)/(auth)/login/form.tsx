@@ -38,7 +38,11 @@ export default function LoginForm() {
     }
   }, [setDialogOpen, searchParams]);
 
-  const [state, formAction] = useFormState(login, null);
+  const loginWithRedirect = login.bind(
+    null,
+    searchParams.get("redirect") ?? "/",
+  );
+  const [state, formAction] = useFormState(loginWithRedirect, null);
 
   return (
     <>

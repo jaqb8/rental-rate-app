@@ -29,8 +29,8 @@ import DeleteImageButton from "./DeleteImageButton";
 import DeleteLandlordAlert from "./DeleteLandlordAlert";
 import { validateRequest } from "@/auth/validate-request";
 import { cache } from "react";
-import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import EditLandlordButton from "./EditLandlordButton";
 
 export default async function LandlordPage({
   params,
@@ -185,7 +185,7 @@ export default async function LandlordPage({
                             <Avatar>
                               <AvatarImage
                                 src={review.userImage}
-                                alt={review.title}
+                                alt={review.username}
                               />
                               <AvatarFallback className="bg-muted-foreground/30">
                                 {review.username?.slice(0, 2).toUpperCase()}
@@ -209,21 +209,19 @@ export default async function LandlordPage({
                             <span className="text-sm text-muted-foreground">
                               {review.createdAt}
                             </span>
-                            <Button
-                              asChild
-                              variant="ghost"
-                              size="icon"
-                              className="text-secondary-foreground hover:text-primary"
-                            >
-                              {user?.id === review.userId && (
-                                <Link
-                                  href={`/landlord/${landlord.id}/reviews/${review.id}/edit`}
-                                >
-                                  <Edit className="h-4 w-4" />
-                                  <span className="sr-only">Edit review</span>
-                                </Link>
-                              )}
-                            </Button>
+                            {user?.id === review.userId && (
+                              <Button
+                                asChild
+                                variant="ghost"
+                                size="icon"
+                                className="text-secondary-foreground hover:text-primary"
+                              >
+                                <EditLandlordButton
+                                  landlordId={landlord.id}
+                                  reviewId={review.id}
+                                />
+                              </Button>
+                            )}
                           </div>
                         </div>
                         <p className="pt-2 text-sm">{review.content}</p>

@@ -1,6 +1,6 @@
 import { createCaller } from "@/server/api/root";
 import { createTRPCContext } from "@/server/api/trpc";
-import { Star } from "lucide-react";
+import { Flag, MapPin, Share2, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import React from "react";
 import {
   Pagination,
@@ -10,6 +10,10 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 
 export default async function LandlordReviewsPage({
   params,
@@ -39,7 +43,7 @@ export default async function LandlordReviewsPage({
     return Array.from({ length: 5 }, (_, index) => (
       <Star
         key={index}
-        className={`h-4 w-4 ${
+        className={`h-6 w-6 ${
           index < rating ? "fill-current text-yellow-400" : "text-gray-300"
         }`}
       />
@@ -48,21 +52,57 @@ export default async function LandlordReviewsPage({
 
   return (
     <div className="min-h-screen text-white">
-      <h1 className="mb-6 text-3xl font-semibold">{landlordName}</h1>
-      <div className="space-y-6">
+      <h1 className="mb-6 flex items-center gap-2 text-3xl font-semibold">
+        <MapPin className="h-8 w-8" />
+        {landlordName}
+      </h1>
+      <div className="flex flex-col gap-4">
         {reviews.map((review) => (
           <div
             key={review.id}
-            className="rounded-lg bg-secondary p-6 text-secondary-foreground"
+            className="rounded-lg border border-primary bg-card-foreground p-4"
           >
             <div className="mb-2 flex items-center justify-between">
-              <span className="font-semibold">{review.title}</span>
-              <span className="text-sm text-muted-foreground">
-                {review.createdAt}
-              </span>
+              <div className="flex gap-3">
+                <Avatar>
+                  <AvatarImage src={review.userImage} alt={review.username} />
+                  <AvatarFallback className="bg-muted-foreground">
+                    {review.username?.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <span className="font-medium">{review.username}</span>
+                  <div className="text-sm text-gray-400">
+                    {review.createdAt}
+                  </div>
+                </div>
+              </div>
+              <span className="flex">{renderStars(review.rating)}</span>
             </div>
-            <div className="mb-2 flex">{renderStars(review.rating)}</div>
             <p>{review.content}</p>
+            <Separator className="my-3 bg-primary" />
+            <div className="flex justify-between text-secondary">
+              <div className="flex gap-4">
+                <span className="flex items-center gap-1">
+                  <ThumbsUp className="h-4 w-4 hover:text-primary" />0
+                </span>
+                <span className="flex items-center gap-1">
+                  <ThumbsDown className="h-4 w-4 hover:text-primary" />0
+                </span>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="default" size="sm">
+                  <Flag className="mr-1 h-4 w-4" />
+                  Report
+                </Button>
+                <Button variant="secondary" size="sm" asChild>
+                  <Link href={`/landlord/${params.id}/reviews/${review.id}`}>
+                    <Share2 className="mr-1 h-4 w-4" />
+                    Share
+                  </Link>
+                </Button>
+              </div>
+            </div>
           </div>
         ))}
       </div>

@@ -36,16 +36,18 @@ export default async function ReviewPage({
     ));
   };
 
+  const landlordName = `${landlord?.street} ${landlord?.streetNumber}${landlord?.flatNumber ? `/${landlord.flatNumber}` : ""}, ${landlord?.city}, ${landlord.country}`;
+
   return (
-    <div className="">
-      <div className="mb-4 flex items-center text-gray-400">
-        <MapPin className="mr-2 h-5 w-5" />
-        <Button variant="link" asChild className="p-0 text-xl text-gray-400">
-          <Link href={`/landlord/${landlord.id}`}>
-            {landlord.street} {landlord.streetNumber}
-            {landlord.flatNumber ? "/" + landlord.flatNumber : ""},{" "}
-            {landlord.zip} {landlord.city}, {landlord.country}
-          </Link>
+    <div>
+      <div className="flex items-center pb-4">
+        <MapPin className="h-8 w-8" />
+        <Button
+          variant="link"
+          className="text-3xl font-semibold text-secondary"
+          asChild
+        >
+          <Link href={`/landlord/${landlord.id}`}>{landlordName}</Link>
         </Button>
       </div>
       <div className="mx-auto max-w-3xl overflow-hidden rounded-lg border border-primary bg-card-foreground shadow-lg">
@@ -53,7 +55,7 @@ export default async function ReviewPage({
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Avatar>
-                <AvatarImage src={review.userImage} alt={review.title} />
+                <AvatarImage src={review.userImage} alt={review.username} />
                 <AvatarFallback className="bg-muted-foreground">
                   {review.username?.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
@@ -65,8 +67,8 @@ export default async function ReviewPage({
             </div>
             <div className="flex">{renderStars(review.rating)}</div>
           </div>
-          <p className="mb-6 text-gray-300">{review.content}</p>
-          <Separator className="my-6" />
+          <p className="mb-6">{review.content}</p>
+          <Separator className="my-6 bg-primary" />
           <div className="flex items-center justify-between">
             <div className="flex space-x-4">
               <Button variant="secondary">

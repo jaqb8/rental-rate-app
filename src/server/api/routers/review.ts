@@ -123,6 +123,31 @@ export const reviewRouter = createTRPCRouter({
         },
       });
 
+      const userIds = reviews.map((review) => review.userId);
+      const users = await ctx.db.user.findMany({
+        where: {
+          id: {
+            in: userIds,
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      });
+      const userMap = users.reduce(
+        (acc, user) => {
+          acc[user.id] = {
+            userName: user.name ?? user.email,
+            userImage: user.image ?? "",
+          };
+          return acc;
+        },
+        {} as Record<string, { userName: string; userImage: string }>,
+      );
+
       return {
         page: input.page,
         pageSize: input.pageSize,
@@ -132,6 +157,8 @@ export const reviewRouter = createTRPCRouter({
         results: reviews.map((review) => ({
           ...review,
           createdAt: dayjs(review.createdAt).format("DD-MM-YYYY HH:mm"),
+          username: userMap[review.userId]?.userName,
+          userImage: userMap[review.userId]?.userImage,
         })),
       };
     }),
@@ -149,7 +176,6 @@ export const reviewRouter = createTRPCRouter({
       console.log(input);
       return ctx.db.review.create({
         data: {
-          title: input.title,
           content: input.content,
           rating: input.rating,
           landlordId: input.landlordId,
