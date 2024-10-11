@@ -17,6 +17,7 @@ import {
   Plus,
   SearchIcon,
   Star,
+  User,
   UserIcon,
 } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
@@ -404,6 +405,14 @@ export function Sidebar() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-[19.5rem]">
+                          <DropdownMenuItem className="cursor-pointer">
+                            <Link href="/profile">
+                              <div className="flex">
+                                <User className="mr-2 h-4 w-4" />
+                                Profile
+                              </div>
+                            </Link>
+                          </DropdownMenuItem>
                           <DropdownMenuItem
                             className="cursor-pointer"
                             onClick={handleLogout}

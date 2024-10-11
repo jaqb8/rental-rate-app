@@ -8,7 +8,11 @@ export async function middleware(request: NextRequest) {
   }
   const sessionData = await validateRequest();
 
-  if (["new", "edit"].some((path) => request.nextUrl.pathname.includes(path))) {
+  if (
+    ["new", "edit", "profile"].some((path) =>
+      request.nextUrl.pathname.includes(path),
+    )
+  ) {
     if (!sessionData.session) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
@@ -26,7 +30,3 @@ export async function middleware(request: NextRequest) {
 
   return NextResponse.next();
 }
-
-// export const config = {
-//   matcher: ["/login", "/register"],
-// };
