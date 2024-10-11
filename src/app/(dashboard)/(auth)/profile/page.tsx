@@ -14,20 +14,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSession } from "@/context";
 import { api } from "@/trpc/react";
+import { type User } from "lucia";
 import { Check, Loader2, Pencil, Upload } from "lucide-react";
 import React, { useState } from "react";
 
 export default function ProfilePage() {
   const [isEditingName, setIsEditingName] = useState(false);
   const [usernameInput, setUsernameInput] = useState("");
-  const { user } = useSession();
+  const { user, updateUserData } = useSession();
   const { mutate: updateUser, isPending: isUsernamePending } =
-    api.auth.updateUser.useMutation();
-
-  const handleUsernameEdit = () => {
-    updateUser({ name: usernameInput });
-    setIsEditingName(false);
-  };
+    api.auth.updateUser.useMutation({
+      onSuccess: (data) => {
+        updateUserData(data as unknown as User);
+        setIsEditingName(false);
+      },
+    });
 
   return (
     <Card className="border-primary bg-card-foreground text-primary-foreground">
@@ -76,7 +77,7 @@ export default function ProfilePage() {
                 <Button
                   className="w-full"
                   disabled={isUsernamePending}
-                  onClick={handleUsernameEdit}
+                  onClick={() => updateUser({ name: usernameInput })}
                 >
                   {isUsernamePending ? (
                     <>

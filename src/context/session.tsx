@@ -5,6 +5,7 @@ import { createContext, useContext, useState } from "react";
 interface SessionProviderProps {
   user: User | null;
   session: Session | null;
+  updateUserData: (newUserData: User | null) => void;
   clearSessionContext: () => void;
 }
 
@@ -21,6 +22,19 @@ export const SessionProvider = ({
 }) => {
   const [sessionData, setSessionData] = useState(initialValue);
 
+  const updateUserData = (newUserData: User | null) => {
+    if (!sessionData.user) {
+      return;
+    }
+    setSessionData({
+      ...sessionData,
+      user: {
+        ...sessionData.user,
+        name: newUserData?.name ?? sessionData.user.name,
+      },
+    });
+  };
+
   const clearSessionContext = () => {
     setSessionData({
       user: null,
@@ -30,6 +44,7 @@ export const SessionProvider = ({
 
   const value = {
     ...sessionData,
+    updateUserData,
     clearSessionContext,
   };
 

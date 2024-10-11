@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { lucia } from "@/auth/lucia";
 
 export const authRouter = createTRPCRouter({
   updateUser: protectedProcedure
@@ -11,7 +10,7 @@ export const authRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const user = await ctx.db.user.update({
+      const { passwordHash: _, ...user } = await ctx.db.user.update({
         where: {
           id: ctx.userId,
         },
