@@ -4,13 +4,13 @@ import { Loader2, Upload } from "lucide-react";
 import { UploadButton } from "../uploadthing";
 import { useToast } from "@/hooks/use-toast";
 
-export default function UploadLandlordImgButton({
+export default function UploadUserAvatarButton({
   children,
-  landlordId,
+  userId,
   onUploadComplete,
 }: {
   children: React.ReactNode;
-  landlordId: string;
+  userId: string;
   onUploadComplete: (res: any) => void;
 }) {
   const { toast } = useToast();
@@ -18,14 +18,14 @@ export default function UploadLandlordImgButton({
     <div>
       <UploadButton
         input={{
-          landlordId,
+          userId,
         }}
         appearance={{
           button:
             "ut-ready:bg-secondary ut-ready:text-secondary-foreground ut-ready:shadow-sm ut-ready:hover:bg-secondary/80 focus-within:ring-0 ut-uploading:cursor-not-allowed bg-secondary after:ut-uploading:bg-green-500 after:ut-uploading:bg-opacity-50 font-medium",
           allowedContent: "hidden",
         }}
-        endpoint="landlordImgUploader"
+        endpoint="userAvatarUploader"
         content={{
           button: ({ isUploading }) => (
             <div className="flex items-center space-x-2 text-sm">
@@ -41,7 +41,7 @@ export default function UploadLandlordImgButton({
         onBeforeUploadBegin={(files) => {
           if (files[0]) {
             const fileExtension = files[0].name.split(".").pop();
-            files[0] = new File([files[0]], `${landlordId}.${fileExtension}`, {
+            files[0] = new File([files[0]], `${userId}.${fileExtension}`, {
               type: files[0].type,
             });
           }

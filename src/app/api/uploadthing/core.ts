@@ -1,13 +1,27 @@
 import { createCaller } from "@/server/api/root";
-import { createTRPCContext } from "@/server/api/trpc";
+import { api } from "@/trpc/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UTFiles } from "uploadthing/server";
 import { z } from "zod";
+import { createTRPCContext } from "@/server/api/trpc";
 
 const f = createUploadthing();
 
 export const fileRouter = {
-  imageUploader: f({ image: { maxFileSize: "1MB" } })
+  userAvatarUploader: f({ image: { maxFileSize: "1MB" } })
+    .input(z.object({ userId: z.string() }))
+    .middleware(async ({ req, input }) => {
+      return { userId: input.userId };
+    })
+    .onUploadComplete(async ({ file, metadata }) => {
+      const trpc = createCaller(await createTRPCContext({} as any));
+      const user = await trpc.auth.updateUser({
+        image: file.url,
+      });
+      console.log("User updated", user);
+      return { uploadedBy: metadata.userId };
+    }),
+  landlordImgUploader: f({ image: { maxFileSize: "1MB" } })
     .input(
       z.object({
         landlordId: z.string(),
@@ -21,8 +35,7 @@ export const fileRouter = {
       return { landlordId: input.landlordId, [UTFiles]: fileOverrides };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      const trpc = createCaller(await createTRPCContext({} as any));
-      await trpc.landlord.updatePhoto({
+      await api.landlord.updatePhoto({
         id: metadata.landlordId,
         data: { photoUrl: file.url },
       });

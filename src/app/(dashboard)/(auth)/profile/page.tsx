@@ -1,6 +1,5 @@
 "use client";
 
-import { lucia } from "@/auth/lucia";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,10 +11,12 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import UploadUserAvatarButton from "@/components/upload-file-button/UploadUserAvatarButton";
 import { useSession } from "@/context";
 import { api } from "@/trpc/react";
 import { type User } from "lucia";
-import { Check, Loader2, Pencil, Upload } from "lucide-react";
+import { Check, Loader2, Pencil } from "lucide-react";
+import { notFound } from "next/navigation";
 import React, { useState } from "react";
 
 export default function ProfilePage() {
@@ -29,6 +30,14 @@ export default function ProfilePage() {
         setIsEditingName(false);
       },
     });
+
+  if (!user) {
+    notFound();
+  }
+
+  const onAvatarUploadComplete = () => {
+    console.log("Avatar upload complete");
+  };
 
   return (
     <Card className="border-primary bg-card-foreground text-primary-foreground">
@@ -48,10 +57,12 @@ export default function ProfilePage() {
         <div>
           <Label htmlFor="avatar-upload" className="cursor-pointer">
             <div className="flex items-center space-x-2 text-sm text-blue-500 hover:text-blue-600">
-              <Button>
-                <Upload className="mr-1 h-4 w-4" />
+              <UploadUserAvatarButton
+                userId={user.id}
+                onUploadComplete={onAvatarUploadComplete}
+              >
                 Change Avatar
-              </Button>
+              </UploadUserAvatarButton>
             </div>
           </Label>
           <Input
