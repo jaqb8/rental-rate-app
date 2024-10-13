@@ -9,6 +9,7 @@
 - [x] Map view
 - [ ] Share review
 - [ ] Share landlord
+- [ ] Analytics
 - [ ] Ship to production (vercel)
 
 ### 1.1.0
