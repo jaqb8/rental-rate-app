@@ -31,6 +31,7 @@ export const SessionProvider = ({
       user: {
         ...sessionData.user,
         name: newUserData?.name ?? sessionData.user.name,
+        image: newUserData?.image ?? sessionData.user.image,
       },
     });
   };

@@ -7,20 +7,25 @@ import { type z } from "zod";
 import ReviewForm, {
   type reviewFormSchema,
 } from "@/components/forms/ReviewForm";
+import { useRouter } from "next/navigation";
 
 export default function EditReviewForm({
+  landlordId,
   review,
   onEditComplete,
 }: {
+  landlordId: string;
   review: Omit<Review, "createdAt"> & { createdAt: string };
   onEditComplete: () => void;
 }) {
   const { toast } = useToast();
+  const router = useRouter();
 
   const { mutate: updateReview, isPending: isUpdatePending } =
     api.review.update.useMutation({
       onSuccess: async () => {
         onEditComplete();
+        router.push(`/landlord/${landlordId}/reviews/${review.id}`);
       },
       onError: (error) => {
         toast({
@@ -50,7 +55,6 @@ export default function EditReviewForm({
           onSubmit={onSubmit}
           isLoading={isUpdatePending}
           defaultValues={{
-            title: review.title,
             content: review.content,
             rating: review.rating,
           }}

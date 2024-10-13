@@ -1,7 +1,7 @@
 import { createCaller } from "@/server/api/root";
 import { createTRPCContext } from "@/server/api/trpc";
 import React from "react";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import EditReviewForm from "./form";
 
@@ -21,12 +21,15 @@ export default async function EditReview({
   const invalidateLandlordPage = async () => {
     "use server";
     revalidatePath("/landlord/[id]", "layout");
-    redirect(`/landlord/${landlord.id}/reviews/${review.id}`);
   };
 
   return (
     <div>
-      <EditReviewForm review={review} onEditComplete={invalidateLandlordPage} />
+      <EditReviewForm
+        review={review}
+        onEditComplete={invalidateLandlordPage}
+        landlordId={landlord.id}
+      />
     </div>
   );
 }

@@ -17,9 +17,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 export const reviewFormSchema = z.object({
-  title: z.string().min(2, {
-    message: "Title must be at least 2 characters.",
-  }),
   content: z.string().min(10, {
     message: "Content must be at least 10 characters.",
   }),
@@ -45,7 +42,6 @@ export default function ReviewForm({
     defaultValues: defaultValues
       ? defaultValues
       : {
-          title: "",
           content: "",
           rating: 0,
         },
@@ -56,22 +52,6 @@ export default function ReviewForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Review Title</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter a title for your review" {...field} />
-              </FormControl>
-              <FormDescription>
-                Provide a brief title summarizing your experience.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <FormField
           control={form.control}
           name="content"

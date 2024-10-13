@@ -4,7 +4,7 @@ import { Edit } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-export default function EditLandlordButton({
+export default function EditReviewButton({
   landlordId,
   reviewId,
 }: {
@@ -16,8 +16,8 @@ export default function EditLandlordButton({
   return (
     <Button
       size="icon"
-      variant="secondary"
-      className="hover:bg-secondary-foreground/10"
+      variant="ghost"
+      className="hover:border hover:border-primary hover:text-primary"
       onClick={() =>
         router.push(`/landlord/${landlordId}/reviews/${reviewId}/edit`)
       }

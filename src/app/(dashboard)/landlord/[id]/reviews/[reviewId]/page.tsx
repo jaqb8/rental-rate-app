@@ -1,3 +1,4 @@
+import { validateRequest } from "@/auth/validate-request";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -6,13 +7,22 @@ import { createTRPCContext } from "@/server/api/trpc";
 import { Flag, MapPin, Share2, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import React from "react";
+import React, { cache } from "react";
+import EditReviewButton from "../../EditLandlordButton";
+import { env } from "@/env";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default async function ReviewPage({
   params,
 }: {
   params: { id: string; reviewId: string };
 }) {
+  const { user } = await cache(validateRequest)();
   const trpc = createCaller(await createTRPCContext({} as any));
   const landlordPromise = trpc.landlord.getById({ id: params.id });
   const reviewPromise = trpc.review.getById({ id: params.reviewId });
@@ -65,26 +75,54 @@ export default async function ReviewPage({
                 <p className="text-sm text-gray-400">{review.createdAt}</p>
               </div>
             </div>
-            <div className="flex">{renderStars(review.rating)}</div>
+            <div className="flex items-center gap-3">
+              <div className="flex">{renderStars(review.rating)}</div>
+              {user?.id === review.userId && (
+                <EditReviewButton
+                  landlordId={landlord.id}
+                  reviewId={review.id}
+                />
+              )}
+            </div>
           </div>
           <p className="mb-6">{review.content}</p>
           <Separator className="my-6 bg-primary" />
           <div className="flex items-center justify-between">
-            <div className="flex space-x-4">
-              <Button variant="secondary">
-                <ThumbsUp className="mr-2 h-4 w-4" />
-                <span className="hidden sm:block">Helpful</span>(0)
-              </Button>
-              <Button variant="secondary">
-                <ThumbsDown className="mr-2 h-4 w-4" />
-                <span className="hidden sm:block">Not Helpful</span>(0)
-              </Button>
-            </div>
+            <TooltipProvider delayDuration={50}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex space-x-4">
+                    <Button
+                      variant="secondary"
+                      className="cursor-default"
+                      disabled={env.NEXT_PUBLIC_APP_VERSION !== "1.1.0"}
+                    >
+                      <ThumbsUp className="mr-2 h-4 w-4" />
+                      <span className="hidden sm:block">Helpful</span>(0)
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      disabled={env.NEXT_PUBLIC_APP_VERSION !== "1.1.0"}
+                    >
+                      <ThumbsDown className="mr-2 h-4 w-4" />
+                      <span className="hidden sm:block">Not Helpful</span>(0)
+                    </Button>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <div className="rounded-lg bg-primary p-2 text-sm">
+                    Review likes and dislikes coming soon!
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <div className="flex space-x-2">
-              <Button variant="secondary" size="icon">
-                <Flag className="h-5 w-5" />
-                <span className="sr-only">Flag review</span>
-              </Button>
+              {env.NEXT_PUBLIC_APP_VERSION === "1.1.0" && (
+                <Button variant="secondary" size="icon">
+                  <Flag className="h-5 w-5" />
+                  <span className="sr-only">Flag review</span>
+                </Button>
+              )}
               <Button variant="secondary" size="icon">
                 <Share2 className="h-5 w-5" />
                 <span className="sr-only">Share review</span>

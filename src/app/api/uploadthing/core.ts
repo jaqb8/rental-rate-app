@@ -1,9 +1,7 @@
-import { createCaller } from "@/server/api/root";
 import { api } from "@/trpc/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UTFiles } from "uploadthing/server";
 import { z } from "zod";
-import { createTRPCContext } from "@/server/api/trpc";
 
 const f = createUploadthing();
 
@@ -13,12 +11,7 @@ export const fileRouter = {
     .middleware(async ({ req, input }) => {
       return { userId: input.userId };
     })
-    .onUploadComplete(async ({ file, metadata }) => {
-      const trpc = createCaller(await createTRPCContext({} as any));
-      const user = await trpc.auth.updateUser({
-        image: file.url,
-      });
-      console.log("User updated", user);
+    .onUploadComplete(async ({ metadata }) => {
       return { uploadedBy: metadata.userId };
     }),
   landlordImgUploader: f({ image: { maxFileSize: "1MB" } })

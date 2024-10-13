@@ -1,5 +1,6 @@
 "use client";
 
+import Loading from "@/components/loading";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import UploadUserAvatarButton from "@/components/upload-file-button/UploadUserAvatarButton";
 import { useSession } from "@/context";
+import { useToast } from "@/hooks/use-toast";
 import { api } from "@/trpc/react";
 import { type User } from "lucia";
 import { Check, Loader2, Pencil } from "lucide-react";
@@ -23,6 +25,7 @@ export default function ProfilePage() {
   const [isEditingName, setIsEditingName] = useState(false);
   const [usernameInput, setUsernameInput] = useState("");
   const { user, updateUserData } = useSession();
+  const { toast } = useToast();
   const { mutate: updateUser, isPending: isUsernamePending } =
     api.auth.updateUser.useMutation({
       onSuccess: (data) => {
@@ -35,8 +38,19 @@ export default function ProfilePage() {
     notFound();
   }
 
-  const onAvatarUploadComplete = () => {
-    console.log("Avatar upload complete");
+  const onAvatarUploadComplete = (res: { url: string }[]) => {
+    console.log(res);
+    if (Array.isArray(res) && res.length > 0) {
+      updateUser({
+        image: res[0]?.url,
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Something went wrong while uploading your avatar.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

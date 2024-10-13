@@ -6,11 +6,8 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { createCaller } from "@/server/api/root";
-import { createTRPCContext } from "@/server/api/trpc";
 import {
   CircleCheck,
-  Edit,
   Ellipsis,
   ImageIcon,
   MapPin,
@@ -30,7 +27,8 @@ import DeleteLandlordAlert from "./DeleteLandlordAlert";
 import { validateRequest } from "@/auth/validate-request";
 import { cache } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import EditLandlordButton from "./EditLandlordButton";
+import EditReviewButton from "./EditLandlordButton";
+import { api } from "@/trpc/server";
 
 export default async function LandlordPage({
   params,
@@ -40,14 +38,13 @@ export default async function LandlordPage({
   searchParams: Record<string, string | string[] | undefined>;
 }) {
   const { user } = await cache(validateRequest)();
-  const trpc = createCaller(await createTRPCContext({} as any));
-  const landlord = await trpc.landlord.getById({ id: params.id });
-  const reviews = await trpc.review.getByLandlordId({
+  const landlord = await api.landlord.getById({ id: params.id });
+  const reviews = await api.review.getByLandlordId({
     landlordId: params.id,
     limit: 3,
   });
   const { avgRating, count: reviewCount } =
-    await trpc.review.getAvgRatingByLandlordId({
+    await api.review.getAvgRatingByLandlordId({
       landlordId: params.id,
     });
 
@@ -177,55 +174,48 @@ export default async function LandlordPage({
                       key={review.id}
                       className="rounded-md bg-secondary p-3 text-secondary-foreground hover:bg-secondary/95"
                     >
-                      <Link
-                        href={`/landlord/${landlord.id}/reviews/${review.id}`}
-                      >
-                        <div className="mb-1 flex items-center justify-between">
-                          <div className="flex gap-3">
-                            <Avatar>
-                              <AvatarImage
-                                src={review.userImage}
-                                alt={review.username}
-                              />
-                              <AvatarFallback className="bg-muted-foreground/30">
-                                {review.username?.slice(0, 2).toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <span className="font-medium">
-                                {review.username}
-                              </span>
-                              <div className="mb-1 flex items-center">
-                                {[...Array(5)].map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    className={`h-4 w-4 ${i < review.rating ? "fill-current text-yellow-400" : "text-gray-300"}`}
-                                  />
-                                ))}
-                              </div>
+                      <div className="mb-1 flex items-center justify-between">
+                        <div className="flex gap-3">
+                          <Avatar>
+                            <AvatarImage
+                              src={review.userImage}
+                              alt={review.username}
+                            />
+                            <AvatarFallback className="bg-muted-foreground/30">
+                              {review.username?.slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <span className="font-medium">
+                              {review.username}
+                            </span>
+                            <div className="mb-1 flex items-center">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`h-4 w-4 ${i < review.rating ? "fill-current text-yellow-400" : "text-gray-300"}`}
+                                />
+                              ))}
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm text-muted-foreground">
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Link
+                            href={`/landlord/${landlord.id}/reviews/${review.id}`}
+                          >
+                            <span className="text-sm text-muted-foreground hover:underline">
                               {review.createdAt}
                             </span>
-                            {user?.id === review.userId && (
-                              <Button
-                                asChild
-                                variant="ghost"
-                                size="icon"
-                                className="text-secondary-foreground hover:text-primary"
-                              >
-                                <EditLandlordButton
-                                  landlordId={landlord.id}
-                                  reviewId={review.id}
-                                />
-                              </Button>
-                            )}
-                          </div>
+                          </Link>
+                          {user?.id === review.userId && (
+                            <EditReviewButton
+                              landlordId={landlord.id}
+                              reviewId={review.id}
+                            />
+                          )}
                         </div>
-                        <p className="pt-2 text-sm">{review.content}</p>
-                      </Link>
+                      </div>
+                      <p className="pt-2 text-sm">{review.content}</p>
                     </li>
                   ))}
                 </ul>
