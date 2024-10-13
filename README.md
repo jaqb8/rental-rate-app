@@ -7,11 +7,11 @@
 - [x] Auth
 - [x] User profiles
 - [x] Map view
-- [] Share review
-- [] Share landlord
-- [] Ship to production (vercel)
+- [ ] Share review
+- [ ] Share landlord
+- [ ] Ship to production (vercel)
 
 ### 1.1.0
 
-- [] Review likes and dislikes
-- [] Report review
+- [ ] Review likes and dislikes
+- [ ] Report review
