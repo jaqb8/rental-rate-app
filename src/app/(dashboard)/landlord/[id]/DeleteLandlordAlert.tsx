@@ -60,7 +60,7 @@ export default function DeleteLandlordAlert({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive">
+        <Button size="sm" variant="destructive">
           <Trash className="mr-2 h-4 w-4" /> Delete
         </Button>
       </AlertDialogTrigger>

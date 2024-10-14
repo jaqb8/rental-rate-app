@@ -13,6 +13,7 @@ import {
   MapPin,
   MessageSquare,
   MessageSquarePlus,
+  Pencil,
   Plus,
   Star,
   X,
@@ -121,7 +122,15 @@ export default async function LandlordPage({
               </div>
             </div>
             {user?.id === landlord.userId && (
-              <DeleteLandlordAlert landlordId={landlord.id} />
+              <div className="flex flex-col gap-2">
+                <Button variant="secondary" size="sm" asChild>
+                  <Link href={`/landlord/${landlord.id}/edit`}>
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Edit
+                  </Link>
+                </Button>
+                <DeleteLandlordAlert landlordId={landlord.id} />
+              </div>
             )}
           </div>
         </CardHeader>

@@ -166,7 +166,6 @@ export const reviewRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
       z.object({
-        title: z.string().min(1),
         content: z.string().min(1),
         rating: z.number().int().gte(1).lte(5),
         landlordId: z.string().min(1),
