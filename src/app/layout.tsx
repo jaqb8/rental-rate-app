@@ -40,7 +40,10 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <TRPCReactProvider>
-              <ReactQueryDevtools initialIsOpen={false} />
+              <ReactQueryDevtools
+                initialIsOpen={false}
+                buttonPosition="top-right"
+              />
               {children}
               <Toaster />
             </TRPCReactProvider>

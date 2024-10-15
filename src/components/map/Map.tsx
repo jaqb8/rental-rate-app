@@ -11,7 +11,6 @@ import { type Landlord } from "@prisma/client";
 import { useSelectedQuery, useSelectedLandlord } from "@/stores";
 import { api } from "@/trpc/react";
 import Loading from "../loading";
-import { usePrefetchQuery } from "@tanstack/react-query";
 
 // L.Marker.prototype.options.icon = L.icon({
 //   iconUrl: "./marker2.svg",

@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Building2,
+  ChevronDown,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronUp,
   House,
   Info,
   Loader2,
@@ -20,7 +22,7 @@ import {
   User,
   UserIcon,
 } from "lucide-react";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Map from "@/components/map";
 import AutosuggestInput from "../autosuggest-input";
 import { api } from "@/trpc/react";
@@ -54,7 +56,7 @@ import {
 } from "../ui/card";
 import Link from "next/link";
 import { useSelectedQuery, useSelectedLandlord } from "@/stores";
-import { capitalizeFirstLetter } from "@/lib/utils";
+import { capitalizeFirstLetter, cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -65,6 +67,16 @@ import { logout } from "@/auth/actions";
 import { useDialogStore } from "@/stores/dialog";
 import Loading from "../loading";
 import { Skeleton } from "../ui/skeleton";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "../ui/drawer";
 
 const formSchema = z.object({
   street: z.string().min(2, {
@@ -207,13 +219,11 @@ export function Sidebar() {
           aria-hidden="true"
         />
       )}
-      <div className="flex h-[100vh] w-full">
+      <div className="flex h-[100vh] w-full flex-col md:flex-row">
         <aside
           className={`${
             isSidebarOpen ? "w-[25rem]" : "w-16"
-          } transform bg-secondary-foreground text-secondary transition-all duration-300 ease-in-out ${
-            isMobile && !isSidebarOpen ? "hidden" : ""
-          }`}
+          } hidden transform bg-secondary-foreground text-secondary transition-all duration-300 ease-in-out md:block`}
         >
           <div className="flex h-full w-inherit flex-col">
             <div className="mb-4 flex h-16 items-center justify-between border-b border-primary bg-primary/30 px-4">
@@ -261,6 +271,7 @@ export function Sidebar() {
                           </div>
                         </Skeleton>
                       )}
+
                       {selectedLandlord && !isAvgRatingLoading && (
                         <Card className="mt-4 border-primary bg-primary/10 text-primary">
                           <CardHeader className="flex flex-row items-center space-x-2 pb-2">
@@ -474,6 +485,161 @@ export function Sidebar() {
           </div>
         </aside>
         <Map sidebarOpen={isSidebarOpen} />
+
+        {/* mobile menu */}
+        <div className="fixed bottom-0 left-0 right-0 z-[1000] md:hidden">
+          <div
+            className={cn(
+              "flex flex-col gap-3 rounded-t-xl bg-secondary-foreground p-4 transition-all duration-300 ease-in-out",
+              isSidebarOpen ? "max-h-[500px]" : "max-h-16",
+            )}
+          >
+            <div className="flex gap-2">
+              <AutosuggestInput isSidebarOpen={isSidebarOpen} />
+              <Button
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                variant="secondary"
+                size="icon"
+                className="w-10"
+              >
+                {isSidebarOpen ? <ChevronDown /> : <ChevronUp />}
+              </Button>
+            </div>
+            {selectedLandlord && isAvgRatingLoading && (
+              <Skeleton className="flex h-80 w-full flex-col justify-between rounded-xl border border-primary px-6 py-4">
+                <MapPinIcon className="h-8 w-8 text-primary/50" />
+                <div className="flex flex-col gap-2">
+                  <Skeleton className="h-8 w-full" />
+                  <Skeleton className="h-8 w-full" />
+                </div>
+              </Skeleton>
+            )}
+            {selectedLandlord && !isAvgRatingLoading && (
+              <Card className="border-primary bg-primary/10 text-primary">
+                <CardHeader className="flex flex-row items-center space-x-2 pb-2">
+                  <MapPinIcon className="h-8 w-8 text-primary" />
+                  <CardTitle className="text-xl text-secondary">
+                    Landlord Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-primary-foreground">
+                  <div className="grid gap-2">
+                    <div className="flex flex-col">
+                      <span className="text-lg font-bold">
+                        {selectedLandlord.street}{" "}
+                        {selectedLandlord.streetNumber}
+                        {selectedLandlord.flatNumber &&
+                          ` / ${selectedLandlord.flatNumber}`}
+                      </span>
+                      <span className="font-semibold">
+                        {selectedLandlord.zip} {selectedLandlord.city}
+                      </span>
+                      <span className="">{selectedLandlord.country}</span>
+                    </div>
+                    <div className="mt-2 flex items-center space-x-1">
+                      <span className="ml-2 font-medium">
+                        {avgRatingData?.avgRating.toFixed(1)}
+                      </span>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`h-5 w-5 ${
+                            star <= Math.floor(avgRatingData?.avgRating ?? 0)
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-gray-300"
+                          }`}
+                        />
+                      ))}
+                      <span className="ml-2 font-medium">
+                        ({avgRatingData?.count})
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex flex-col justify-between gap-2 rounded-b-md bg-primary/40 px-6 py-4">
+                  <Link
+                    href={`landlord/${selectedLandlord.id}`}
+                    className="w-full"
+                  >
+                    <Button variant="secondary" className="w-full">
+                      <Info className="mr-1 h-4 w-4" />
+                      Show Details
+                    </Button>
+                  </Link>
+                  <Button className="w-full" asChild>
+                    {user ? (
+                      <Link
+                        href={`landlord/${selectedLandlord.id}/reviews/new`}
+                        className="w-full"
+                      >
+                        <MessageSquare className="mr-1 h-4 w-4" /> Add new
+                        opinion
+                      </Link>
+                    ) : (
+                      <Link
+                        href={`/login?redirect=landlord/${selectedLandlord.id}/reviews/new`}
+                      >
+                        <LogInIcon className="mr-2 h-4 w-4" />
+                        Login to add new opinion
+                      </Link>
+                    )}
+                  </Button>
+                </CardFooter>
+              </Card>
+            )}
+            {selectedQuery && !selectedLandlord && (
+              <Card className="max-w-[100%] border-primary bg-primary/10 text-white">
+                <CardContent className="p-6">
+                  <div className="mb-4 flex items-center gap-2">
+                    <MapPin className="h-8 w-8 text-primary" />
+                    <h2 className="text-xl font-semibold">Selected Address</h2>
+                  </div>
+                  <p className="mb-2 text-lg font-medium">
+                    {selectedQuery.display_name}
+                  </p>
+                  <div className="flex items-center gap-2 text-sm text-slate-400">
+                    <Building2 className="h-4 w-4" />
+                    <span>
+                      {capitalizeFirstLetter(selectedQuery.type) ??
+                        capitalizeFirstLetter(selectedQuery.addresstype)}
+                    </span>
+                  </div>
+                </CardContent>
+                <CardFooter className="rounded-b-md bg-primary/40 px-6 py-4">
+                  {user ? (
+                    <Button
+                      onClick={handleOpenDialog}
+                      variant="secondary"
+                      className="w-full"
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add New Landlord
+                    </Button>
+                  ) : (
+                    <Button variant="secondary" asChild className="w-full">
+                      <Link href="/login?dialog=true">
+                        <LogInIcon className="mr-2 h-4 w-4" />
+                        Login to add landlord
+                      </Link>
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            )}
+            <div className="flex justify-center pt-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger>{user?.email}</DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>Profile</DropdownMenuItem>
+                  <DropdownMenuItem>Billing</DropdownMenuItem>
+                  <DropdownMenuItem>Team</DropdownMenuItem>
+                  <DropdownMenuItem>Subscription</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+        </div>
+
         <div className="absolute right-4 top-4 z-[1000]">
           <Dialog open={isDialogOpen} onOpenChange={onOpenChange}>
             <DialogContent className="z-[1000] border-0 border-primary bg-secondary-foreground p-0">
@@ -494,7 +660,7 @@ export function Sidebar() {
                       control={form.control}
                       name="street"
                       render={({ field }) => (
-                        <FormItem className="w-3/5 flex-grow">
+                        <FormItem className="w-2/5 flex-grow md:w-3/5">
                           <FormLabel>Street</FormLabel>
                           <FormControl>
                             <Input placeholder="Street" {...field} />
