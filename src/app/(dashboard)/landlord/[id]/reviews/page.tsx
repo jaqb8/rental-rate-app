@@ -14,6 +14,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { env } from "@/env";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default async function LandlordReviewsPage({
   params,
@@ -52,9 +59,15 @@ export default async function LandlordReviewsPage({
 
   return (
     <div className="min-h-screen text-white">
-      <h1 className="mb-6 flex items-center gap-2 text-3xl font-semibold">
+      <h1 className="mb-6 flex items-center text-3xl font-semibold">
         <MapPin className="h-8 w-8" />
-        {landlordName}
+        <Button
+          variant="link"
+          className="text-3xl font-semibold text-secondary"
+          asChild
+        >
+          <Link href={`/landlord/${params.id}`}>{landlordName}</Link>
+        </Button>
       </h1>
       <div className="flex flex-col gap-4">
         {reviews.map((review) => (
@@ -72,8 +85,10 @@ export default async function LandlordReviewsPage({
                 </Avatar>
                 <div>
                   <span className="font-medium">{review.username}</span>
-                  <div className="text-sm text-gray-400">
-                    {review.createdAt}
+                  <div className="text-sm text-gray-400 hover:underline">
+                    <Link href={`/landlord/${params.id}/reviews/${review.id}`}>
+                      {review.createdAt}
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -82,19 +97,32 @@ export default async function LandlordReviewsPage({
             <p>{review.content}</p>
             <Separator className="my-3 bg-primary" />
             <div className="flex justify-between text-secondary">
-              <div className="flex gap-4">
-                <span className="flex items-center gap-1">
-                  <ThumbsUp className="h-4 w-4 hover:text-primary" />0
-                </span>
-                <span className="flex items-center gap-1">
-                  <ThumbsDown className="h-4 w-4 hover:text-primary" />0
-                </span>
-              </div>
+              <TooltipProvider delayDuration={50}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex gap-4 text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <ThumbsUp className="h-4 w-4" />0
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <ThumbsDown className="h-4 w-4" />0
+                      </span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <div className="rounded-lg bg-primary p-2 text-sm">
+                      Review likes and dislikes coming soon!
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <div className="flex gap-2">
-                <Button variant="default" size="sm">
-                  <Flag className="mr-1 h-4 w-4" />
-                  Report
-                </Button>
+                {env.NEXT_PUBLIC_APP_VERSION === "1.1.0" && (
+                  <Button variant="default" size="sm">
+                    <Flag className="mr-1 h-4 w-4" />
+                    Report
+                  </Button>
+                )}
                 <Button variant="secondary" size="sm" asChild>
                   <Link href={`/landlord/${params.id}/reviews/${review.id}`}>
                     <Share2 className="mr-1 h-4 w-4" />
