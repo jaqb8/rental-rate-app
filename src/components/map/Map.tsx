@@ -11,6 +11,7 @@ import { type Landlord } from "@prisma/client";
 import { useSelectedQuery, useSelectedLandlord } from "@/stores";
 import { api } from "@/trpc/react";
 import Loading from "../loading";
+import { cn } from "@/lib/utils";
 
 // L.Marker.prototype.options.icon = L.icon({
 //   iconUrl: "./marker2.svg",
@@ -175,7 +176,13 @@ function Map({ sidebarOpen }: MapProps) {
   }
 
   return (
-    <div className="z-1 h-[100vh] w-[100vw]" ref={containerRef}>
+    <div
+      className={cn(
+        "z-1 w-[100vw] md:h-[100vh]",
+        sidebarOpen ? "h-[65vh]" : "h-[100vh]",
+      )}
+      ref={containerRef}
+    >
       <MapContainer
         key={key}
         center={[40.609787846393196, 20.7890265133657]}

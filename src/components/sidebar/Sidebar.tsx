@@ -77,6 +77,11 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "../ui/drawer";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "../ui/collapsible";
 
 const formSchema = z.object({
   street: z.string().min(2, {
@@ -488,7 +493,123 @@ export function Sidebar() {
 
         {/* mobile menu */}
         <div className="fixed bottom-0 left-0 right-0 z-[1000] md:hidden">
-          <div
+          <Collapsible
+            className="rounded-t-xl bg-secondary-foreground"
+            open={isSidebarOpen}
+            onOpenChange={setIsSidebarOpen}
+          >
+            <div className="flex items-center justify-between gap-4 px-14 py-4">
+              <Button variant="secondary" className="rounded-full px-6 py-4">
+                <UserIcon className="mr-1 h-4 w-4" /> {!isSidebarOpen && "User"}
+              </Button>
+              <CollapsibleTrigger asChild>
+                <Button
+                  size={isSidebarOpen ? "default" : "icon"}
+                  className={cn("h-12 rounded-full", !isSidebarOpen && "w-12")}
+                >
+                  <SearchIcon className={cn(isSidebarOpen && "mr-1")} />
+                  {isSidebarOpen && "Search"}
+                </Button>
+              </CollapsibleTrigger>
+              <Button variant="secondary" className="rounded-full px-6 py-4">
+                <LogOutIcon className="mr-1 h-4 w-4" />
+                {!isSidebarOpen && "Logout"}
+              </Button>
+            </div>
+            <CollapsibleContent className="CollapsibleContent flex flex-col gap-4">
+              <div className="flex flex-col gap-3 px-4 pb-4">
+                <AutosuggestInput isSidebarOpen={isSidebarOpen} />
+                {selectedLandlord && isAvgRatingLoading && (
+                  <Skeleton className="flex h-80 w-full flex-col justify-between rounded-xl border border-primary px-6 py-4">
+                    <MapPinIcon className="h-8 w-8 text-primary/50" />
+                    <div className="flex flex-col gap-2">
+                      <Skeleton className="h-8 w-full" />
+                      <Skeleton className="h-8 w-full" />
+                    </div>
+                  </Skeleton>
+                )}
+                {selectedLandlord && !isAvgRatingLoading && (
+                  <Card className="border-primary bg-primary/10 text-primary">
+                    <CardHeader className="flex flex-row items-center space-x-2 pb-2">
+                      <MapPinIcon className="h-8 w-8 text-primary" />
+                      <CardTitle className="text-xl text-secondary">
+                        Landlord Information
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-primary-foreground">
+                      <div className="grid gap-2">
+                        <div className="flex flex-col">
+                          <span className="text-lg font-bold">
+                            {selectedLandlord.street}{" "}
+                            {selectedLandlord.streetNumber}
+                            {selectedLandlord.flatNumber &&
+                              ` / ${selectedLandlord.flatNumber}`}
+                          </span>
+                          <span className="font-semibold">
+                            {selectedLandlord.zip} {selectedLandlord.city}
+                          </span>
+                          <span className="">{selectedLandlord.country}</span>
+                        </div>
+                        <div className="mt-2 flex items-center space-x-1">
+                          <span className="ml-2 font-medium">
+                            {avgRatingData?.avgRating.toFixed(1)}
+                          </span>
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className={`h-5 w-5 ${
+                                star <=
+                                Math.floor(avgRatingData?.avgRating ?? 0)
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                          <span className="ml-2 font-medium">
+                            ({avgRatingData?.count})
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="flex flex-col justify-between gap-2 rounded-b-md bg-primary/40 px-6 py-4">
+                      <Link
+                        href={`landlord/${selectedLandlord.id}`}
+                        className="w-full"
+                      >
+                        <Button variant="secondary" className="w-full">
+                          <Info className="mr-1 h-4 w-4" />
+                          Show Details
+                        </Button>
+                      </Link>
+                      <Button className="w-full" asChild>
+                        {user ? (
+                          <Link
+                            href={`landlord/${selectedLandlord.id}/reviews/new`}
+                            className="w-full"
+                          >
+                            <MessageSquare className="mr-1 h-4 w-4" /> Add new
+                            opinion
+                          </Link>
+                        ) : (
+                          <Link
+                            href={`/login?redirect=landlord/${selectedLandlord.id}/reviews/new`}
+                          >
+                            <LogInIcon className="mr-2 h-4 w-4" />
+                            Login to add new opinion
+                          </Link>
+                        )}
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                )}
+                <div className="flex justify-center text-xs text-gray-400">
+                  v{process.env.NEXT_PUBLIC_APP_VERSION}
+                </div>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* <div
             className={cn(
               "flex flex-col gap-3 rounded-t-xl bg-secondary-foreground p-4 transition-all duration-300 ease-in-out",
               isSidebarOpen ? "max-h-[500px]" : "max-h-16",
@@ -637,7 +758,7 @@ export function Sidebar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-          </div>
+          </div> */}
         </div>
 
         <div className="absolute right-4 top-4 z-[1000]">
