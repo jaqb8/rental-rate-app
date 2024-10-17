@@ -178,8 +178,8 @@ function Map({ sidebarOpen }: MapProps) {
   return (
     <div
       className={cn(
-        "z-1 w-[100vw] md:h-[100vh]",
-        sidebarOpen ? "h-[65vh]" : "h-[100vh]",
+        "z-1 h-[100vh] w-[100vw]",
+        // sidebarOpen ? "h-[65vh]" : "h-[100vh]",
       )}
       ref={containerRef}
     >

@@ -179,49 +179,51 @@ export default function AutosuggestInput({
       </div>
 
       {isOpen && inputValue.length > 2 && (
-        <ScrollArea className="absolute z-10 max-h-60 w-[300px] overflow-auto rounded-md border bg-background shadow-md">
-          <ul
-            id="suggestions-list"
-            ref={suggestionsRef}
-            role="listbox"
-            aria-label="Suggestions"
-            className="py-1"
-          >
-            {isLoadingSuggestions ? (
-              <div className="flex items-center justify-center p-4">
-                <LoaderCircle className="h-4 w-4 animate-spin text-primary" />
-              </div>
-            ) : isErrorSuggestions ? (
-              <div className="flex items-center justify-center p-4">
-                <li className="flex items-center gap-2 px-3 py-2 text-destructive">
-                  <AlertTriangle className="h-4 w-4" />
-                  Error loading suggestions
+        <div className="fixed bottom-[85px] md:static md:mt-1">
+          <ScrollArea className="absolute z-10 max-h-60 w-[397px] overflow-auto rounded-md border bg-background shadow-md md:w-full">
+            <ul
+              id="suggestions-list"
+              ref={suggestionsRef}
+              role="listbox"
+              aria-label="Suggestions"
+              className="py-1"
+            >
+              {isLoadingSuggestions ? (
+                <div className="flex items-center justify-center p-4">
+                  <LoaderCircle className="h-4 w-4 animate-spin text-primary" />
+                </div>
+              ) : isErrorSuggestions ? (
+                <div className="flex items-center justify-center p-4">
+                  <li className="flex items-center gap-2 px-3 py-2 text-destructive">
+                    <AlertTriangle className="h-4 w-4" />
+                    Error loading suggestions
+                  </li>
+                </div>
+              ) : suggestions && suggestions.length > 0 ? (
+                suggestions.map((suggestion, index) => (
+                  <li
+                    key={suggestion.place_id}
+                    role="option"
+                    aria-selected={index === highlightedIndex}
+                    className={`cursor-pointer px-3 py-2 ${
+                      index === highlightedIndex
+                        ? "bg-accent text-accent-foreground"
+                        : "text-muted-foreground"
+                    }`}
+                    onClick={() => handleSelectSuggestion(suggestion)}
+                    onMouseEnter={() => setHighlightedIndex(index)}
+                  >
+                    {suggestion.display_name}
+                  </li>
+                ))
+              ) : (
+                <li className="px-3 py-2 text-muted-foreground">
+                  No matching suggestions found
                 </li>
-              </div>
-            ) : suggestions && suggestions.length > 0 ? (
-              suggestions.map((suggestion, index) => (
-                <li
-                  key={suggestion.place_id}
-                  role="option"
-                  aria-selected={index === highlightedIndex}
-                  className={`cursor-pointer px-3 py-2 ${
-                    index === highlightedIndex
-                      ? "bg-accent text-accent-foreground"
-                      : "text-muted-foreground"
-                  }`}
-                  onClick={() => handleSelectSuggestion(suggestion)}
-                  onMouseEnter={() => setHighlightedIndex(index)}
-                >
-                  {suggestion.display_name}
-                </li>
-              ))
-            ) : (
-              <li className="px-3 py-2 text-muted-foreground">
-                No matching suggestions found
-              </li>
-            )}
-          </ul>
-        </ScrollArea>
+              )}
+            </ul>
+          </ScrollArea>
+        </div>
       )}
     </div>
   );

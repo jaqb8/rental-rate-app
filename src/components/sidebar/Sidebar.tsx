@@ -21,6 +21,7 @@ import {
   Star,
   User,
   UserIcon,
+  UserPlus2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import Map from "@/components/map";
@@ -65,18 +66,7 @@ import { DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu";
 import { useSession } from "@/context";
 import { logout } from "@/auth/actions";
 import { useDialogStore } from "@/stores/dialog";
-import Loading from "../loading";
 import { Skeleton } from "../ui/skeleton";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "../ui/drawer";
 import {
   Collapsible,
   CollapsibleContent,
@@ -103,8 +93,11 @@ export function Sidebar() {
   const { user, clearSessionContext } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
   const { selectedQuery, setSelectedQuery } = useSelectedQuery();
+  const { toast } = useToast();
+  const router = useRouter();
+  const { selectedLandlord } = useSelectedLandlord();
+  const { setDialogOpen, isOpen: isDialogOpen } = useDialogStore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -116,10 +109,6 @@ export function Sidebar() {
       zipCode: selectedQuery?.address.postcode ?? "",
     },
   });
-  const { toast } = useToast();
-  const router = useRouter();
-  const { selectedLandlord } = useSelectedLandlord();
-  const { setDialogOpen, isOpen: isDialogOpen } = useDialogStore();
 
   const handleOpenDialog = () => {
     form.reset();
@@ -170,18 +159,6 @@ export function Sidebar() {
       setIsSidebarOpen(true);
     }
   }, [selectedLandlord]);
-
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768);
-      setIsSidebarOpen(window.innerWidth >= 768);
-    };
-
-    checkScreenSize();
-    window.addEventListener("resize", checkScreenSize);
-
-    return () => window.removeEventListener("resize", checkScreenSize);
-  }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -498,9 +475,25 @@ export function Sidebar() {
             open={isSidebarOpen}
             onOpenChange={setIsSidebarOpen}
           >
-            <div className="flex items-center justify-between gap-4 px-14 py-4">
-              <Button variant="secondary" className="rounded-full px-6 py-4">
-                <UserIcon className="mr-1 h-4 w-4" /> {!isSidebarOpen && "User"}
+            <div className="flex items-center justify-center gap-4 px-12 py-4">
+              <Button
+                variant="secondary"
+                className={cn("rounded-full px-6 py-4", !user && "hidden")}
+                asChild
+              >
+                <Link href="/profile">
+                  <UserIcon className="mr-1 h-4 w-4" />{" "}
+                  {!isSidebarOpen && "User"}
+                </Link>
+              </Button>
+              <Button
+                variant="secondary"
+                className={cn("rounded-full py-4", user && "hidden")}
+                asChild
+              >
+                <Link href="/login">
+                  <User /> Sign In
+                </Link>
               </Button>
               <CollapsibleTrigger asChild>
                 <Button
@@ -511,8 +504,27 @@ export function Sidebar() {
                   {isSidebarOpen && "Search"}
                 </Button>
               </CollapsibleTrigger>
-              <Button variant="secondary" className="rounded-full px-6 py-4">
-                <LogOutIcon className="mr-1 h-4 w-4" />
+              <Button
+                className={cn("rounded-full py-4", user && "hidden")}
+                variant="secondary"
+                asChild
+              >
+                <Link href="/register">
+                  <UserPlus2 />
+                  Sign Up
+                </Link>
+              </Button>
+              <Button
+                onClick={handleLogout}
+                disabled={isLoading}
+                variant="secondary"
+                className={cn("rounded-full px-6 py-4", !user && "hidden")}
+              >
+                {!isLoading ? (
+                  <LogOutIcon className="mr-1 h-4 w-4" />
+                ) : (
+                  <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                )}
                 {!isSidebarOpen && "Logout"}
               </Button>
             </div>
@@ -599,6 +611,47 @@ export function Sidebar() {
                           </Link>
                         )}
                       </Button>
+                    </CardFooter>
+                  </Card>
+                )}
+                {selectedQuery && !selectedLandlord && (
+                  <Card className="max-w-[100%] border-primary bg-primary/10 text-white">
+                    <CardContent className="p-6">
+                      <div className="mb-4 flex items-center gap-2">
+                        <MapPin className="h-8 w-8 text-primary" />
+                        <h2 className="text-xl font-semibold">
+                          Selected Address
+                        </h2>
+                      </div>
+                      <p className="mb-2 text-lg font-medium">
+                        {selectedQuery.display_name}
+                      </p>
+                      <div className="flex items-center gap-2 text-sm text-slate-400">
+                        <Building2 className="h-4 w-4" />
+                        <span>
+                          {capitalizeFirstLetter(selectedQuery.type) ??
+                            capitalizeFirstLetter(selectedQuery.addresstype)}
+                        </span>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="rounded-b-md bg-primary/40 px-6 py-4">
+                      {user ? (
+                        <Button
+                          onClick={handleOpenDialog}
+                          variant="secondary"
+                          className="w-full"
+                        >
+                          <Plus className="mr-2 h-4 w-4" />
+                          Add New Landlord
+                        </Button>
+                      ) : (
+                        <Button variant="secondary" asChild className="w-full">
+                          <Link href="/login?dialog=true">
+                            <LogInIcon className="mr-2 h-4 w-4" />
+                            Login to add landlord
+                          </Link>
+                        </Button>
+                      )}
                     </CardFooter>
                   </Card>
                 )}
