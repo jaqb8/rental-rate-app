@@ -16,6 +16,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { CopyButton } from "@/components/copy-button";
 
 export default async function ReviewPage({
   params,
@@ -123,10 +124,15 @@ export default async function ReviewPage({
                   <span className="sr-only">Flag review</span>
                 </Button>
               )}
-              <Button variant="secondary" size="icon">
-                <Share2 className="h-5 w-5" />
-                <span className="sr-only">Share review</span>
-              </Button>
+              <CopyButton
+                value={
+                  env.APP_URL + `/landlord/${landlord.id}/reviews/${review.id}`
+                }
+                message="Link copied to clipboard"
+                variant="secondary"
+              >
+                Share review
+              </CopyButton>
             </div>
           </div>
         </div>

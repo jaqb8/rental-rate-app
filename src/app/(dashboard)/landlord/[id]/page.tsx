@@ -15,6 +15,7 @@ import {
   MessageSquarePlus,
   Pencil,
   Plus,
+  Share2,
   Star,
   X,
 } from "lucide-react";
@@ -30,6 +31,8 @@ import { cache } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import EditReviewButton from "./EditLandlordButton";
 import { api } from "@/trpc/server";
+import { CopyButton } from "@/components/copy-button";
+import { env } from "@/env";
 
 export default async function LandlordPage({
   params,
@@ -252,9 +255,9 @@ export default async function LandlordPage({
           </div>
         </CardContent>
 
-        <CardFooter className="flex flex-wrap gap-2">
+        <CardFooter className="flex flex-col justify-between gap-2 md:flex-row">
           <Link
-            className="flex-1"
+            className="w-full"
             href={`/landlord/${landlord.id}/reviews/new`}
           >
             <Button className="w-full">
@@ -262,11 +265,20 @@ export default async function LandlordPage({
             </Button>
           </Link>
 
-          <Link className="flex-1" href={`/?landlordId=${landlord.id}`}>
+          <Link className="w-full" href={`/?landlordId=${landlord.id}`}>
             <Button className="w-full" variant="secondary">
               <MapPin className="mr-2 h-4 w-4" /> Show on Map
             </Button>
           </Link>
+
+          <CopyButton
+            value={env.APP_URL + `/landlord/${landlord.id}`}
+            className="w-full md:w-32"
+            variant="secondary"
+            message="Link copied to clipboard"
+          >
+            Share
+          </CopyButton>
         </CardFooter>
       </Card>
     </>
