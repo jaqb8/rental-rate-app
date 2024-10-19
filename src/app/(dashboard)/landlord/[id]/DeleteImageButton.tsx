@@ -3,13 +3,14 @@
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/trpc/react";
+import { type Landlord } from "@prisma/client";
 import { Loader2, Trash } from "lucide-react";
 
 export default function DeleteImageButton({
-  landlordId,
+  landlord,
   onDeleteComplete,
 }: {
-  landlordId: string;
+  landlord: Landlord;
   onDeleteComplete: () => void;
 }) {
   const { toast } = useToast();
@@ -27,16 +28,14 @@ export default function DeleteImageButton({
       },
     });
 
-  const onDeleteImage = async () => {
-    deleteImage({ id: landlordId });
-  };
-
   return (
     <Button
       size="icon"
       variant="outline"
       className="absolute right-3 top-3"
-      onClick={onDeleteImage}
+      onClick={() =>
+        deleteImage({ id: landlord.id, key: landlord.photoKey ?? "" })
+      }
       disabled={isPendingDeleteImage}
     >
       {isPendingDeleteImage ? (

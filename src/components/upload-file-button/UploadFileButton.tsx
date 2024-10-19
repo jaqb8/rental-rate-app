@@ -41,9 +41,13 @@ export default function UploadLandlordImgButton({
         onBeforeUploadBegin={(files) => {
           if (files[0]) {
             const fileExtension = files[0].name.split(".").pop();
-            files[0] = new File([files[0]], `${landlordId}.${fileExtension}`, {
-              type: files[0].type,
-            });
+            files[0] = new File(
+              [files[0]],
+              `landlord_${landlordId}.${fileExtension}`,
+              {
+                type: files[0].type,
+              },
+            );
           }
           return files;
         }}

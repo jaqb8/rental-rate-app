@@ -178,7 +178,7 @@ export const reviewRouter = createTRPCRouter({
           content: input.content,
           rating: input.rating,
           landlordId: input.landlordId,
-          userId: ctx.userId,
+          userId: ctx.user.id,
         },
       });
     }),
@@ -198,7 +198,7 @@ export const reviewRouter = createTRPCRouter({
       const result = await ctx.db.review.updateMany({
         where: {
           id: input.id,
-          userId: ctx.userId,
+          userId: ctx.user.id,
         },
         data: input.data,
       });

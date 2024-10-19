@@ -72,7 +72,7 @@ export const landlordRouter = createTRPCRouter({
           country: capitalizeFirstLetter(input.country),
           lat,
           lng,
-          userId: ctx.userId,
+          userId: ctx.user.id,
         },
       });
     }),
@@ -120,7 +120,7 @@ export const landlordRouter = createTRPCRouter({
       }
 
       const result = await ctx.db.landlord.updateMany({
-        where: { id: input.id, userId: ctx.userId },
+        where: { id: input.id, userId: ctx.user.id },
         data: {
           ...input.data,
           lat,
@@ -142,13 +142,14 @@ export const landlordRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         data: z.object({
-          photoUrl: z.string().optional(),
+          photoUrl: z.string().min(1),
+          photoKey: z.string().min(1),
         }),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const result = await ctx.db.landlord.updateMany({
-        where: { id: input.id, userId: ctx.userId },
+        where: { id: input.id, userId: ctx.user.id },
         data: input.data,
       });
       if (result.count === 0) {
@@ -162,12 +163,14 @@ export const landlordRouter = createTRPCRouter({
     }),
 
   deleteImage: protectedProcedure
-    .input(z.object({ id: z.string() }))
+    .input(
+      z.object({
+        id: z.string().min(1),
+        key: z.string(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
-      const photoCustomId = input.id;
-      const utResult = await utapi.deleteFiles(photoCustomId, {
-        keyType: "customId",
-      });
+      const utResult = await utapi.deleteFiles(input.key);
       if (utResult.deletedCount === 0) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -175,8 +178,11 @@ export const landlordRouter = createTRPCRouter({
         });
       }
       const dbResult = await ctx.db.landlord.updateMany({
-        where: { id: input.id, userId: ctx.userId },
-        data: { photoUrl: null },
+        where: { id: input.id, userId: ctx.user.id },
+        data: {
+          photoUrl: null,
+          photoKey: null,
+        },
       });
       if (dbResult.count === 0) {
         throw new TRPCError({
@@ -192,7 +198,7 @@ export const landlordRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const result = await ctx.db.landlord.deleteMany({
-        where: { id: input.id, userId: ctx.userId },
+        where: { id: input.id, userId: ctx.user.id },
       });
       if (result.count === 0) {
         throw new TRPCError({

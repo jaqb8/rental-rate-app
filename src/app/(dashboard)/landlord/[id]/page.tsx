@@ -27,7 +27,7 @@ import { revalidatePath } from "next/cache";
 import DeleteImageButton from "./DeleteImageButton";
 import DeleteLandlordAlert from "./DeleteLandlordAlert";
 import { validateRequest } from "@/auth/validate-request";
-import { cache } from "react";
+import { cache, Suspense } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import EditReviewButton from "./EditLandlordButton";
 import { api } from "@/trpc/server";
@@ -59,6 +59,22 @@ export default async function LandlordPage({
   const invalidateLandlordPage = async () => {
     "use server";
     revalidatePath(`/landlord/${landlord.id}`);
+  };
+
+  const onUploadComplete = async (res: { url: string; key: string }[]) => {
+    "use server";
+    if (Array.isArray(res) && res.length > 0 && res[0]) {
+      await api.landlord.updatePhoto({
+        id: landlord.id,
+        data: {
+          photoUrl: res[0].url,
+          photoKey: res[0].key,
+        },
+      });
+      await invalidateLandlordPage();
+    } else {
+      throw new Error("Something went wrong while uploading the image");
+    }
   };
 
   const renderStars = (rating: number) => {
@@ -139,7 +155,7 @@ export default async function LandlordPage({
         </CardHeader>
         <div className="relative mb-6 h-48 w-full border-y border-primary bg-primary/30">
           {landlord.photoUrl ? (
-            <>
+            <Suspense fallback="loading...">
               <Image
                 src={landlord.photoUrl}
                 alt={`Photo of ${landlord.street} ${landlord.streetNumber}`}
@@ -148,18 +164,18 @@ export default async function LandlordPage({
               />
               {user?.id === landlord.userId && (
                 <DeleteImageButton
-                  landlordId={landlord.id}
+                  landlord={landlord}
                   onDeleteComplete={invalidateLandlordPage}
                 />
               )}
-            </>
+            </Suspense>
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center space-y-2">
               <ImageIcon className="h-14 w-14 text-muted" />
               {user?.id === landlord.userId && (
                 <UploadFileButton
                   landlordId={landlord.id}
-                  onUploadComplete={invalidateLandlordPage}
+                  onUploadComplete={onUploadComplete}
                 >
                   Upload Photo
                 </UploadFileButton>

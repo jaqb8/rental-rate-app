@@ -1,6 +1,5 @@
 "use client";
 
-import Loading from "@/components/loading";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,11 +37,11 @@ export default function ProfilePage() {
     notFound();
   }
 
-  const onAvatarUploadComplete = (res: { url: string }[]) => {
-    console.log(res);
+  const onAvatarUploadComplete = (res: { url: string; key: string }[]) => {
     if (Array.isArray(res) && res.length > 0) {
       updateUser({
         image: res[0]?.url,
+        imageKey: res[0]?.key,
       });
     } else {
       toast({

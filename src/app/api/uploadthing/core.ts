@@ -20,19 +20,20 @@ export const fileRouter = {
         landlordId: z.string(),
       }),
     )
-    .middleware(async ({ req, input, files }) => {
-      const fileOverrides = files.map((file) => ({
-        ...file,
-        customId: input.landlordId,
-      }));
-      return { landlordId: input.landlordId, [UTFiles]: fileOverrides };
+    .middleware(async ({ req, input }) => {
+      // const fileOverrides = files.map((file) => ({
+      //   ...file,
+      //   customId: input.landlordId,
+      // }));
+      return { landlordId: input.landlordId };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      await api.landlord.updatePhoto({
-        id: metadata.landlordId,
-        data: { photoUrl: file.url },
-      });
-      return { uploadedBy: metadata.landlordId };
+      // const res = await api.landlord.updatePhoto({
+      //   id: metadata.landlordId,
+      //   data: { photoUrl: file.url },
+      // });
+      // console.log(res);
+      return { url: file.url };
     }),
 } satisfies FileRouter;
 

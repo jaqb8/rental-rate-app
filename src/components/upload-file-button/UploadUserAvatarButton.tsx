@@ -41,9 +41,13 @@ export default function UploadUserAvatarButton({
         onBeforeUploadBegin={(files) => {
           if (files[0]) {
             const fileExtension = files[0].name.split(".").pop();
-            files[0] = new File([files[0]], `${userId}.${fileExtension}`, {
-              type: files[0].type,
-            });
+            files[0] = new File(
+              [files[0]],
+              `avatar_${userId}.${fileExtension}`,
+              {
+                type: files[0].type,
+              },
+            );
           }
           return files;
         }}

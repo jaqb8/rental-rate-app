@@ -32,6 +32,7 @@ model User {
     passwordHash  String
     emailVerified DateTime?
     image         String?
+    imageKey      String?
     sessions      Session[]
     activations   Activation[]
     landlords     Landlord[]
@@ -57,6 +58,7 @@ model Landlord {
     lat          String
     lng          String
     photoUrl     String?
+    photoKey     String?
     createdAt    DateTime @default(now())
     updatedAt    DateTime @updatedAt
     reviews      Review[]

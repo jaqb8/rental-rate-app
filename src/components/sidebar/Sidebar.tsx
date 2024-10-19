@@ -469,7 +469,7 @@ export function Sidebar() {
         <Map sidebarOpen={isSidebarOpen} />
 
         {/* mobile menu */}
-        <div className="fixed bottom-0 left-0 right-0 z-[1000] md:hidden">
+        <div className="fixed bottom-0 left-0 right-0 z-[500] md:hidden">
           <Collapsible
             className="rounded-t-xl bg-secondary-foreground"
             open={isSidebarOpen}
@@ -637,7 +637,10 @@ export function Sidebar() {
                     <CardFooter className="rounded-b-md bg-primary/40 px-6 py-4">
                       {user ? (
                         <Button
-                          onClick={handleOpenDialog}
+                          onClick={() => {
+                            setIsSidebarOpen(false);
+                            handleOpenDialog();
+                          }}
                           variant="secondary"
                           className="w-full"
                         >

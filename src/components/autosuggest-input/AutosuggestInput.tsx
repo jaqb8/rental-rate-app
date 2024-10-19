@@ -162,9 +162,6 @@ export default function AutosuggestInput({
             value={inputValue}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
-            aria-autocomplete="list"
-            aria-controls="suggestions-list"
-            aria-expanded={isOpen}
             className="w-full"
           />
           {inputValue && (

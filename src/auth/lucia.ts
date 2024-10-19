@@ -18,6 +18,7 @@ export const lucia = new Lucia(adapter, {
       id: attributes.id,
       email: attributes.email,
       image: attributes.image,
+      imageKey: attributes.imageKey,
       name: attributes.name,
       emailVerified: dayjs(attributes.emailVerified).format("DD-MM-YYYY HH:mm"),
     };
