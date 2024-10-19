@@ -7,12 +7,15 @@
 - [x] Auth
 - [x] User profiles
 - [x] Map view
-- [ ] Share review
-- [ ] Share landlord
+- [x] Share review
+- [x] Share landlord
 - [ ] Analytics
-- [ ] Ship to production (vercel)
+- [x] Ship to production (vercel)
 
 ### 1.1.0
 
 - [ ] Review likes and dislikes
 - [ ] Report review
+- [ ] implement selecting users locale
+- [ ] add AI validation for reviews
+- [ ] login with google
