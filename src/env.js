@@ -25,7 +25,9 @@ export const env = createEnv({
     APP_URL: z.preprocess(
       // This makes Vercel deployments not fail if you don't set APP_URL
       (str) =>
-        process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : str,
+        process.env.VERCEL_PROJECT_PRODUCTION_URL
+          ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+          : str,
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
       process.env.VERCEL ? z.string() : z.string().url(),
     ),
