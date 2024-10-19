@@ -15,7 +15,6 @@ import {
   MessageSquarePlus,
   Pencil,
   Plus,
-  Share2,
   Star,
   X,
 } from "lucide-react";

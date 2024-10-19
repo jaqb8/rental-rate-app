@@ -13,13 +13,6 @@ import { api } from "@/trpc/react";
 import Loading from "../loading";
 import { cn } from "@/lib/utils";
 
-// L.Marker.prototype.options.icon = L.icon({
-//   iconUrl: "./marker2.svg",
-//   iconSize: [28, 45],
-//   iconAnchor: [12, 41],
-//   popupAnchor: [1, -34],
-// });
-
 const getMarkerIcon = ({ temp } = { temp: false }) =>
   L.icon({
     iconUrl: `./marker${temp ? "1" : "2"}.svg`,
@@ -90,7 +83,6 @@ function Map({ sidebarOpen }: MapProps) {
     api.landlord.getAll.useQuery();
   const { selectedQuery, setSelectedQuery } = useSelectedQuery();
   const { setSelectedLandlord, selectedLandlord } = useSelectedLandlord();
-  const [isMapLoaded, setIsMapLoaded] = useState(false);
 
   const focusLandlord = useCallback(
     (landlord: Landlord) => {
@@ -176,13 +168,7 @@ function Map({ sidebarOpen }: MapProps) {
   }
 
   return (
-    <div
-      className={cn(
-        "z-1 h-[100vh] w-[100vw]",
-        // sidebarOpen ? "h-[65vh]" : "h-[100vh]",
-      )}
-      ref={containerRef}
-    >
+    <div className={cn("z-1 h-[100vh] w-[100vw]")} ref={containerRef}>
       <MapContainer
         key={key}
         center={[40.609787846393196, 20.7890265133657]}
@@ -191,10 +177,6 @@ function Map({ sidebarOpen }: MapProps) {
       >
         <ResizeMap containerRef={containerRef} />
         <TileLayer
-          eventHandlers={{
-            loading: () => setIsMapLoaded(false),
-            load: () => setIsMapLoaded(true),
-          }}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url={`https://tile.jawg.io/jawg-sunny/{z}/{x}/{y}{r}.png?access-token=${env.NEXT_PUBLIC_JAWG_ACCESS_TOKEN}`}
         />

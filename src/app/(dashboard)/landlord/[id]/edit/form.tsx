@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -8,14 +7,13 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Loader2, Star } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { type Landlord } from "@prisma/client";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
@@ -54,29 +52,18 @@ export default function EditLandlordForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      street: "",
-      streetNumber: "",
-      flatNumber: "",
-      city: "",
-      zip: "",
-      country: "",
-    },
-  });
-
-  useEffect(() => {
-    form.reset({
       street: landlord.street,
       streetNumber: landlord.streetNumber,
       flatNumber: landlord?.flatNumber ?? "",
       city: landlord.city,
       zip: landlord.zip,
       country: landlord.country,
-    });
-  }, []);
+    },
+  });
 
   const { mutate: updateLandlord, isPending: isUpdatePending } =
     api.landlord.update.useMutation({
-      onSuccess: async (data) => {
+      onSuccess: async () => {
         await utils.landlord.getById.invalidate({
           id: landlord.id,
         });
@@ -125,7 +112,7 @@ export default function EditLandlordForm({
                 control={form.control}
                 name="street"
                 render={({ field }) => (
-                  <FormItem className="w-3/5 flex-grow">
+                  <FormItem className="w-2/5 flex-grow md:w-3/5">
                     <FormLabel>Street</FormLabel>
                     <FormControl>
                       <Input {...field} />
@@ -152,7 +139,7 @@ export default function EditLandlordForm({
                 name="flatNumber"
                 render={({ field }) => (
                   <FormItem className="w-1/5 flex-grow">
-                    <FormLabel>Flat Number</FormLabel>
+                    <FormLabel className="truncate">Flat Number</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>

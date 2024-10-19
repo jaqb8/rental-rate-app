@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { createCaller } from "@/server/api/root";
 import { createTRPCContext } from "@/server/api/trpc";
-import { Flag, MapPin, Share2, Star, ThumbsDown, ThumbsUp } from "lucide-react";
+import { Flag, MapPin, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import React, { cache } from "react";

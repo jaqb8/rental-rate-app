@@ -65,13 +65,13 @@ export async function signUp(
 
   const activationCode = await createActivationCode(userId);
 
-  // await sendMail({
-  //   to: email,
-  //   template: EmailTemplate.EmailVerification,
-  //   props: {
-  //     verificationLink: `${env.APP_URL}/activation?code=${activationCode}`,
-  //   },
-  // });
+  await sendMail({
+    to: email,
+    template: EmailTemplate.EmailVerification,
+    props: {
+      verificationLink: `${env.APP_URL}/activation?code=${activationCode}`,
+    },
+  });
 
   return redirect("/verify-email");
 }
