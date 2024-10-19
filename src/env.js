@@ -22,7 +22,12 @@ export const env = createEnv({
     SMTP_PORT: z.string(),
     SMTP_USER: z.string(),
     SMTP_PASSWORD: z.string(),
-    APP_URL: z.string().url(),
+    APP_URL: z.preprocess(
+      // This makes Vercel deployments not fail if you don't set APP_URL
+      (str) => process.env.VERCEL_URL ?? str,
+      // VERCEL_URL doesn't include `https` so it cant be validated as a URL
+      process.env.VERCEL ? z.string() : z.string().url(),
+    ),
     REDIS_URL: z.string().url(),
   },
 
