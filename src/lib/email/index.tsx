@@ -3,7 +3,7 @@ import { env } from "@/env";
 import { createTransport, type TransportOptions } from "nodemailer";
 import type { ComponentProps } from "react";
 import { EmailVerificationTemplate } from "./templates/email-verification";
-import { emailQueue } from "@/workers/email-worker";
+import { emailQueue } from "@/redis/email-worker";
 
 export enum EmailTemplate {
   EmailVerification = "EmailVerification",

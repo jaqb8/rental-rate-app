@@ -16,33 +16,31 @@ export const CopyButton = React.forwardRef<HTMLButtonElement, CopyButtonProps>(
     const [hasCopied, setHasCopied] = React.useState(false);
     const { toast } = useToast();
 
-    React.useEffect(() => {
-      setTimeout(() => {
-        setHasCopied(false);
-      }, 2000);
-    }, [hasCopied]);
+    const handleCopy = () => {
+      setHasCopied(true);
+      void copyToClipboardWithMeta(props.value);
+      toast({
+        title: props.message,
+        variant: "default",
+        duration: 2000,
+      });
+      setTimeout(() => setHasCopied(false), 2000);
+    };
 
     return (
-      <Button
-        onClick={() => {
-          void copyToClipboardWithMeta(props.value);
-          toast({
-            title: props.message,
-            variant: "default",
-            duration: 2000,
-          });
-          setHasCopied(true);
-        }}
-        ref={ref}
-        {...props}
+      <div
+        key={hasCopied ? "copied" : "not-copied"}
+        className={props.className}
       >
-        {hasCopied ? (
-          <Check className="mr-2 h-4 w-4" />
-        ) : (
-          <Share2 className="mr-2 h-4 w-4" />
-        )}
-        {children}
-      </Button>
+        <Button onClick={handleCopy} ref={ref} {...props}>
+          {hasCopied ? (
+            <Check className="mr-2 h-4 w-4" />
+          ) : (
+            <Share2 className="mr-2 h-4 w-4" />
+          )}
+          {children}
+        </Button>
+      </div>
     );
   },
 );

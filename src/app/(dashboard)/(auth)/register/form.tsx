@@ -19,6 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { env } from "@/env";
 
 export default function SignUpForm() {
   const form = useForm<z.infer<typeof signUpFormSchema>>({
@@ -109,7 +110,11 @@ export default function SignUpForm() {
           </span>
         </div>
       </div>
-      <Button variant="secondary" className="w-full">
+      <Button
+        disabled={env.NEXT_PUBLIC_APP_VERSION !== "1.1.0"}
+        variant="secondary"
+        className="w-full"
+      >
         <Image
           src="./google.svg"
           alt="Google icon"
@@ -117,7 +122,7 @@ export default function SignUpForm() {
           height={20}
           className="mr-1"
         />
-        Login with Google
+        Login with Google coming soon!
       </Button>
     </>
   );

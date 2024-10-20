@@ -21,6 +21,7 @@ import { loginFormSchema } from "@/lib/schemas/auth";
 import { SubmitButton } from "../components/submit-button";
 import { useSearchParams } from "next/navigation";
 import { useDialogStore } from "@/stores/dialog";
+import { env } from "@/env";
 
 export default function LoginForm() {
   const form = useForm<z.infer<typeof loginFormSchema>>({
@@ -104,7 +105,11 @@ export default function LoginForm() {
           </span>
         </div>
       </div>
-      <Button variant="secondary" className="w-full">
+      <Button
+        disabled={env.NEXT_PUBLIC_APP_VERSION !== "1.1.0"}
+        variant="secondary"
+        className="w-full"
+      >
         <Image
           src="./google.svg"
           alt="Google icon"
@@ -112,7 +117,7 @@ export default function LoginForm() {
           height={20}
           className="mr-2"
         />
-        Login with Google
+        Login with Google coming soon!
       </Button>
     </>
   );

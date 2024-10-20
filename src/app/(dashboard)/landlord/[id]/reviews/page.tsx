@@ -1,6 +1,6 @@
 import { createCaller } from "@/server/api/root";
 import { createTRPCContext } from "@/server/api/trpc";
-import { Flag, MapPin, Share2, Star, ThumbsDown, ThumbsUp } from "lucide-react";
+import { Flag, MapPin, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import React from "react";
 import {
   Pagination,
@@ -21,6 +21,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { CopyButton } from "@/components/copy-button";
 
 export default async function LandlordReviewsPage({
   params,
@@ -59,11 +60,11 @@ export default async function LandlordReviewsPage({
 
   return (
     <div className="min-h-screen text-white">
-      <h1 className="mb-6 flex items-center text-3xl font-semibold">
+      <h1 className="mb-10 flex items-center text-3xl font-semibold">
         <MapPin className="h-8 w-8" />
         <Button
           variant="link"
-          className="text-3xl font-semibold text-secondary"
+          className="whitespace-normal text-3xl font-semibold text-secondary"
           asChild
         >
           <Link href={`/landlord/${params.id}`}>{landlordName}</Link>
@@ -123,12 +124,16 @@ export default async function LandlordReviewsPage({
                     Report
                   </Button>
                 )}
-                <Button variant="secondary" size="sm" asChild>
-                  <Link href={`/landlord/${params.id}/reviews/${review.id}`}>
-                    <Share2 className="mr-1 h-4 w-4" />
-                    Share
-                  </Link>
-                </Button>
+                <CopyButton
+                  value={
+                    env.APP_URL + `/landlord/${params.id}/reviews/${review.id}`
+                  }
+                  message="Link copied to clipboard"
+                  variant="secondary"
+                  size="sm"
+                >
+                  Share
+                </CopyButton>
               </div>
             </div>
           </div>

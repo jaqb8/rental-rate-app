@@ -26,12 +26,14 @@ import { revalidatePath } from "next/cache";
 import DeleteImageButton from "./DeleteImageButton";
 import DeleteLandlordAlert from "./DeleteLandlordAlert";
 import { validateRequest } from "@/auth/validate-request";
-import { cache, Suspense } from "react";
+import { cache } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import EditReviewButton from "./EditLandlordButton";
 import { api } from "@/trpc/server";
 import { CopyButton } from "@/components/copy-button";
 import { env } from "@/env";
+
+export const revalidate = +(process.env.NEXT_REVALIDATION_TIME ?? 0) || 3600;
 
 export default async function LandlordPage({
   params,
@@ -154,7 +156,7 @@ export default async function LandlordPage({
         </CardHeader>
         <div className="relative mb-6 h-48 w-full border-y border-primary bg-primary/30">
           {landlord.photoUrl ? (
-            <Suspense fallback="loading...">
+            <>
               <Image
                 src={landlord.photoUrl}
                 alt={`Photo of ${landlord.street} ${landlord.streetNumber}`}
@@ -167,7 +169,7 @@ export default async function LandlordPage({
                   onDeleteComplete={invalidateLandlordPage}
                 />
               )}
-            </Suspense>
+            </>
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center space-y-2">
               <ImageIcon className="h-14 w-14 text-muted" />
@@ -201,7 +203,7 @@ export default async function LandlordPage({
                       key={review.id}
                       className="rounded-md bg-secondary p-3 text-secondary-foreground hover:bg-secondary/95"
                     >
-                      <div className="mb-1 flex items-center justify-between">
+                      <div className="mb-1 flex items-start justify-between md:items-center">
                         <div className="flex gap-3">
                           <Avatar>
                             <AvatarImage
@@ -226,7 +228,7 @@ export default async function LandlordPage({
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-col items-end gap-2 md:flex-row md:items-center">
                           <Link
                             href={`/landlord/${landlord.id}/reviews/${review.id}`}
                           >

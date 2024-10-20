@@ -51,11 +51,11 @@ export default async function ReviewPage({
 
   return (
     <div>
-      <div className="flex items-center pb-4">
+      <div className="flex items-center pb-8">
         <MapPin className="h-8 w-8" />
         <Button
           variant="link"
-          className="text-3xl font-semibold text-secondary"
+          className="whitespace-normal text-3xl font-semibold text-secondary"
           asChild
         >
           <Link href={`/landlord/${landlord.id}`}>{landlordName}</Link>

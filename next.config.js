@@ -11,6 +11,7 @@ const config = {
   },
   experimental: {
     serverComponentsExternalPackages: ["@node-rs/argon2"],
+    instrumentationHook: true,
   },
 };
 
