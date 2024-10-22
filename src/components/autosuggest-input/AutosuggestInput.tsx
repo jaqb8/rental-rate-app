@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDebounce } from "@/hooks";
 import { useSelectedLandlord, useSelectedQuery } from "@/stores";
 import { useRouter } from "next/navigation";
+import { useScopedI18n } from "locales/client";
 
 export type AddressSuggestion = {
   place_id: number;
@@ -32,6 +33,7 @@ export default function AutosuggestInput({
   isSidebarOpen: boolean;
   suggestionsLimit?: number;
 }) {
+  const t = useScopedI18n("AutosuggestInput");
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [isOpen, setIsOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -158,7 +160,7 @@ export default function AutosuggestInput({
           <Input
             ref={inputRef}
             type="text"
-            placeholder="Search for an address"
+            placeholder={t("placeholder")}
             value={inputValue}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
@@ -215,7 +217,7 @@ export default function AutosuggestInput({
                 ))
               ) : (
                 <li className="px-3 py-2 text-muted-foreground">
-                  No matching suggestions found
+                  {t("noSuggestions")}
                 </li>
               )}
             </ul>

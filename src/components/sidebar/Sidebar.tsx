@@ -70,6 +70,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../ui/collapsible";
+import { useScopedI18n } from "locales/client";
 
 const formSchema = z.object({
   street: z.string().min(2, {
@@ -88,6 +89,7 @@ const formSchema = z.object({
 });
 
 export function Sidebar() {
+  const t = useScopedI18n("Sidebar");
   const { user, clearSessionContext } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -212,7 +214,7 @@ export function Sidebar() {
                   href="/"
                   className="flex items-center gap-1 text-2xl font-thin text-secondary"
                 >
-                  <House /> Rate Your Landlord
+                  <House /> {t("title")}
                 </Link>
               ) : (
                 <Link href="/" className="flex w-full justify-center">
@@ -257,7 +259,7 @@ export function Sidebar() {
                           <CardHeader className="flex flex-row items-center space-x-2 pb-2">
                             <MapPinIcon className="h-8 w-8 text-primary" />
                             <CardTitle className="text-xl text-secondary">
-                              Landlord Information
+                              {t("landlordInformation")}
                             </CardTitle>
                           </CardHeader>
                           <CardContent className="text-primary-foreground">
@@ -304,7 +306,7 @@ export function Sidebar() {
                             >
                               <Button variant="secondary" className="w-full">
                                 <Info className="mr-1 h-4 w-4" />
-                                Show Details
+                                {t("showDetails")}
                               </Button>
                             </Link>
                             <Button className="w-full" asChild>
@@ -321,7 +323,7 @@ export function Sidebar() {
                                   href={`/login?redirect=landlord/${selectedLandlord.id}/reviews/new`}
                                 >
                                   <LogInIcon className="mr-2 h-4 w-4" />
-                                  Login to add new opinion
+                                  {t("loginToAddOpinion")}
                                 </Link>
                               )}
                             </Button>
@@ -334,7 +336,7 @@ export function Sidebar() {
                             <div className="mb-4 flex items-center gap-2">
                               <MapPin className="h-8 w-8 text-primary" />
                               <h2 className="text-xl font-semibold">
-                                Selected Address
+                                {t("selectedAddress")}
                               </h2>
                             </div>
                             <p className="mb-2 text-lg font-medium">
@@ -358,7 +360,7 @@ export function Sidebar() {
                                 className="w-full"
                               >
                                 <Plus className="mr-2 h-4 w-4" />
-                                Add New Landlord
+                                {t("addNewLandlord")}
                               </Button>
                             ) : (
                               <Button
@@ -368,7 +370,7 @@ export function Sidebar() {
                               >
                                 <Link href="/login?dialog=true">
                                   <LogInIcon className="mr-2 h-4 w-4" />
-                                  Login to add landlord
+                                  {t("loginToAddLandlord")}
                                 </Link>
                               </Button>
                             )}
@@ -400,7 +402,7 @@ export function Sidebar() {
                             <Link href="/profile">
                               <div className="flex">
                                 <User className="mr-2 h-4 w-4" />
-                                Profile
+                                {t("profile")}
                               </div>
                             </Link>
                           </DropdownMenuItem>
@@ -412,12 +414,12 @@ export function Sidebar() {
                             {isLoading ? (
                               <>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Processing...
+                                {t("processing")}
                               </>
                             ) : (
                               <>
                                 <LogOutIcon className="mr-2 h-4 w-4" />
-                                Log out
+                                {t("logout")}
                               </>
                             )}
                           </DropdownMenuItem>
@@ -431,7 +433,7 @@ export function Sidebar() {
                       >
                         <Link href="/login">
                           <LogInIcon className="mr-2 h-4 w-4" />
-                          Sign In
+                          {t("signIn")}
                         </Link>
                       </Button>
                     )}
@@ -444,7 +446,7 @@ export function Sidebar() {
                     </Button>
                   </div>
                   <div className="flex justify-center text-xs text-gray-400">
-                    Version {process.env.NEXT_PUBLIC_APP_VERSION}
+                    {t("version")} {process.env.NEXT_PUBLIC_APP_VERSION}
                   </div>
                 </div>
               ) : (
@@ -481,7 +483,7 @@ export function Sidebar() {
               >
                 <Link href="/profile">
                   <UserIcon className="mr-1 h-4 w-4" />{" "}
-                  {!isSidebarOpen && "User"}
+                  {!isSidebarOpen && t("profile")}
                 </Link>
               </Button>
               <Button
@@ -490,7 +492,7 @@ export function Sidebar() {
                 asChild
               >
                 <Link href="/login">
-                  <User /> Sign In
+                  <User /> {t("signIn")}
                 </Link>
               </Button>
               <CollapsibleTrigger asChild>
@@ -499,7 +501,7 @@ export function Sidebar() {
                   className={cn("h-12 rounded-full", !isSidebarOpen && "w-12")}
                 >
                   <SearchIcon className={cn(isSidebarOpen && "mr-1")} />
-                  {isSidebarOpen && "Search"}
+                  {isSidebarOpen && t("search")}
                 </Button>
               </CollapsibleTrigger>
               <Button
@@ -509,7 +511,7 @@ export function Sidebar() {
               >
                 <Link href="/register">
                   <UserPlus2 />
-                  Sign Up
+                  {t("signUp")}
                 </Link>
               </Button>
               <Button
@@ -523,7 +525,7 @@ export function Sidebar() {
                 ) : (
                   <Loader2 className="mr-1 h-4 w-4 animate-spin" />
                 )}
-                {!isSidebarOpen && "Logout"}
+                {!isSidebarOpen && t("logout")}
               </Button>
             </div>
             <CollapsibleContent className="CollapsibleContent flex flex-col gap-4">
@@ -543,7 +545,7 @@ export function Sidebar() {
                     <CardHeader className="flex flex-row items-center space-x-2 pb-2">
                       <MapPinIcon className="h-8 w-8 text-primary" />
                       <CardTitle className="text-xl text-secondary">
-                        Landlord Information
+                        {t("landlordInformation")}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="text-primary-foreground">
@@ -588,7 +590,7 @@ export function Sidebar() {
                       >
                         <Button variant="secondary" className="w-full">
                           <Info className="mr-1 h-4 w-4" />
-                          Show Details
+                          {t("showDetails")}
                         </Button>
                       </Link>
                       <Button className="w-full" asChild>
@@ -597,15 +599,15 @@ export function Sidebar() {
                             href={`landlord/${selectedLandlord.id}/reviews/new`}
                             className="w-full"
                           >
-                            <MessageSquare className="mr-1 h-4 w-4" /> Add new
-                            opinion
+                            <MessageSquare className="mr-1 h-4 w-4" />{" "}
+                            {t("addNewOpinion")}
                           </Link>
                         ) : (
                           <Link
                             href={`/login?redirect=landlord/${selectedLandlord.id}/reviews/new`}
                           >
                             <LogInIcon className="mr-2 h-4 w-4" />
-                            Login to add new opinion
+                            {t("loginToAddOpinion")}
                           </Link>
                         )}
                       </Button>
@@ -618,7 +620,7 @@ export function Sidebar() {
                       <div className="mb-4 flex items-center gap-2">
                         <MapPin className="h-8 w-8 text-primary" />
                         <h2 className="text-xl font-semibold">
-                          Selected Address
+                          {t("selectedAddress")}
                         </h2>
                       </div>
                       <p className="mb-2 text-lg font-medium">
@@ -643,13 +645,13 @@ export function Sidebar() {
                           className="w-full"
                         >
                           <Plus className="mr-2 h-4 w-4" />
-                          Add New Landlord
+                          {t("addNewLandlord")}
                         </Button>
                       ) : (
                         <Button variant="secondary" asChild className="w-full">
                           <Link href="/login?dialog=true">
                             <LogInIcon className="mr-2 h-4 w-4" />
-                            Login to add landlord
+                            {t("loginToAddLandlord")}
                           </Link>
                         </Button>
                       )}

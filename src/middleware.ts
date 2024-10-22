@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { validateRequest } from "./auth/validate-request";
+import { createI18nMiddleware } from "next-international/middleware";
+
+const I18nMiddleware = createI18nMiddleware({
+  locales: ["en", "pl"],
+  defaultLocale: "pl",
+  urlMappingStrategy: "rewrite",
+});
 
 export async function middleware(request: NextRequest) {
   if (request.method !== "GET") {
-    return NextResponse.next();
+    return I18nMiddleware(request);
   }
   const sessionData = await validateRequest();
 
@@ -28,5 +35,9 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  return I18nMiddleware(request);
 }
+
+export const config = {
+  matcher: ["/((?!api|static|.*\\..*|_next|favicon.ico|robots.txt).*)"],
+};

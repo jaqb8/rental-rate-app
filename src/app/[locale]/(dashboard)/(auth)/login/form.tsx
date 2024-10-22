@@ -22,8 +22,11 @@ import { SubmitButton } from "../components/submit-button";
 import { useSearchParams } from "next/navigation";
 import { useDialogStore } from "@/stores/dialog";
 import { env } from "@/env";
+import { useScopedI18n } from "locales/client";
 
 export default function LoginForm() {
+  const t = useScopedI18n("Login");
+
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -54,9 +57,13 @@ export default function LoginForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t("email")}</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="Your email" {...field} />
+                  <Input
+                    type="email"
+                    placeholder={t("emailPlaceholder")}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -67,11 +74,11 @@ export default function LoginForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>{t("password")}</FormLabel>
                 <FormControl>
                   <Input
                     type="password"
-                    placeholder="Your password"
+                    placeholder={t("passwordPlaceholder")}
                     {...field}
                   />
                 </FormControl>
@@ -92,7 +99,7 @@ export default function LoginForm() {
               {state?.formError}
             </p>
           ) : null}
-          <SubmitButton className="w-full">Login</SubmitButton>
+          <SubmitButton className="w-full">{t("title")}</SubmitButton>
         </form>
       </Form>
       <div className="relative">
@@ -101,7 +108,7 @@ export default function LoginForm() {
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-[#121212] px-2 text-muted-foreground">
-            Or continue with
+            {t("or")}
           </span>
         </div>
       </div>
@@ -117,7 +124,9 @@ export default function LoginForm() {
           height={20}
           className="mr-2"
         />
-        Login with Google coming soon!
+        {env.NEXT_PUBLIC_APP_VERSION !== "1.1.0"
+          ? t("loginWithGoogleCommingSoon")
+          : t("loginWithGoogle")}
       </Button>
     </>
   );

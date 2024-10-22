@@ -2,8 +2,11 @@ import { HydrateClient } from "@/trpc/server";
 import { Sidebar } from "@/components/sidebar";
 import Link from "next/link";
 import { House } from "lucide-react";
+import { getI18n } from "locales/server";
 
 export default async function Home() {
+  const t = await getI18n();
+
   return (
     <HydrateClient>
       <main className="flex flex-col md:flex-row">
@@ -12,7 +15,7 @@ export default async function Home() {
             href="/"
             className="flex items-center gap-1 text-2xl font-thin text-secondary"
           >
-            <House /> Rate Your Landlord
+            <House /> {t("Header.title")}
           </Link>
         </header>
         <Sidebar />

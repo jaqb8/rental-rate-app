@@ -10,6 +10,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { validateRequest } from "@/auth/validate-request";
 import { SessionProvider } from "@/context";
 import { cache } from "react";
+import { I18nProviderClient } from "locales/client";
 
 export const metadata: Metadata = {
   title: "Rate Your Landlord",
@@ -18,8 +19,9 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({
+  params: { locale = "pl" },
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: Readonly<{ params: { locale: string }; children: React.ReactNode }>) {
   const sessionData = await cache(validateRequest)();
 
   return (
@@ -44,7 +46,9 @@ export default async function RootLayout({
                 initialIsOpen={false}
                 buttonPosition="top-right"
               />
-              {children}
+              <I18nProviderClient locale={locale}>
+                {children}
+              </I18nProviderClient>
               <Toaster />
             </TRPCReactProvider>
           </ThemeProvider>

@@ -20,8 +20,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { env } from "@/env";
+import { useScopedI18n } from "locales/client";
 
 export default function SignUpForm() {
+  const t = useScopedI18n("Register");
   const form = useForm<z.infer<typeof signUpFormSchema>>({
     resolver: zodResolver(signUpFormSchema),
     defaultValues: {
@@ -42,9 +44,13 @@ export default function SignUpForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t("email")}</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="Your email" {...field} />
+                  <Input
+                    type="email"
+                    placeholder={t("emailPlaceholder")}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -55,11 +61,11 @@ export default function SignUpForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>{t("password")}</FormLabel>
                 <FormControl>
                   <Input
                     type="password"
-                    placeholder="Your password"
+                    placeholder={t("passwordPlaceholder")}
                     {...field}
                   />
                 </FormControl>
@@ -72,11 +78,11 @@ export default function SignUpForm() {
             name="password2"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
+                <FormLabel>{t("confirmPassword")}</FormLabel>
                 <FormControl>
                   <Input
                     type="password"
-                    placeholder="Confirm your password"
+                    placeholder={t("confirmPasswordPlaceholder")}
                     {...field}
                   />
                 </FormControl>
@@ -97,7 +103,7 @@ export default function SignUpForm() {
               {state?.formError}
             </p>
           ) : null}
-          <SubmitButton className="w-full">Sign Up</SubmitButton>
+          <SubmitButton className="w-full">{t("signUp")}</SubmitButton>
         </form>
       </Form>
       <div className="relative">
@@ -106,7 +112,7 @@ export default function SignUpForm() {
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-[#121212] px-2 text-muted-foreground">
-            Or continue with
+            {t("or")}
           </span>
         </div>
       </div>
@@ -122,7 +128,9 @@ export default function SignUpForm() {
           height={20}
           className="mr-1"
         />
-        Login with Google coming soon!
+        {env.NEXT_PUBLIC_APP_VERSION !== "1.1.0"
+          ? t("loginWithGoogleCommingSoon")
+          : t("loginWithGoogle")}
       </Button>
     </>
   );
