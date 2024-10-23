@@ -15,12 +15,14 @@ import UploadUserAvatarButton from "@/components/upload-file-button/UploadUserAv
 import { useSession } from "@/context";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/trpc/react";
+import { useScopedI18n } from "locales/client";
 import { type User } from "lucia";
 import { Check, Loader2, Pencil } from "lucide-react";
 import { notFound } from "next/navigation";
 import React, { useState } from "react";
 
 export default function ProfilePage() {
+  const t = useScopedI18n("Profile");
   const [isEditingName, setIsEditingName] = useState(false);
   const [usernameInput, setUsernameInput] = useState("");
   const { user, updateUserData } = useSession();
@@ -55,7 +57,7 @@ export default function ProfilePage() {
   return (
     <Card className="border-primary bg-card-foreground text-primary-foreground">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">User Profile</CardTitle>
+        <CardTitle className="text-2xl font-bold">{t("title")}</CardTitle>
       </CardHeader>
       <div className="mb-6 flex flex-col items-center justify-between gap-4 space-x-4 border-y border-primary bg-primary/30 p-4 md:flex-row">
         <div className="flex items-center gap-2 text-xl md:gap-4">
@@ -74,7 +76,7 @@ export default function ProfilePage() {
                 userId={user.id}
                 onUploadComplete={onAvatarUploadComplete}
               >
-                Change Avatar
+                {t("changeAvatar")}
               </UploadUserAvatarButton>
             </div>
           </Label>
@@ -88,13 +90,13 @@ export default function ProfilePage() {
       </div>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="name">Username</Label>
+          <Label htmlFor="name">{t("username")}</Label>
           {isEditingName ? (
             <div className="flex flex-col gap-2 md:flex-row md:gap-0 md:space-x-2">
               <Input
                 id="name"
                 value={usernameInput}
-                placeholder="Enter your username"
+                placeholder={t("enterUsername")}
                 onChange={(e) => setUsernameInput(e.target.value)}
               />
               <div className="flex gap-2">
@@ -106,10 +108,10 @@ export default function ProfilePage() {
                   {isUsernamePending ? (
                     <>
                       <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-                      Processing...
+                      {t("processing")}
                     </>
                   ) : (
-                    <>Save</>
+                    <>{t("save")}</>
                   )}
                 </Button>
                 <Button
@@ -121,7 +123,7 @@ export default function ProfilePage() {
                     setUsernameInput("");
                   }}
                 >
-                  Cancel
+                  {t("cancel")}
                 </Button>
               </div>
             </div>
@@ -130,9 +132,7 @@ export default function ProfilePage() {
               {user?.name ? (
                 <span>{user?.name}</span>
               ) : (
-                <span className="text-muted-foreground">
-                  You have not name set yet.
-                </span>
+                <span className="text-muted-foreground">{t("noUsername")}</span>
               )}
               <Button
                 variant="ghost"
@@ -146,10 +146,10 @@ export default function ProfilePage() {
         </div>
 
         <div className="space-y-2">
-          <Label>Account Status</Label>
+          <Label>{t("accountStatus")}</Label>
           <div className="flex items-center space-x-2 text-green-600">
             <Check size={20} />
-            <span className="font-medium">Verified Account</span>
+            <span className="font-medium">{t("verified")}</span>
             {user?.emailVerified && (
               <span className="text-sm text-gray-500">
                 ({user.emailVerified})

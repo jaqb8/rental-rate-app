@@ -54,4 +54,16 @@ export default {
     loginWithGoogle: "Login with Google",
     or: "or continue with",
   },
+  Profile: {
+    title: "Profile",
+    changeAvatar: "Change Avatar",
+    username: "Username",
+    accountStatus: "Account Status",
+    verified: "Verified",
+    noUsername: "You have not set a username yet",
+    enterUsername: "Enter your username",
+    save: "Save",
+    cancel: "Cancel",
+    processing: "Processing...",
+  },
 } as const;

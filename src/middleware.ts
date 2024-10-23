@@ -10,6 +10,7 @@ const I18nMiddleware = createI18nMiddleware({
 });
 
 export async function middleware(request: NextRequest) {
+  console.log(request.cookies);
   if (request.method !== "GET") {
     return I18nMiddleware(request);
   }
