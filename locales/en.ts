@@ -1,5 +1,3 @@
-import { logout } from "@/auth/actions";
-
 export default {
   Header: {
     title: "Rental Rate",
@@ -65,5 +63,32 @@ export default {
     save: "Save",
     cancel: "Cancel",
     processing: "Processing...",
+  },
+  LandlordPage: {
+    lastReviews: "Last reviews",
+    showMore: "Show more",
+    writeAnOpinion: "Write an opinion",
+    showOnMap: "Show on map",
+    share: "Share",
+    alert: {
+      title: "You have added a new landlord!",
+      message:
+        "You have successfully added information about the landlord to our database. You can manage the information on this page. Also, feel free to add the first opinion about this landlord here.",
+      cta: "Also, feel free to add the first opinion about this landlord",
+      here: "here",
+    },
+    edit: "Edit",
+    delete: "Delete",
+    addFirstOpinion: "Add first opinion",
+    uploadPhoto: "Upload photo",
+    deleteAlert: {
+      title: "Are you absolutely sure?",
+      message:
+        "This action cannot be undone. This will permanently delete the landlord and all associated reviews.",
+    },
+    deleting: "Deleting...",
+    cancel: "Cancel",
+    noReviews: "No reviews yet",
+    copied: "Copied to clipboard!",
   },
 } as const;

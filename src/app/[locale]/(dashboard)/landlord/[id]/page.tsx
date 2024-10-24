@@ -32,6 +32,7 @@ import EditReviewButton from "./EditLandlordButton";
 import { api } from "@/trpc/server";
 import { CopyButton } from "@/components/copy-button";
 import { env } from "@/env";
+import { getScopedI18n } from "locales/server";
 
 export const revalidate = +(process.env.NEXT_REVALIDATION_TIME ?? 0) || 3600;
 
@@ -42,6 +43,7 @@ export default async function LandlordPage({
   params: { id: string };
   searchParams: Record<string, string | string[] | undefined>;
 }) {
+  const t = await getScopedI18n("LandlordPage");
   const { user } = await cache(validateRequest)();
   const landlord = await api.landlord.getById({ id: params.id });
   const reviews = await api.review.getByLandlordId({
@@ -98,19 +100,18 @@ export default async function LandlordPage({
           <div className="flex items-center gap-1">
             <CircleCheck className="h-5 w-5 font-bold text-primary" />
             <AlertTitle className="mb-0 text-lg font-bold">
-              New Landlord Added!
+              {t("alert.title")}{" "}
             </AlertTitle>
           </div>
           <AlertDescription className="ps-6 font-thin">
-            You have successfully added a new landlord to the database. You can
-            now view and manage their information on this page.{" "}
+            {t("alert.message")}
             <span className="font-normal">
-              Also feel free to leave a review for the landlord{" "}
+              {t("alert.cta")}{" "}
               <Link
                 href={`/landlord/${params.id}/reviews/new`}
                 className="underline hover:text-blue-500"
               >
-                here
+                {t("alert.here")}
               </Link>
               .
             </span>
@@ -146,7 +147,7 @@ export default async function LandlordPage({
                 <Button variant="secondary" size="sm" asChild>
                   <Link href={`/landlord/${landlord.id}/edit`}>
                     <Pencil className="mr-2 h-4 w-4" />
-                    Edit
+                    {t("edit")}
                   </Link>
                 </Button>
                 <DeleteLandlordAlert landlordId={landlord.id} />
@@ -178,7 +179,7 @@ export default async function LandlordPage({
                   landlordId={landlord.id}
                   onUploadComplete={onUploadComplete}
                 >
-                  Upload Photo
+                  {t("uploadPhoto")}
                 </UploadFileButton>
               )}
             </div>
@@ -189,11 +190,11 @@ export default async function LandlordPage({
             {reviews.length > 0 && (
               <>
                 <div className="flex items-center justify-between">
-                  <span className="ps-2 font-semibold">Last Reviews</span>
+                  <span className="ps-2 font-semibold">{t("lastReviews")}</span>
                   <Link href={`/landlord/${landlord.id}/reviews`}>
                     <Button className="text-base" variant="link">
                       <Ellipsis className="mr-1 h-5 w-5" />
-                      Show more
+                      {t("showMore")}
                     </Button>
                   </Link>
                 </div>
@@ -255,7 +256,7 @@ export default async function LandlordPage({
                 <CardContent className="flex flex-col items-center justify-center space-y-4 p-6">
                   <MessageSquarePlus className="h-12 w-12 text-muted" />
                   <p className="text-center text-lg font-medium text-muted">
-                    No reviews yet
+                    {t("noReviews")}
                   </p>
                   <Link
                     href={`/landlord/${landlord.id}/reviews/new`}
@@ -263,7 +264,7 @@ export default async function LandlordPage({
                   >
                     <Button variant="secondary">
                       <Plus className="me-1 h-5 w-5" />
-                      Add first opinion
+                      {t("addFirstOpinion")}
                     </Button>
                   </Link>
                 </CardContent>
@@ -278,13 +279,13 @@ export default async function LandlordPage({
             href={`/landlord/${landlord.id}/reviews/new`}
           >
             <Button className="w-full">
-              <MessageSquare className="mr-2 h-4 w-4" /> Write an opinion
+              <MessageSquare className="mr-2 h-4 w-4" /> {t("writeAnOpinion")}
             </Button>
           </Link>
 
           <Link className="w-full" href={`/?landlordId=${landlord.id}`}>
             <Button className="w-full" variant="secondary">
-              <MapPin className="mr-2 h-4 w-4" /> Show on Map
+              <MapPin className="mr-2 h-4 w-4" /> {t("showOnMap")}
             </Button>
           </Link>
 
@@ -292,9 +293,9 @@ export default async function LandlordPage({
             value={env.APP_URL + `/landlord/${landlord.id}`}
             className="w-full md:w-32"
             variant="secondary"
-            message="Link copied to clipboard"
+            message={t("copied")}
           >
-            Share
+            {t("share")}
           </CopyButton>
         </CardFooter>
       </Card>

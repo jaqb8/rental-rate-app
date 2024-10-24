@@ -65,4 +65,30 @@ export default {
     cancel: "Anuluj",
     processing: "Przetwarzanie...",
   },
+  LandlordPage: {
+    lastReviews: "Ostatnie opinie",
+    showMore: "Pokaż więcej",
+    writeAnOpinion: "Napisz opinię",
+    showOnMap: "Pokaż na mapie",
+    share: "Udostępnij",
+    alert: {
+      title: "Dodałeś nowego wynajmującego!",
+      message:
+        "Pomyślnie dodałeś informacje o wynajmującym do naszej bazy danych. Możesz zarządzać infomacjami na tej stronie. ",
+      cta: "Dodaj również pierwszą opinię o tym wynajmującym",
+      here: "tutaj",
+    },
+    edit: "Edytuj",
+    delete: "Usuń",
+    addFirstOpinion: "Dodaj pierwszą opinię",
+    uploadPhoto: "Prześlij zdjęcie",
+    deleteAlert: {
+      title: "Czy na pewno chcesz usunąć tego wynajmującego?",
+      message: "Tej operacji nie można cofnąć. Dane zostaną utracone.",
+    },
+    deleting: "Usuwanie...",
+    cancel: "Anuluj",
+    noReviews: "Brak opinii",
+    copied: "Link został skopiowany!",
+  },
 } as const;

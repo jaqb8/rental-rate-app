@@ -17,6 +17,7 @@ import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useSelectedLandlord, useSelectedQuery } from "@/stores";
+import { useScopedI18n } from "locales/client";
 
 const CustomAlertDialogAction = React.forwardRef<
   HTMLButtonElement,
@@ -33,6 +34,7 @@ export default function DeleteLandlordAlert({
 }: {
   landlordId: string;
 }) {
+  const t = useScopedI18n("LandlordPage");
   const router = useRouter();
   const utils = api.useUtils();
   const { toast } = useToast();
@@ -61,29 +63,31 @@ export default function DeleteLandlordAlert({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button size="sm" variant="destructive">
-          <Trash className="mr-2 h-4 w-4" /> Delete
+          <Trash className="mr-2 h-4 w-4" /> {t("delete")}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>{t("deleteAlert.title")}</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the
-            landlord and all associated reviews.
+            {t("deleteAlert.message")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isPending}>
+            {t("cancel")}
+          </AlertDialogCancel>
           <CustomAlertDialogAction
             disabled={isPending}
             onClick={() => deleteLandlord({ id: landlordId })}
           >
             {isPending ? (
               <span className="flex items-center">
-                <Loader2 className="mr-1 h-4 w-4 animate-spin" /> Deleting...
+                <Loader2 className="mr-1 h-4 w-4 animate-spin" />{" "}
+                {t("deleting")}
               </span>
             ) : (
-              <span>Delete</span>
+              <span>{t("delete")}</span>
             )}
           </CustomAlertDialogAction>
         </AlertDialogFooter>
