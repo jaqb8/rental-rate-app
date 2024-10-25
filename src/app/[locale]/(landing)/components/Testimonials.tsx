@@ -43,7 +43,7 @@ export default function Testimonials() {
           ].map((testimonial, index) => (
             <div
               key={index}
-              className="overflow-hidden rounded-xl border border-purple-500/20 bg-gray-800/50 p-6 shadow-lg backdrop-blur-sm"
+              className="overflow-hidden rounded-xl border border-cyan-500/20 bg-gray-800/50 p-6 shadow-lg backdrop-blur-sm"
             >
               <div className="flex items-center">
                 <img
@@ -60,10 +60,7 @@ export default function Testimonials() {
               </div>
               <div className="mt-4 flex">
                 {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="h-5 w-5 fill-current text-purple-400"
-                  />
+                  <Star key={i} className="h-5 w-5 fill-current text-primary" />
                 ))}
               </div>
               <p className="mt-4 text-gray-300">{testimonial.quote}</p>

@@ -100,19 +100,23 @@
   }
 }
 
+.gradient-bg {
+  background: linear-gradient(to right, #6905e5, #2512b1);
+}
+
 .gradient-text {
-  @apply bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent;
+  @apply bg-gradient-to-r from-cyan-800 to-cyan-400 bg-clip-text text-transparent;
 }
 
 @keyframes border-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4);
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
   }
   70% {
-    box-shadow: 0 0 0 10px rgba(168, 85, 247, 0);
+    box-shadow: 0 0 0 15px hsl(var(--primary) / 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0);
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
   }
 }
 

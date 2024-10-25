@@ -6,6 +6,7 @@ import {
   Star,
   Users,
 } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 export default function Hero() {
@@ -25,37 +26,21 @@ export default function Hero() {
           </p>
           <div className="mx-auto mt-8 max-w-md sm:flex sm:justify-center md:mt-12">
             <div>
-              <a
-                href="/app"
-                className="animate-border-pulse inline-flex transform items-center justify-center rounded-md bg-gradient-to-r from-purple-500 to-pink-500 px-8 py-4 text-lg font-medium text-white transition-all duration-200 hover:scale-105 hover:from-purple-600 hover:to-pink-600 md:px-12 md:py-5 md:text-xl"
+              <Link
+                href="/"
+                className="animate-border-pulse inline-flex transform items-center justify-center rounded-md bg-gradient-to-r from-cyan-700 to-purple-600 px-8 py-4 text-lg font-medium text-white transition-all duration-200 hover:scale-105 md:px-12 md:py-5 md:text-xl"
               >
                 Go to App
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </a>
+              </Link>
             </div>
-          </div>
-          <div className="mt-6 flex justify-center space-x-4">
-            <a
-              href="#search"
-              className="flex items-center rounded-md border border-gray-700 bg-gray-800/50 px-4 py-2 text-sm font-medium text-gray-300 transition-all duration-200 hover:border-purple-500/50 hover:bg-gray-700/50 hover:text-white"
-            >
-              <Search className="mr-2 h-4 w-4" />
-              Find Ratings
-            </a>
-            <a
-              href="#rate"
-              className="flex items-center rounded-md border border-gray-700 bg-gray-800/50 px-4 py-2 text-sm font-medium text-gray-300 transition-all duration-200 hover:border-purple-500/50 hover:bg-gray-700/50 hover:text-white"
-            >
-              <PenSquare className="mr-2 h-4 w-4" />
-              Write a Review
-            </a>
           </div>
         </div>
 
         <div className="mt-20 grid grid-cols-1 gap-8 sm:grid-cols-3">
           <div className="text-center">
             <div className="flex justify-center">
-              <Star className="h-12 w-12 text-purple-400" />
+              <Star className="h-12 w-12 text-primary" />
             </div>
             <h3 className="mt-4 text-lg font-medium text-gray-200">
               Verified Reviews
@@ -66,7 +51,7 @@ export default function Hero() {
           </div>
           <div className="text-center">
             <div className="flex justify-center">
-              <Shield className="h-12 w-12 text-purple-400" />
+              <Shield className="h-12 w-12 text-primary" />
             </div>
             <h3 className="mt-4 text-lg font-medium text-gray-200">
               Safe & Secure
@@ -77,7 +62,7 @@ export default function Hero() {
           </div>
           <div className="text-center">
             <div className="flex justify-center">
-              <Users className="h-12 w-12 text-purple-400" />
+              <Users className="h-12 w-12 text-primary" />
             </div>
             <h3 className="mt-4 text-lg font-medium text-gray-200">
               Community Driven

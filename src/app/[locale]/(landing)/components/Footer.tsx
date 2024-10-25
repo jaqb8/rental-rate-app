@@ -8,8 +8,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center">
-              <Home className="h-8 w-8 text-purple-400" />
-              <span className="gradient-text ml-2 text-xl font-bold">
+              <Home className="h-8 w-8 text-primary" />
+              <span className="ml-2 text-xl font-bold text-primary">
                 RentalRate
               </span>
             </div>

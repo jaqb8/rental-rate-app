@@ -44,7 +44,7 @@ export default function Features() {
             ].map((feature, index) => (
               <div key={index} className="flex">
                 <div className="flex-shrink-0">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gradient-to-r from-cyan-700 to-purple-600 text-white">
                     <feature.icon className="h-6 w-6" />
                   </div>
                 </div>
