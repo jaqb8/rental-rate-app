@@ -18,19 +18,15 @@ export default function Navbar() {
               href="#features"
               className="text-gray-300 transition-colors hover:text-purple-400"
             >
-              Features
-            </a>
-            <a
-              href="#how-it-works"
-              className="text-gray-300 transition-colors hover:text-purple-400"
-            >
-              How it Works
+              {/* Feature */}
+              Funkcje
             </a>
             <a
               href="#testimonials"
               className="text-gray-300 transition-colors hover:text-purple-400"
             >
-              Testimonials
+              {/* Testimonials */}
+              Opinie
             </a>
             <button className="flex items-center rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 text-white transition-all hover:from-purple-600 hover:to-pink-600">
               <LogIn className="mr-2 h-4 w-4" />

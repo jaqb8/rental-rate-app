@@ -1,4 +1,11 @@
-import { Shield, Star, Users } from "lucide-react";
+import {
+  ArrowRight,
+  PenSquare,
+  Search,
+  Shield,
+  Star,
+  Users,
+} from "lucide-react";
 import React from "react";
 
 export default function Hero() {
@@ -16,23 +23,32 @@ export default function Hero() {
             Make informed decisions about your next home. Read and share
             authentic landlord reviews from real tenants.
           </p>
-          <div className="mx-auto mt-5 max-w-md sm:flex sm:justify-center md:mt-8">
-            <div className="rounded-md shadow">
+          <div className="mx-auto mt-8 max-w-md sm:flex sm:justify-center md:mt-12">
+            <div>
               <a
-                href="#search"
-                className="flex w-full items-center justify-center rounded-md border border-transparent bg-gradient-to-r from-purple-500 to-pink-500 px-8 py-3 text-base font-medium text-white transition-all hover:from-purple-600 hover:to-pink-600 md:px-10 md:py-4 md:text-lg"
+                href="/app"
+                className="animate-border-pulse inline-flex transform items-center justify-center rounded-md bg-gradient-to-r from-purple-500 to-pink-500 px-8 py-4 text-lg font-medium text-white transition-all duration-200 hover:scale-105 hover:from-purple-600 hover:to-pink-600 md:px-12 md:py-5 md:text-xl"
               >
-                Find Ratings
+                Go to App
+                <ArrowRight className="ml-2 h-5 w-5" />
               </a>
             </div>
-            <div className="mt-3 rounded-md shadow sm:ml-3 sm:mt-0">
-              <a
-                href="#rate"
-                className="flex w-full items-center justify-center rounded-md border border-purple-500 bg-transparent px-8 py-3 text-base font-medium text-purple-400 transition-all hover:bg-purple-500/10 md:px-10 md:py-4 md:text-lg"
-              >
-                Write a Review
-              </a>
-            </div>
+          </div>
+          <div className="mt-6 flex justify-center space-x-4">
+            <a
+              href="#search"
+              className="flex items-center rounded-md border border-gray-700 bg-gray-800/50 px-4 py-2 text-sm font-medium text-gray-300 transition-all duration-200 hover:border-purple-500/50 hover:bg-gray-700/50 hover:text-white"
+            >
+              <Search className="mr-2 h-4 w-4" />
+              Find Ratings
+            </a>
+            <a
+              href="#rate"
+              className="flex items-center rounded-md border border-gray-700 bg-gray-800/50 px-4 py-2 text-sm font-medium text-gray-300 transition-all duration-200 hover:border-purple-500/50 hover:bg-gray-700/50 hover:text-white"
+            >
+              <PenSquare className="mr-2 h-4 w-4" />
+              Write a Review
+            </a>
           </div>
         </div>
 
