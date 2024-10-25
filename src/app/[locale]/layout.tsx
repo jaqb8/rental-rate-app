@@ -44,7 +44,7 @@ export default async function RootLayout({
             <TRPCReactProvider>
               <ReactQueryDevtools
                 initialIsOpen={false}
-                buttonPosition="top-right"
+                buttonPosition="bottom-left"
               />
               <I18nProviderClient locale={locale}>
                 {children}
