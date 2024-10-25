@@ -1,7 +1,10 @@
+import { getScopedI18n } from "locales/server";
 import { Facebook, Home, Instagram, Mail, Twitter } from "lucide-react";
 import React from "react";
 
-export default function Footer() {
+export default async function Footer() {
+  const t = await getScopedI18n("LandingPage.footer");
+
   return (
     <footer className="border-t border-purple-500/20 bg-gray-900/80 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -10,24 +13,23 @@ export default function Footer() {
             <div className="flex items-center">
               <Home className="h-8 w-8 text-primary" />
               <span className="ml-2 text-xl font-bold text-primary">
-                RentalRate
+                {t("title")}
               </span>
             </div>
-            <p className="mt-4 text-gray-400">
-              Empowering tenants with knowledge and transparency in the rental
-              market.
-            </p>
+            <p className="mt-4 text-gray-400">{t("description")}</p>
           </div>
 
           <div>
-            <h3 className="mb-4 font-semibold text-gray-200">Quick Links</h3>
+            <h3 className="mb-4 font-semibold text-gray-200">
+              {t("quickLinks")}
+            </h3>
             <ul className="space-y-2">
               <li>
                 <a
                   href="#about"
                   className="text-gray-400 transition-colors hover:text-purple-400"
                 >
-                  About Us
+                  {t("about")}
                 </a>
               </li>
               <li>
@@ -35,7 +37,7 @@ export default function Footer() {
                   href="#contact"
                   className="text-gray-400 transition-colors hover:text-purple-400"
                 >
-                  Contact
+                  {t("contact")}
                 </a>
               </li>
               <li>
@@ -43,7 +45,7 @@ export default function Footer() {
                   href="#privacy"
                   className="text-gray-400 transition-colors hover:text-purple-400"
                 >
-                  Privacy Policy
+                  {t("privacy")}
                 </a>
               </li>
               <li>
@@ -51,7 +53,7 @@ export default function Footer() {
                   href="#terms"
                   className="text-gray-400 transition-colors hover:text-purple-400"
                 >
-                  Terms of Service
+                  {t("terms")}
                 </a>
               </li>
             </ul>
@@ -59,7 +61,7 @@ export default function Footer() {
 
           <div>
             <h3 className="mb-4 font-semibold text-gray-200">
-              Connect With Us
+              {t("connectWithUs")}
             </h3>
             <div className="flex space-x-4">
               <a
@@ -92,7 +94,8 @@ export default function Footer() {
 
         <div className="mt-8 border-t border-gray-800 pt-8">
           <p className="text-center text-gray-500">
-            © {new Date().getFullYear()} RentalRate. All rights reserved.
+            © {new Date().getFullYear()} {t("title")}. {t("allRightsReserved")}
+            .
           </p>
         </div>
       </div>

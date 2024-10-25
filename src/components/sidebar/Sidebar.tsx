@@ -6,6 +6,7 @@ import {
   Building2,
   ChevronLeftIcon,
   ChevronRightIcon,
+  Home,
   House,
   Info,
   Loader2,
@@ -208,17 +209,17 @@ export function Sidebar() {
           } hidden transform bg-secondary-foreground text-secondary transition-all duration-300 ease-in-out md:block`}
         >
           <div className="flex h-full w-inherit flex-col">
-            <div className="mb-4 flex h-16 items-center justify-between border-b border-primary bg-primary/30 px-4">
+            <div className="mb-4 flex h-16 items-center justify-between border-b border-cyan-500/20 bg-gray-900/80 px-4">
               {isSidebarOpen ? (
                 <Link
                   href="/"
-                  className="flex items-center gap-1 text-2xl font-thin text-secondary"
+                  className="flex items-center gap-1 text-xl font-bold text-cyan-500"
                 >
-                  <House /> {t("title")}
+                  <Home className="h-8 w-8 text-cyan-500" /> {t("title")}
                 </Link>
               ) : (
                 <Link href="/" className="flex w-full justify-center">
-                  <House />
+                  <Home className="h-8 w-8 text-cyan-500" />
                 </Link>
               )}
             </div>

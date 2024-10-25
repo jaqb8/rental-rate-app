@@ -91,4 +91,57 @@ export default {
     noReviews: "No reviews yet",
     copied: "Copied to clipboard!",
   },
+  LandingPage: {
+    navbar: {
+      title: "RentalRate",
+      features: "Features",
+      testimonials: "Testimonials",
+      signIn: "Sign In",
+      profile: "Profile",
+    },
+    hero: {
+      title: "Rate Your Rental Experience",
+      title2: "Empower Future Tenants",
+      subtitle:
+        "Make informed decisions about your next home. Read and share authentic landlord reviews from real tenants.",
+      cta: "Get Started",
+      verifiedReviews: "Verified Reviews",
+      verifiedReviewsDescription: "Real experiences from real tenants",
+      safeAndSecure: "Safe & Secure",
+      safeAndSecureDescription: "Protected identity and honest feedback",
+      communityDriven: "Community Driven",
+      communityDrivenDescription: "Growing network of tenant experiences",
+    },
+    features: {
+      title: "Everything you need to make informed decisions",
+      subtitle: "Find the perfect rental by learning from others' experiences",
+      comprehensiveSearch: "Comprehensive Search",
+      comprehensiveSearchDescription:
+        "Search by address, neighborhood, or landlord name to find detailed reviews and ratings.",
+      detailedReviews: "Detailed Reviews",
+      detailedReviewsDescription:
+        "Get insights on maintenance, communication, and overall rental experience from previous tenants.",
+      ratingTrends: "Rating Trends",
+      ratingTrendsDescription:
+        "View historical rating trends and track improvements or declines in landlord performance.",
+      verifiedReviews: "Verified Reviews",
+      verifiedReviewsDescription:
+        "Trust our verification process ensuring authentic reviews from real tenants.",
+    },
+    testimonials: {
+      title: "What our users are saying",
+    },
+    footer: {
+      title: "RentalRate",
+      description:
+        "Empowering tenants with knowledge and transparency in the rental market.",
+      about: "About",
+      contact: "Contact",
+      terms: "Terms of Service",
+      privacy: "Privacy Policy",
+      connectWithUs: "Connect With Us",
+      quickLinks: "Quick Links",
+      allRightsReserved: "All rights reserved",
+    },
+  },
 } as const;

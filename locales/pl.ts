@@ -1,3 +1,7 @@
+import { Testimonials } from "@/app/[locale]/(landing)/components";
+import { profile } from "console";
+import { title } from "process";
+
 export default {
   Header: {
     title: "Rental Rate",
@@ -90,5 +94,59 @@ export default {
     cancel: "Anuluj",
     noReviews: "Brak opinii",
     copied: "Link został skopiowany!",
+  },
+  LandingPage: {
+    navbar: {
+      title: "RentalRate",
+      features: "Funkcje",
+      testimonials: "Opinie",
+      signIn: "Zaloguj się",
+      profile: "Profil",
+    },
+    hero: {
+      title: "Oceń swojego wynajmującego",
+      title2: "i pomóż innym",
+      subtitle:
+        "Podejmij świadomą decyzję dotyczące swojego następnego domu. Autentyczne recenzje wynajmujących od prawdziwych najemców. ",
+      cta: "Przejdź do aplikacji",
+      verifiedReviews: "Zweryfikowane opinie",
+      verifiedReviewsDescription:
+        "Prawdziwe doświadczenia od prawdziwych najemców",
+      safeAndSecure: "Bezpieczne i poufne",
+      safeAndSecureDescription: "Chronimy tożsamość i uczciwe opinie",
+      communityDriven: "Stworzone przez społeczność",
+      communityDrivenDescription: "Rozwijająca się sieć doświadczeń najemców",
+    },
+    features: {
+      title: "Wszystko, czego potrzebujesz, aby podjąć świadomą decyzję",
+      subtitle: "Znajdź idealne wynajem na podstawie doświadczeń innych",
+      comprehensiveSearch: "Kompleksowe wyszukiwanie",
+      comprehensiveSearchDescription:
+        "Wyszukaj po adresie, dzielnicy lub nazwie wynajmującego, aby znaleźć szczegółowe recenzje i oceny.",
+      detailedReviews: "Szczegółowe recenzje",
+      detailedReviewsDescription:
+        "Dowiedz się o konserwacji, komunikacji i ogólnym doświadczeniu wynajmu od poprzednich najemców.",
+      ratingTrends: "Trendy ocen",
+      ratingTrendsDescription:
+        "Sprawdź historyczne trendy ocen i śledź poprawy lub spadki w wydajności wynajmującego.",
+      verifiedReviews: "Zweryfikowane recenzje",
+      verifiedReviewsDescription:
+        "Zaufaj naszemu procesowi weryfikacji, zapewniającemu autentyczne recenzje od prawdziwych najemców.",
+    },
+    testimonials: {
+      title: "Opinie naszych użytkowników",
+    },
+    footer: {
+      title: "RentalRate",
+      description:
+        "Zapewniamy najemcom wiedzę i przejrzystość na rynku wynajmu.",
+      about: "O nas",
+      contact: "Kontakt",
+      terms: "Regulamin",
+      privacy: "Polityka prywatności",
+      connectWithUs: "Skontaktuj się z nami",
+      quickLinks: "Linki",
+      allRightsReserved: "Wszelkie prawa zastrzeżone",
+    },
   },
 } as const;

@@ -1,17 +1,18 @@
+import { getScopedI18n } from "locales/server";
 import { MessageSquare, Search, Shield, TrendingUp } from "lucide-react";
 import React from "react";
 
-export default function Features() {
+export default async function Features() {
+  const t = await getScopedI18n("LandingPage.features");
+
   return (
     <section id="features" className="bg-gray-900/50 py-20 backdrop-blur-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h2 className="text-3xl font-extrabold text-gray-100 sm:text-4xl">
-            Everything you need to make informed decisions
+            {t("title")}
           </h2>
-          <p className="mt-4 text-xl text-gray-400">
-            Find the perfect rental by learning from others&apos; experiences
-          </p>
+          <p className="mt-4 text-xl text-gray-400">{t("subtitle")}</p>
         </div>
 
         <div className="mt-20">
@@ -19,27 +20,23 @@ export default function Features() {
             {[
               {
                 icon: Search,
-                title: "Comprehensive Search",
-                description:
-                  "Search by address, neighborhood, or landlord name to find detailed reviews and ratings.",
+                title: t("comprehensiveSearch"),
+                description: t("comprehensiveSearchDescription"),
               },
               {
                 icon: MessageSquare,
-                title: "Detailed Reviews",
-                description:
-                  "Get insights on maintenance, communication, and overall rental experience from previous tenants.",
+                title: t("detailedReviews"),
+                description: t("detailedReviewsDescription"),
               },
               {
                 icon: TrendingUp,
-                title: "Rating Trends",
-                description:
-                  "View historical rating trends and track improvements or declines in landlord performance.",
+                title: t("ratingTrends"),
+                description: t("ratingTrendsDescription"),
               },
               {
                 icon: Shield,
-                title: "Verified Reviews",
-                description:
-                  "Trust our verification process ensuring authentic reviews from real tenants.",
+                title: t("verifiedReviews"),
+                description: t("verifiedReviewsDescription"),
               },
             ].map((feature, index) => (
               <div key={index} className="flex">

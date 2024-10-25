@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { House } from "lucide-react";
+import { Home, House } from "lucide-react";
 import { getI18n } from "locales/server";
 
 export default async function LandlordLayout({
@@ -12,12 +12,12 @@ export default async function LandlordLayout({
 
   return (
     <>
-      <header className="flex items-center justify-between border-b border-primary bg-primary/30 px-8 py-3">
+      <header className="flex items-center justify-between border-b border-cyan-500/20 bg-gray-900/80 px-8 py-3">
         <Link
           href="/"
-          className="flex items-center gap-1 text-2xl font-thin text-secondary"
+          className="flex items-center gap-1 text-xl font-bold text-cyan-500"
         >
-          <House /> {t("Header.title")}
+          <Home className="h-8 w-8 text-cyan-500" /> {t("Header.title")}
         </Link>
       </header>
       <section className="px-8 py-12 md:px-24 lg:px-64">

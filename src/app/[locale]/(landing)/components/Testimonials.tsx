@@ -1,7 +1,10 @@
+import { getScopedI18n } from "locales/server";
 import { Star } from "lucide-react";
 import React from "react";
 
-export default function Testimonials() {
+export default async function Testimonials() {
+  const t = await getScopedI18n("LandingPage.testimonials");
+
   return (
     <section
       id="testimonials"
@@ -10,7 +13,7 @@ export default function Testimonials() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h2 className="text-3xl font-extrabold text-gray-100 sm:text-4xl">
-            What our users are saying
+            {t("title")}
           </h2>
         </div>
 
