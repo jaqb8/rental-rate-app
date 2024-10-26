@@ -1,8 +1,5 @@
 import Redis from "ioredis";
 
-export const connection = new Redis(process.env.KV_URL!, {
+export const connection = new Redis(process.env.REDIS_URI!, {
   maxRetriesPerRequest: null,
-  tls: {
-    rejectUnauthorized: false,
-  },
 });

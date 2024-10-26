@@ -31,7 +31,7 @@ export const env = createEnv({
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
       process.env.VERCEL ? z.string() : z.string().url(),
     ),
-    KV_URL: z.string().url(),
+    REDIS_URI: z.string().url(),
   },
 
   /**
@@ -64,7 +64,7 @@ export const env = createEnv({
     SMTP_USER: process.env.SMTP_USER,
     SMTP_PASSWORD: process.env.SMTP_PASSWORD,
     APP_URL: process.env.APP_URL,
-    KV_URL: process.env.KV_URL,
+    REDIS_URI: process.env.REDIS_URI,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
