@@ -32,6 +32,7 @@ export const env = createEnv({
       process.env.VERCEL ? z.string() : z.string().url(),
     ),
     REDIS_URI: z.string().url(),
+    PROMETHEUS_IP: z.string(),
   },
 
   /**
@@ -65,6 +66,7 @@ export const env = createEnv({
     SMTP_PASSWORD: process.env.SMTP_PASSWORD,
     APP_URL: process.env.APP_URL,
     REDIS_URI: process.env.REDIS_URI,
+    PROMETHEUS_IP: process.env.PROMETHEUS_IP,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
