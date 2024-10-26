@@ -149,4 +149,14 @@ export default {
       allRightsReserved: "Wszelkie prawa zastrzeżone",
     },
   },
+  VerifyEmail: {
+    title: "Zweryfikuj swój adres e-mail",
+    message:
+      "Link weryfikacyjny został wysłany na Twój adres e-mail. Sprawdź swoją skrzynkę odbiorczą i kliknij w link, aby zweryfikować swoje konto.",
+    didntReceiveEmail:
+      "Nie otrzymałeś e-maila? Sprawdź folder spam lub kliknij poniżej, aby ponownie wysłać.",
+    resendEmail: "Wyślij ponownie e-mail weryfikacyjny",
+    returnToHomePage: "Powrót do ",
+    homePage: "Strony głównej",
+  },
 } as const;

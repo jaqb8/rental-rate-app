@@ -144,4 +144,14 @@ export default {
       allRightsReserved: "All rights reserved",
     },
   },
+  VerifyEmail: {
+    title: "Verify Your Email",
+    message:
+      "A verification link has been sent to your email address. Please check your inbox and click on the link to verify your account.",
+    didntReceiveEmail:
+      "Didn't receive the email? Check your spam folder or click below to resend.",
+    resendEmail: "Resend Verification Email",
+    returnToHomePage: "Return to ",
+    homePage: "Home page",
+  },
 } as const;

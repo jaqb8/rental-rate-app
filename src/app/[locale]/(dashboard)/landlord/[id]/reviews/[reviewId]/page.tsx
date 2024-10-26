@@ -131,7 +131,7 @@ export default async function ReviewPage({
                 message="Link copied to clipboard"
                 variant="secondary"
               >
-                Share review
+                Share
               </CopyButton>
             </div>
           </div>
