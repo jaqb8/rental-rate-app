@@ -72,6 +72,7 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { useScopedI18n } from "locales/client";
+import { LanguageSwitcher } from "../language-switcher";
 
 const formSchema = z.object({
   street: z.string().min(2, {
@@ -211,12 +212,15 @@ export function Sidebar() {
           <div className="flex h-full w-inherit flex-col">
             <div className="mb-4 flex h-16 items-center justify-between border-b border-cyan-500/20 bg-gray-900/80 px-4">
               {isSidebarOpen ? (
-                <Link
-                  href="/"
-                  className="flex items-center gap-1 text-xl font-bold text-cyan-500"
-                >
-                  <Home className="h-8 w-8 text-cyan-500" /> {t("title")}
-                </Link>
+                <div className="flex w-full items-center justify-between">
+                  <Link
+                    href="/"
+                    className="flex items-center gap-1 text-xl font-bold text-cyan-500"
+                  >
+                    <Home className="h-8 w-8 text-cyan-500" /> {t("title")}
+                  </Link>
+                  <LanguageSwitcher />
+                </div>
               ) : (
                 <Link href="/" className="flex w-full justify-center">
                   <Home className="h-8 w-8 text-cyan-500" />

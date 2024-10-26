@@ -1,5 +1,6 @@
 import { getScopedI18n } from "locales/server";
 import { Star } from "lucide-react";
+import Image from "next/image";
 import React from "react";
 
 export default async function Testimonials() {
@@ -49,7 +50,9 @@ export default async function Testimonials() {
               className="overflow-hidden rounded-xl border border-cyan-500/20 bg-gray-800/50 p-6 shadow-lg backdrop-blur-sm"
             >
               <div className="flex items-center">
-                <img
+                <Image
+                  width={64}
+                  height={64}
                   className="h-12 w-12 rounded-full"
                   src={testimonial.image}
                   alt={testimonial.name}

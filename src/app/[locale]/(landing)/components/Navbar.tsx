@@ -1,11 +1,29 @@
-import { validateRequest } from "@/auth/validate-request";
-import { getScopedI18n } from "locales/server";
+"use client";
+
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useSession } from "@/context";
+import { useScopedI18n } from "locales/client";
 import { Home, LogIn, Menu, User2 } from "lucide-react";
 import Link from "next/link";
 
-export default async function Navbar() {
-  const { user } = await validateRequest();
-  const t = await getScopedI18n("LandingPage.navbar");
+export default function Navbar() {
+  const { user } = useSession();
+  const t = useScopedI18n("LandingPage.navbar");
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const navbarHeight = 64;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition =
+        elementPosition + window.pageYOffset - navbarHeight;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+  };
 
   return (
     <nav className="fixed z-50 w-full border-b border-cyan-500/20 bg-gray-900/80 backdrop-blur-md">
@@ -19,18 +37,19 @@ export default async function Navbar() {
           </div>
 
           <div className="hidden items-center space-x-8 md:flex">
-            <a
-              href="#features"
+            <button
+              onClick={() => scrollToSection("features")}
               className="text-gray-300 transition-colors hover:text-cyan-400"
             >
               {t("features")}
-            </a>
-            <a
-              href="#testimonials"
+            </button>
+            <button
+              onClick={() => scrollToSection("testimonials")}
               className="text-gray-300 transition-colors hover:text-cyan-400"
             >
               {t("testimonials")}
-            </a>
+            </button>
+            <LanguageSwitcher />
             <button className="rounded-lg bg-gradient-to-r from-cyan-700 to-purple-600 px-4 py-2 text-white transition-all hover:bg-purple-700">
               {!user ? (
                 <Link className="flex items-center" href="/login">

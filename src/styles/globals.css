@@ -68,6 +68,11 @@
   }
 } */
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 4rem;
+}
+
 .leaflet-container {
   height: 100vh;
 }
