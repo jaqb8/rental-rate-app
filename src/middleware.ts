@@ -15,8 +15,13 @@ export async function middleware(request: NextRequest) {
 
   console.log("hostname", request.headers.get("host"));
   if (hostname === "rentalrate.me" && !url.pathname.startsWith("/landing")) {
-    url.pathname = `/landing${url.pathname}`;
-    return NextResponse.rewrite(url);
+    // url.pathname = `/landing${url.pathname}`;
+    return NextResponse.rewrite(
+      new URL(
+        `/pl/landing${url.pathname === "/" ? "" : url.pathname}`,
+        request.url,
+      ),
+    );
   }
 
   // if (hostname === "app.rentalrate.me") {
