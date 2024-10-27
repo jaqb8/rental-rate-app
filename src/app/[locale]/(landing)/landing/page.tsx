@@ -1,5 +1,5 @@
 import React from "react";
-import { Features, Footer, Hero, Navbar, Testimonials } from "../components";
+import { Features, Footer, Hero, Navbar, Testimonials } from "../_components";
 
 export default function LandingPage() {
   return (

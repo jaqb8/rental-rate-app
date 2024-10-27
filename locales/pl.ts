@@ -1,4 +1,4 @@
-import { Testimonials } from "@/app/[locale]/(landing)/components";
+import { Testimonials } from "@/app/[locale]/(landing)/_components";
 import { profile } from "console";
 import { title } from "process";
 

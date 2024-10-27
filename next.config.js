@@ -16,13 +16,13 @@ const config = {
   async rewrites() {
     return [
       {
-        source: "/",
-        destination: "/landing",
+        source: "/:path*",
+        destination: "/landing/:path*",
         has: [{ type: "host", value: "rentalrate.me" }],
       },
       {
-        source: "/landing",
-        destination: "/",
+        source: "/:path*",
+        destination: "/app/:path*",
         has: [{ type: "host", value: "app.rentalrate.me" }],
       },
     ];
