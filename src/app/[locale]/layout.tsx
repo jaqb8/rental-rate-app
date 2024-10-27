@@ -13,9 +13,9 @@ import { cache } from "react";
 import { I18nProviderClient } from "locales/client";
 
 export const metadata: Metadata = {
-  title: "Rate Your Landlord",
-  description: "Rate Your Landlord",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  title: "RentalRate",
+  description: "Find the best place to rent",
+  icons: [{ rel: "icon", url: "/house.svg" }],
 };
 
 export default async function RootLayout({

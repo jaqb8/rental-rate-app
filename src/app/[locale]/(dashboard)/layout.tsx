@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Home, House } from "lucide-react";
+import { Home } from "lucide-react";
 import { getI18n } from "locales/server";
 
 export default async function LandlordLayout({
