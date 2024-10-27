@@ -19,10 +19,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
-  if (hostname === "app.rentalrate.me" && !url.pathname.startsWith("/app")) {
-    url.pathname = `/${url.pathname}`;
-    return NextResponse.rewrite(url);
-  }
+  // if (hostname === "app.rentalrate.me") {
+  //   url.pathname = `/${url.pathname}`;
+  //   return NextResponse.rewrite(url);
+  // }
 
   if (request.method !== "GET") {
     return I18nMiddleware(request);
