@@ -10,7 +10,18 @@ const I18nMiddleware = createI18nMiddleware({
 });
 
 export async function middleware(request: NextRequest) {
-  console.log(request.cookies);
+  const hostname = request.nextUrl.hostname;
+  const url = request.nextUrl.clone();
+
+  if (hostname === "rentalrate.me") {
+    url.pathname = `/landing${url.pathname}`;
+    return NextResponse.rewrite(url);
+  }
+
+  if (hostname === "app.rentalrate.me") {
+    url.pathname = `/app${url.pathname}`;
+  }
+
   if (request.method !== "GET") {
     return I18nMiddleware(request);
   }
