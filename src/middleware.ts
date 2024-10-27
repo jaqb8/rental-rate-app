@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (hostname === "app.rentalrate.me" && !url.pathname.startsWith("/app")) {
-    url.pathname = `/app${url.pathname}`;
+    url.pathname = `/${url.pathname}`;
     return NextResponse.rewrite(url);
   }
 
