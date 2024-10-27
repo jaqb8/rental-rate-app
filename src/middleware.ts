@@ -18,6 +18,7 @@ export async function middleware(request: NextRequest) {
   if (hostname === "rentalrate.me" && !url.pathname.startsWith("/landing")) {
     // url.pathname = `/landing${url.pathname}`;
     const newPath = `/pl/landing${url.pathname.replace(`/pl`, "")}`;
+    console.log("newPath", newPath);
     url.pathname = newPath;
     return NextResponse.rewrite(url);
   }
