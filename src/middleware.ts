@@ -17,12 +17,9 @@ export async function middleware(request: NextRequest) {
   console.log("url.pathname", url.pathname);
   if (hostname === "rentalrate.me" && !url.pathname.startsWith("/landing")) {
     // url.pathname = `/landing${url.pathname}`;
-    return NextResponse.rewrite(
-      new URL(
-        `/pl/landing${url.pathname === "/" ? "" : url.pathname}`,
-        request.url,
-      ),
-    );
+    const newPath = `/pl/landing${url.pathname.replace(`/pl`, "")}`;
+    url.pathname = newPath;
+    return NextResponse.rewrite(url);
   }
 
   // if (hostname === "app.rentalrate.me") {
