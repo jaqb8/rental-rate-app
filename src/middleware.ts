@@ -13,6 +13,7 @@ export async function middleware(request: NextRequest) {
   const hostname = request.nextUrl.hostname;
   const url = request.nextUrl.clone();
 
+  console.log("hostname", hostname);
   if (hostname === "rentalrate.me") {
     url.pathname = `/landing${url.pathname}`;
     return NextResponse.rewrite(url);
