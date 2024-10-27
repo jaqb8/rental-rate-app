@@ -13,6 +13,20 @@ const config = {
     serverComponentsExternalPackages: ["@node-rs/argon2"],
     instrumentationHook: true,
   },
+  async rewrites() {
+    return [
+      {
+        source: "/",
+        destination: "/landing",
+        has: [{ type: "host", value: "rentalrate.me" }],
+      },
+      {
+        source: "/landing",
+        destination: "/",
+        has: [{ type: "host", value: "app.rentalrate.me" }],
+      },
+    ];
+  },
 };
 
 export default config;
