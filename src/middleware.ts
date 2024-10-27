@@ -14,18 +14,14 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
 
   console.log("hostname", request.headers.get("host"));
-  if (hostname === "rentalrate.me") {
-    // url.pathname = `/landing${url.pathname}`;
-    return NextResponse.rewrite(
-      new URL(
-        `/landing${url.pathname === "/" ? "" : url.pathname}`,
-        request.url,
-      ),
-    );
+  if (hostname === "rentalrate.me" && !url.pathname.startsWith("/landing")) {
+    url.pathname = `/landing${url.pathname}`;
+    return NextResponse.rewrite(url);
   }
 
-  if (hostname === "app.rentalrate.me") {
+  if (hostname === "app.rentalrate.me" && !url.pathname.startsWith("/app")) {
     url.pathname = `/app${url.pathname}`;
+    return NextResponse.rewrite(url);
   }
 
   if (request.method !== "GET") {
