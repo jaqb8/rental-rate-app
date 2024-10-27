@@ -7,7 +7,6 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   Home,
-  House,
   Info,
   Loader2,
   LogInIcon,
@@ -320,8 +319,8 @@ export function Sidebar() {
                                   href={`landlord/${selectedLandlord.id}/reviews/new`}
                                   className="w-full"
                                 >
-                                  <MessageSquare className="mr-1 h-4 w-4" /> Add
-                                  new opinion
+                                  <MessageSquare className="mr-1 h-4 w-4" />{" "}
+                                  {t("addNewOpinion")}
                                 </Link>
                               ) : (
                                 <Link
@@ -675,9 +674,9 @@ export function Sidebar() {
           <Dialog open={isDialogOpen} onOpenChange={onOpenChange}>
             <DialogContent className="z-[1000] border-0 border-primary bg-secondary-foreground p-0">
               <DialogHeader className="rounded-t-md bg-primary/40 px-8 py-5">
-                <DialogTitle>Add New Landlord</DialogTitle>
+                <DialogTitle>{t("addNewLandlord")}</DialogTitle>
                 <DialogDescription className="text-muted">
-                  Enter the details for the new landlord here.
+                  {t("addNewLandlordDescription")}
                 </DialogDescription>
               </DialogHeader>
 
@@ -705,9 +704,9 @@ export function Sidebar() {
                       name="streetNumber"
                       render={({ field }) => (
                         <FormItem className="w-1/5 flex-grow">
-                          <FormLabel>Number</FormLabel>
+                          <FormLabel>{t("streetNumber")}</FormLabel>
                           <FormControl>
-                            <Input placeholder="Street Number" {...field} />
+                            <Input placeholder={t("streetNumber")} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -717,10 +716,10 @@ export function Sidebar() {
                       control={form.control}
                       name="flatNumber"
                       render={({ field }) => (
-                        <FormItem className="w-1/5 flex-grow">
-                          <FormLabel>Flat Number</FormLabel>
+                        <FormItem className="w-2/5 flex-grow">
+                          <FormLabel>{t("flatNumber")}</FormLabel>
                           <FormControl>
-                            <Input placeholder="Flat Number" {...field} />
+                            <Input placeholder={t("flatNumber")} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -733,9 +732,9 @@ export function Sidebar() {
                       name="city"
                       render={({ field }) => (
                         <FormItem className="w-2/3 flex-grow">
-                          <FormLabel>City</FormLabel>
+                          <FormLabel>{t("city")}</FormLabel>
                           <FormControl>
-                            <Input placeholder="City" {...field} />
+                            <Input placeholder={t("city")} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -746,9 +745,9 @@ export function Sidebar() {
                       name="zipCode"
                       render={({ field }) => (
                         <FormItem className="w-1/3 flex-grow">
-                          <FormLabel>Zip Code</FormLabel>
+                          <FormLabel>{t("zipCode")}</FormLabel>
                           <FormControl>
-                            <Input placeholder="Zip Code" {...field} />
+                            <Input placeholder={t("zipCode")} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -762,7 +761,9 @@ export function Sidebar() {
                       ) : (
                         <Plus className="mr-2 h-4 w-4" />
                       )}
-                      {isPendingLandlord ? "Processing..." : "Add Landlord"}
+                      {isPendingLandlord
+                        ? t("processing")
+                        : t("addNewLandlord")}
                     </Button>
                   </div>
                 </form>

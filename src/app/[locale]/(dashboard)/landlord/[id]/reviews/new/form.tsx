@@ -4,9 +4,9 @@ import { type Landlord } from "@prisma/client";
 import { api } from "@/trpc/react";
 import { useToast } from "@/hooks/use-toast";
 import ReviewForm, {
-  type reviewFormSchema,
+  type ReviewFormSchema,
 } from "@/components/forms/ReviewForm";
-import { type z } from "zod";
+import { useScopedI18n } from "locales/client";
 
 export default function AddReviewForm({
   landlord,
@@ -17,6 +17,7 @@ export default function AddReviewForm({
 }) {
   const { toast } = useToast();
   const utils = api.useUtils();
+  const t = useScopedI18n("AddReviewPage");
 
   const { mutate: createReview, isPending: isCreatePending } =
     api.review.create.useMutation({
@@ -35,7 +36,7 @@ export default function AddReviewForm({
       },
     });
 
-  function onSubmit(values: z.infer<typeof reviewFormSchema>) {
+  function onSubmit(values: ReviewFormSchema) {
     createReview({
       ...values,
       landlordId: landlord.id,
@@ -46,7 +47,7 @@ export default function AddReviewForm({
     <div className="overflow-hidden rounded-lg border border-primary bg-card-foreground">
       <div className="border-b border-primary bg-primary/10 p-6">
         <h1 className="mb-2 text-2xl font-bold text-primary-foreground">
-          Add Review
+          {t("title")}
         </h1>
         <p className="text-lg font-semibold text-primary-foreground">
           {landlord.street} {landlord.streetNumber}

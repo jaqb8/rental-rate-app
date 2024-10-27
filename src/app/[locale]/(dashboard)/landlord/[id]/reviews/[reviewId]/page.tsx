@@ -17,6 +17,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { CopyButton } from "@/components/copy-button";
+import { getScopedI18n } from "locales/server";
 
 export default async function ReviewPage({
   params,
@@ -31,6 +32,7 @@ export default async function ReviewPage({
     landlordPromise,
     reviewPromise,
   ]);
+  const t = await getScopedI18n("ReviewPage");
 
   if (!review || !landlord) {
     notFound();
@@ -99,20 +101,21 @@ export default async function ReviewPage({
                       disabled={env.NEXT_PUBLIC_APP_VERSION !== "1.1.0"}
                     >
                       <ThumbsUp className="mr-2 h-4 w-4" />
-                      <span className="hidden sm:block">Helpful</span>(0)
+                      <span className="hidden sm:block">{t("helpful")}</span>(0)
                     </Button>
                     <Button
                       variant="secondary"
                       disabled={env.NEXT_PUBLIC_APP_VERSION !== "1.1.0"}
                     >
                       <ThumbsDown className="mr-2 h-4 w-4" />
-                      <span className="hidden sm:block">Not Helpful</span>(0)
+                      <span className="hidden sm:block">{t("notHelpful")}</span>
+                      (0)
                     </Button>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
                   <div className="rounded-lg bg-primary p-2 text-sm">
-                    Review likes and dislikes coming soon!
+                    {t("comingSoon")}
                   </div>
                 </TooltipContent>
               </Tooltip>
@@ -121,17 +124,17 @@ export default async function ReviewPage({
               {env.NEXT_PUBLIC_APP_VERSION === "1.1.0" && (
                 <Button variant="secondary" size="icon">
                   <Flag className="h-5 w-5" />
-                  <span className="sr-only">Flag review</span>
+                  <span className="sr-only">{t("flagReview")}</span>
                 </Button>
               )}
               <CopyButton
                 value={
                   env.APP_URL + `/landlord/${landlord.id}/reviews/${review.id}`
                 }
-                message="Link copied to clipboard"
+                message={t("linkCopied")}
                 variant="secondary"
               >
-                Share
+                {t("share")}
               </CopyButton>
             </div>
           </div>

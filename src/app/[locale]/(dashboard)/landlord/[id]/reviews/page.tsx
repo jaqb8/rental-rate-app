@@ -22,6 +22,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { CopyButton } from "@/components/copy-button";
+import { getScopedI18n } from "locales/server";
 
 export default async function LandlordReviewsPage({
   params,
@@ -42,6 +43,7 @@ export default async function LandlordReviewsPage({
   });
   const landlord = await trpc.landlord.getById({ id: params.id });
   const landlordName = `${landlord?.street} ${landlord?.streetNumber}${landlord?.flatNumber ? `/${landlord.flatNumber}` : ""}, ${landlord?.city}`;
+  const t = await getScopedI18n("ReviewPage");
 
   const reviewsPerPage = pageSize;
   const totalPages = Math.ceil(count / reviewsPerPage);
@@ -112,7 +114,7 @@ export default async function LandlordReviewsPage({
                   </TooltipTrigger>
                   <TooltipContent side="bottom">
                     <div className="rounded-lg bg-primary p-2 text-sm">
-                      Review likes and dislikes coming soon!
+                      {t("comingSoon")}
                     </div>
                   </TooltipContent>
                 </Tooltip>
@@ -121,18 +123,18 @@ export default async function LandlordReviewsPage({
                 {env.NEXT_PUBLIC_APP_VERSION === "1.1.0" && (
                   <Button variant="default" size="sm">
                     <Flag className="mr-1 h-4 w-4" />
-                    Report
+                    {t("report")}
                   </Button>
                 )}
                 <CopyButton
                   value={
                     env.APP_URL + `/landlord/${params.id}/reviews/${review.id}`
                   }
-                  message="Link copied to clipboard"
+                  message={t("linkCopied")}
                   variant="secondary"
                   size="sm"
                 >
-                  Share
+                  {t("share")}
                 </CopyButton>
               </div>
             </div>

@@ -1,3 +1,5 @@
+import { link } from "fs";
+
 export default {
   Header: {
     title: "Rental Rate",
@@ -13,11 +15,16 @@ export default {
     version: "version",
     selectedAddress: "Selected Address",
     addNewLandlord: "Add New Landlord",
+    addNewLandlordDescription: "Enter the details for the new landlord here.",
     addNewOpinion: "Add New Opinion",
     search: "Search",
     profile: "Profile",
     logout: "Logout",
     processing: "Processing...",
+    streetNumber: "Number",
+    flatNumber: "Flat Number",
+    city: "City",
+    zipCode: "Zip Code",
   },
   AutosuggestInput: {
     placeholder: "Search for a location",
@@ -153,5 +160,28 @@ export default {
     resendEmail: "Resend Verification Email",
     returnToHomePage: "Return to ",
     homePage: "Home page",
+  },
+  ReviewPage: {
+    share: "Share",
+    flagReview: "Flag review",
+    helpful: "Helpful",
+    notHelpful: "Not Helpful",
+    linkCopied: "Link copied to clipboard",
+    comingSoon: "This feature is coming soon!",
+    report: "Report",
+  },
+  AddReviewPage: {
+    title: "Add Review",
+    editTitle: "Edit Review",
+    reviewContent: "Review Content",
+    reviewContentDescription: "Share your experience with the landlord",
+    reviewContentDescription2:
+      "Provide details about your experience with the landlord.",
+    rating: "Rating",
+    ratingDescription: "Rate your landlord from 1 to 5 stars.",
+    submit: "Submit Review",
+    processing: "Processing...",
+    contentMessage: "Content must be at least 10 characters.",
+    pickRating: "Pick a rating",
   },
 } as const;

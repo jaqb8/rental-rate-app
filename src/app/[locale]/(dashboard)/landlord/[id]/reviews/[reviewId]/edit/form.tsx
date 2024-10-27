@@ -5,9 +5,10 @@ import { useToast } from "@/hooks/use-toast";
 import { type Review } from "@prisma/client";
 import { type z } from "zod";
 import ReviewForm, {
-  type reviewFormSchema,
+  type ReviewFormSchema,
 } from "@/components/forms/ReviewForm";
 import { useRouter } from "next/navigation";
+import { useScopedI18n } from "locales/client";
 
 export default function EditReviewForm({
   landlordId,
@@ -20,6 +21,7 @@ export default function EditReviewForm({
 }) {
   const { toast } = useToast();
   const router = useRouter();
+  const t = useScopedI18n("AddReviewPage");
 
   const { mutate: updateReview, isPending: isUpdatePending } =
     api.review.update.useMutation({
@@ -36,7 +38,7 @@ export default function EditReviewForm({
       },
     });
 
-  function onSubmit(values: z.infer<typeof reviewFormSchema>) {
+  function onSubmit(values: ReviewFormSchema) {
     updateReview({
       id: review.id,
       data: values,
@@ -47,7 +49,7 @@ export default function EditReviewForm({
     <div className="overflow-hidden rounded-lg border border-primary bg-card-foreground">
       <div className="border-b border-primary bg-primary/10 p-6">
         <h1 className="text-2xl font-bold text-primary-foreground">
-          Edit Review
+          {t("editTitle")}
         </h1>
       </div>
       <div className="p-6">

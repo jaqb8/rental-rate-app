@@ -14,29 +14,38 @@ import { useState } from "react";
 import { Loader2, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useScopedI18n } from "locales/client";
 
-export const reviewFormSchema = z.object({
-  content: z.string().min(10, {
-    message: "Content must be at least 10 characters.",
-  }),
-  rating: z
-    .number()
-    .min(1, {
-      message: "Pick a rating",
-    })
-    .max(5),
-});
+export const useReviewFormSchema = () => {
+  const t = useScopedI18n("AddReviewPage");
+
+  return z.object({
+    content: z.string().min(10, {
+      message: t("contentMessage"),
+    }),
+    rating: z
+      .number()
+      .min(1, {
+        message: t("pickRating"),
+      })
+      .max(5),
+  });
+};
+
+export type ReviewFormSchema = z.infer<ReturnType<typeof useReviewFormSchema>>;
 
 export default function ReviewForm({
   onSubmit,
   isLoading,
   defaultValues,
 }: {
-  onSubmit: (data: z.infer<typeof reviewFormSchema>) => void;
+  onSubmit: (data: z.infer<ReturnType<typeof useReviewFormSchema>>) => void;
   isLoading: boolean;
-  defaultValues?: z.infer<typeof reviewFormSchema>;
+  defaultValues?: z.infer<ReturnType<typeof useReviewFormSchema>>;
 }) {
-  const form = useForm<z.infer<typeof reviewFormSchema>>({
+  const reviewFormSchema = useReviewFormSchema();
+
+  const form = useForm<z.infer<ReturnType<typeof useReviewFormSchema>>>({
     resolver: zodResolver(reviewFormSchema),
     defaultValues: defaultValues
       ? defaultValues
@@ -47,6 +56,7 @@ export default function ReviewForm({
   });
   const [hoveredRating, setHoveredRating] = useState(0);
   const [rating, setRating] = useState(defaultValues?.rating ?? 0);
+  const t = useScopedI18n("AddReviewPage");
 
   return (
     <Form {...form}>
@@ -56,16 +66,16 @@ export default function ReviewForm({
           name="content"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Review Content</FormLabel>
+              <FormLabel>{t("reviewContent")}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Share your experience with this landlord"
+                  placeholder={t("reviewContentDescription")}
                   className="resize-none"
                   {...field}
                 />
               </FormControl>
               <FormDescription>
-                Provide details about your experience with the landlord.
+                {t("reviewContentDescription2")}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -76,7 +86,7 @@ export default function ReviewForm({
           name="rating"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Rating</FormLabel>
+              <FormLabel>{t("rating")}</FormLabel>
               <FormControl>
                 <div className="flex items-center space-x-2">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -97,16 +107,14 @@ export default function ReviewForm({
                   ))}
                 </div>
               </FormControl>
-              <FormDescription>
-                Rate your landlord from 1 to 5 stars.
-              </FormDescription>
+              <FormDescription>{t("ratingDescription")}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
         <Button disabled={isLoading} type="submit">
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isLoading ? "Processing..." : "Submit Review"}
+          {isLoading ? t("processing") : t("submit")}
         </Button>
       </form>
     </Form>
