@@ -1,7 +1,3 @@
-import { Testimonials } from "@/app/[locale]/(landing)/_components";
-import { profile } from "console";
-import { title } from "process";
-
 export default {
   Header: {
     title: "Rental Rate",
