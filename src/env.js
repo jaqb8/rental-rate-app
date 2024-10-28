@@ -44,7 +44,6 @@ export const env = createEnv({
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
     NEXT_PUBLIC_JAWG_ACCESS_TOKEN: z.string(),
     NEXT_PUBLIC_APP_VERSION: z.string(),
-    NEXT_PUBLIC_ROOT_DOMAIN: z.string(),
   },
 
   /**
@@ -58,7 +57,6 @@ export const env = createEnv({
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     NEXT_PUBLIC_JAWG_ACCESS_TOKEN: process.env.NEXT_PUBLIC_JAWG_ACCESS_TOKEN,
-    NEXT_PUBLIC_ROOT_DOMAIN: process.env.NEXT_PUBLIC_ROOT_DOMAIN,
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
     NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION,
     MOCK_SEND_EMAIL: process.env.MOCK_SEND_EMAIL,
