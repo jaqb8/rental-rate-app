@@ -211,12 +211,12 @@ export function Sidebar() {
           <div className="flex h-full w-inherit flex-col">
             <div className="mb-4 flex h-16 items-center justify-between border-b border-cyan-500/20 bg-gray-900/80 px-4">
               {isSidebarOpen ? (
-                <div className="flex w-full items-center justify-between">
+                <div className="flex w-full items-center justify-between gap-2">
                   <Link
                     href="/"
                     className="flex items-center gap-1 text-xl font-bold text-cyan-500"
                   >
-                    <Home className="h-8 w-8 text-cyan-500" /> {t("title")}
+                    <img src="/rental_logo.svg" className="w-10" /> {t("title")}
                   </Link>
                   <LanguageSwitcher />
                 </div>
