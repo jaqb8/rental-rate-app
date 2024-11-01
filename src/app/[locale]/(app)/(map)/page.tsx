@@ -3,6 +3,7 @@ import { Sidebar } from "@/components/sidebar";
 import Link from "next/link";
 import { Home, House } from "lucide-react";
 import { getI18n } from "locales/server";
+import Image from "next/image";
 
 export default async function HomePage() {
   const t = await getI18n();
@@ -15,7 +16,13 @@ export default async function HomePage() {
             href="/"
             className="flex items-center gap-1 text-2xl font-thin text-secondary"
           >
-            <Home className="h-8 w-8 text-cyan-500" />
+            <Image
+              src="/rental_logo.svg"
+              width={40}
+              height={40}
+              alt="logo"
+              className="h-8 w-8 text-cyan-500"
+            />
             <span className="ml-2 text-xl font-bold text-cyan-500">
               {t("Header.title")}
             </span>
