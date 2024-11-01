@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Home } from "lucide-react";
 import { getI18n } from "locales/server";
+import Image from "next/image";
 
 export default async function LandlordLayout({
   children,
@@ -17,7 +18,14 @@ export default async function LandlordLayout({
           href="/"
           className="flex items-center gap-1 text-xl font-bold text-cyan-500"
         >
-          <Home className="h-8 w-8 text-cyan-500" /> {t("Header.title")}
+          <Image
+            src="/rental_logo.svg"
+            width={40}
+            height={40}
+            alt="logo"
+            className="h-8 w-8 text-cyan-500"
+          />{" "}
+          {t("Header.title")}
         </Link>
       </header>
       <section className="px-8 py-12 md:px-24 lg:px-64">
