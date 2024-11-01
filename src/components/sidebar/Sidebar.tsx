@@ -72,6 +72,7 @@ import {
 } from "../ui/collapsible";
 import { useScopedI18n } from "locales/client";
 import { LanguageSwitcher } from "../language-switcher";
+import Image from "next/image";
 
 const formSchema = z.object({
   street: z.string().min(2, {
@@ -211,18 +212,30 @@ export function Sidebar() {
           <div className="flex h-full w-inherit flex-col">
             <div className="mb-4 flex h-16 items-center justify-between border-b border-cyan-500/20 bg-gray-900/80 px-4">
               {isSidebarOpen ? (
-                <div className="flex w-full items-center justify-between">
+                <div className="flex w-full items-center justify-between gap-2">
                   <Link
                     href="/"
                     className="flex items-center gap-1 text-xl font-bold text-cyan-500"
                   >
-                    <Home className="h-8 w-8 text-cyan-500" /> {t("title")}
+                    <Image
+                      src="/rental_logo.svg"
+                      width={40}
+                      height={40}
+                      alt="logo"
+                    />
+                    {t("title")}
                   </Link>
                   <LanguageSwitcher />
                 </div>
               ) : (
                 <Link href="/" className="flex w-full justify-center">
-                  <Home className="h-8 w-8 text-cyan-500" />
+                  <Image
+                    alt="logo"
+                    width={40}
+                    height={40}
+                    src="/rental_logo.svg"
+                    className="text-cyan-500"
+                  />
                 </Link>
               )}
             </div>
