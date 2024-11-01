@@ -22,7 +22,7 @@ export const CopyButton = React.forwardRef<HTMLButtonElement, CopyButtonProps>(
       toast({
         title: props.message,
         variant: "default",
-        duration: 2000,
+        duration: 2001,
       });
       setTimeout(() => setHasCopied(false), 2000);
     };
