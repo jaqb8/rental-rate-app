@@ -212,30 +212,39 @@ export function Sidebar() {
           <div className="flex h-full w-inherit flex-col">
             <div className="mb-4 flex h-16 items-center justify-between border-b border-cyan-500/20 bg-gray-900/80 px-4">
               {isSidebarOpen ? (
-                <div className="flex w-full items-center justify-between gap-2">
+                <div className="flex h-full w-full items-center justify-between gap-2">
                   <Link
                     href="/"
-                    className="flex items-center gap-1 text-xl font-bold text-cyan-500"
+                    className="flex h-full items-center justify-center gap-2 text-xl font-bold text-cyan-500"
                   >
-                    <Image
-                      src="/rental_logo.svg"
-                      width={40}
-                      height={40}
-                      alt="logo"
-                    />
+                    <div className="flex items-center justify-center pt-1">
+                      {" "}
+                      <Image
+                        src="/rental_logo2.svg"
+                        alt="logo"
+                        width={40}
+                        height={40}
+                      />
+                    </div>
+
                     {t("title")}
                   </Link>
                   <LanguageSwitcher />
                 </div>
               ) : (
-                <Link href="/" className="flex w-full justify-center">
-                  <Image
-                    alt="logo"
-                    width={40}
-                    height={40}
-                    src="/rental_logo.svg"
-                    className="text-cyan-500"
-                  />
+                <Link
+                  href="/"
+                  className="flex w-full items-center justify-center"
+                >
+                  <div className="flex items-center justify-center pt-1">
+                    {" "}
+                    <Image
+                      src="/rental_logo2.svg"
+                      alt="logo"
+                      width={40}
+                      height={40}
+                    />
+                  </div>
                 </Link>
               )}
             </div>
