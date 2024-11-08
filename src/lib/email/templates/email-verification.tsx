@@ -34,7 +34,7 @@ export const EmailVerificationTemplate = ({
               style={logo}
             >
               <img
-                src="https://app.rentalrate.me/rental_logo.svg"
+                src="https://app.rentalrate.me/rental_logo2.svg"
                 width={40}
                 height={40}
                 alt="logo"
