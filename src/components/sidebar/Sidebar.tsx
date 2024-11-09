@@ -501,58 +501,89 @@ export function Sidebar() {
             open={isSidebarOpen}
             onOpenChange={setIsSidebarOpen}
           >
-            <div className="flex items-center justify-center gap-4 px-12 py-4">
-              <Button
-                variant="secondary"
-                className={cn("rounded-full px-6 py-4", !user && "hidden")}
-                asChild
-              >
-                <Link href="/profile">
-                  <UserIcon className="mr-1 h-4 w-4" />{" "}
-                  {!isSidebarOpen && t("profile")}
-                </Link>
-              </Button>
-              <Button
-                variant="secondary"
-                className={cn("rounded-full py-4", user && "hidden")}
-                asChild
-              >
-                <Link href="/login">
-                  <User /> {t("signIn")}
-                </Link>
-              </Button>
-              <CollapsibleTrigger asChild>
+            <div className="flex items-center justify-center gap-2 p-3">
+              <div className="profile flex basis-1/3 items-center justify-center">
                 <Button
-                  size={isSidebarOpen ? "default" : "icon"}
-                  className={cn("h-12 rounded-full", !isSidebarOpen && "w-12")}
+                  variant="secondary"
+                  className={cn(
+                    "h-8 w-full rounded-full px-6 py-4",
+                    !user && "hidden",
+                  )}
+                  asChild
                 >
-                  <SearchIcon className={cn(isSidebarOpen && "mr-1")} />
-                  {isSidebarOpen && t("search")}
+                  <Link href="/profile">
+                    <UserIcon className="mr-1 h-4 w-4" />{" "}
+                    {!isSidebarOpen && t("profile")}
+                    {t("profile")}
+                  </Link>
                 </Button>
-              </CollapsibleTrigger>
-              <Button
-                className={cn("rounded-full py-4", user && "hidden")}
-                variant="secondary"
-                asChild
-              >
-                <Link href="/register">
-                  <UserPlus2 />
-                  {t("signUp")}
-                </Link>
-              </Button>
-              <Button
-                onClick={handleLogout}
-                disabled={isLoading}
-                variant="secondary"
-                className={cn("rounded-full px-6 py-4", !user && "hidden")}
-              >
-                {!isLoading ? (
-                  <LogOutIcon className="mr-1 h-4 w-4" />
-                ) : (
-                  <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-                )}
-                {!isSidebarOpen && t("logout")}
-              </Button>
+              </div>
+              <div className="log in">
+                <Button
+                  variant="secondary"
+                  className={cn(
+                    "h-8 rounded-full py-4 text-[12px]",
+                    user && "hidden",
+                  )}
+                  asChild
+                >
+                  <Link href="/login">
+                    <User className="mr-1 size-[18px]" /> {t("signIn")}
+                  </Link>
+                </Button>
+              </div>
+              <div className="search flex basis-1/3 items-center justify-center">
+                {" "}
+                <CollapsibleTrigger asChild>
+                  <Button
+                    size={isSidebarOpen ? "default" : "icon"}
+                    className={cn(
+                      "h-8 rounded-full text-[14px]",
+                      !isSidebarOpen && "w-10",
+                    )}
+                  >
+                    <SearchIcon
+                      className={cn(isSidebarOpen && "mr-1 size-[18px]")}
+                    />
+                    {isSidebarOpen && t("search")}
+                  </Button>
+                </CollapsibleTrigger>
+              </div>
+
+              <div className="sign in">
+                <Button
+                  className={cn(
+                    "h-8 rounded-full py-4 text-[12px]",
+                    user && "hidden",
+                  )}
+                  variant="secondary"
+                  asChild
+                >
+                  <Link href="/register">
+                    <UserPlus2 className="mr-1 size-[18px]" />
+                    {t("signUp")}
+                  </Link>
+                </Button>
+              </div>
+              <div className="logout flex basis-1/3 items-center justify-center">
+                <Button
+                  onClick={handleLogout}
+                  disabled={isLoading}
+                  variant="secondary"
+                  className={cn(
+                    "h-8 w-full rounded-full px-6 py-4",
+                    !user && "hidden",
+                  )}
+                >
+                  {!isLoading ? (
+                    <LogOutIcon className="mr-1 h-4 w-4" />
+                  ) : (
+                    <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                  )}
+                  {!isSidebarOpen && t("logout")}
+                  {t("logout")}
+                </Button>
+              </div>
             </div>
             <CollapsibleContent className="CollapsibleContent flex flex-col gap-4">
               <div className="flex flex-col gap-3 px-4 pb-4">
