@@ -1,4 +1,12 @@
-<svg width="444" height="719" viewBox="0 0 444 719" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M221.989 719C230.322 670.667 266.389 547.8 343.989 443C421.589 338.2 441.655 272 441.989 252C452.655 173 404.489 0 221.989 0C17.9886 0 -13.0113 204 3.9886 252L8.9887 278L17.9887 304L49.9887 363L100.989 443C126.989 466 214.789 633.4 221.989 719Z" fill="#7C3AED"/>
-<ellipse cx="222" cy="223" rx="80" ry="81" fill="white"/>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.1.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Warstwa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 444 719" style="enable-background:new 0 0 444 719;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#00BCD4;}
+	.st1{fill:#FFFFFF;}
+</style>
+<path class="st0" d="M222,719c8.3-48.3,44.4-171.2,122-276s97.7-171,98-191C452.7,173,404.5,0,222,0C18,0-13,204,4,252l5,26l9,26
+	l32,59l51,80C127,466,214.8,633.4,222,719z"/>
+<ellipse class="st1" cx="222" cy="223" rx="80" ry="81"/>
 </svg>
